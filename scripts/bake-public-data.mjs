@@ -1,0 +1,543 @@
+#!/usr/bin/env node
+/**
+ * bake-public-data.mjs
+ *
+ * 把 .evaluations/ 目录 + seed + 运行时 snapshot 烘焙成一组静态 JSON/MD，
+ * 放进 public/data/，供 `vite build` 收进 dist，发布到 GitHub Pages。
+ *
+ * 前端在 prod 模式下（import.meta.env.PROD）会把 `/_bus/*` 请求映射到
+ * `/data/*.json`（由 src/lib/dataSource.ts 的 toStaticUrl 决定）。本脚本
+ * 产出的文件结构必须与那里的映射表严格对齐。
+ *
+ * 产物清单（均写入 ${OUT_DIR}/ = public/data/）：
+ *   standard.json             ←  镜像 /_bus/standard        （RUBRIC_STANDARD.md 原文 + 元信息）
+ *   contract.json             ←  镜像 /_bus/contract        （EVALUATION_CONTRACT.md 原文 + 元信息）
+ *   products.json             ←  镜像 /_bus/products        （PRODUCTS.json + 元信息）
+ *   outbox/index.json         ←  镜像 /_bus/outbox          （{results: OutboxListItem[]}）
+ *   outbox/{taskId}/bundle.json
+ *                             ←  镜像 /_bus/outbox/:taskId  （{taskId,latestVersion,versions,latest}）
+ *   outbox/{taskId}/v{n}.json ←  原样拷贝 .evaluations/outbox/{taskId}/v{n}.json
+ *   public-bundle.json        ←  首次打开网页时载入的 queries+submissions+products 元数据
+ *                                （不含 submission.content 正文，避免 bundle 过大）
+ *   reports/{submissionId}.md ←  每条 submission 的正文单拆一份 md，懒加载
+ *   health.json               ←  {ok:true,dir:"<baked>"}   纯占位，让 prod 下 /_bus/health 也能应答
+ *   bake-manifest.json        ←  本次烘焙的元信息（bakedAt、文件 hash、来源 snapshot 等）
+ *
+ * 数据源（优先级从高到低）：
+ *   (1) .evaluations/*                                               ←  唯一事实源
+ *   (2) .evaluations/_runtime-snapshot.json（可选）                   ←  管理员用 npm run export-snapshot 导出
+ *   (3) src/seed.ts 的 SEED_SNAPSHOT                                 ←  兜底（首次打开网页也是用它）
+ *
+ * 冲突策略：若同一个 id 在 (2) 和 (3) 都出现，(2) 覆盖 (3)，因为 runtime snapshot
+ * 是最新的。但脚本会在 stderr 打印 "overrode from snapshot" 帮助你确认。
+ *
+ * 严格校验（fail fast）：
+ *   - outbox JSON 里出现的所有 reportId 必须在合并后的 submissions 里能找到
+ *   - 若不满足，脚本直接 exit 1 并列出悬挂 reportId 对应的 taskId
+ *     → 管理员需要先跑 `npm run export-snapshot` 把本地最新 submissions 倒出来
+ *
+ * 调用姿势：
+ *   node scripts/bake-public-data.mjs                  # 正常烘焙
+ *   node scripts/bake-public-data.mjs --allow-orphan   # 放宽校验（仅调试用）
+ *   node scripts/bake-public-data.mjs --out dist-data  # 自定义输出目录
+ */
+
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import crypto from "node:crypto";
+
+// ------------------------------------------------------------
+// CLI args
+// ------------------------------------------------------------
+const argv = process.argv.slice(2);
+const flag = (name) => argv.includes(name);
+const option = (name, fallback) => {
+  const idx = argv.indexOf(name);
+  if (idx >= 0 && idx < argv.length - 1) return argv[idx + 1];
+  return fallback;
+};
+
+const ALLOW_ORPHAN = flag("--allow-orphan");
+
+// ------------------------------------------------------------
+// 路径
+// ------------------------------------------------------------
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const PROJECT_ROOT = path.resolve(__dirname, "..");
+const EV_DIR = path.join(PROJECT_ROOT, ".evaluations");
+const OUT_DIR = path.resolve(PROJECT_ROOT, option("--out", "public/data"));
+const RUNTIME_SNAPSHOT_PATH = path.join(EV_DIR, "_runtime-snapshot.json");
+
+function rel(p) {
+  return path.relative(PROJECT_ROOT, p);
+}
+
+function log(level, ...args) {
+  const tag = level === "error" ? "\x1b[31m[bake:error]\x1b[0m" : level === "warn" ? "\x1b[33m[bake:warn]\x1b[0m" : "\x1b[36m[bake]\x1b[0m";
+  // eslint-disable-next-line no-console
+  console[level === "error" ? "error" : "log"](tag, ...args);
+}
+
+function die(msg, extra) {
+  log("error", msg);
+  if (extra) log("error", extra);
+  process.exit(1);
+}
+
+// ------------------------------------------------------------
+// 基础 IO
+// ------------------------------------------------------------
+function readJson(filePath, required = true) {
+  if (!fs.existsSync(filePath)) {
+    if (required) die(`File not found: ${rel(filePath)}`);
+    return null;
+  }
+  try {
+    return JSON.parse(fs.readFileSync(filePath, "utf8"));
+  } catch (err) {
+    die(`Invalid JSON: ${rel(filePath)}`, String(err?.message ?? err));
+    return null;
+  }
+}
+
+function readText(filePath) {
+  if (!fs.existsSync(filePath)) die(`File not found: ${rel(filePath)}`);
+  return fs.readFileSync(filePath, "utf8");
+}
+
+function ensureDir(dir) {
+  fs.mkdirSync(dir, { recursive: true });
+}
+
+function writeJson(target, payload) {
+  ensureDir(path.dirname(target));
+  const body = JSON.stringify(payload, null, 2);
+  fs.writeFileSync(target, body);
+  return body.length;
+}
+
+function writeText(target, content) {
+  ensureDir(path.dirname(target));
+  fs.writeFileSync(target, content);
+  return content.length;
+}
+
+function sha1(s) {
+  return crypto.createHash("sha1").update(s).digest("hex").slice(0, 12);
+}
+
+function statMs(p) {
+  return fs.statSync(p).mtimeMs;
+}
+
+// ------------------------------------------------------------
+// 清理旧产物（避免残留已删除的 outbox）
+// ------------------------------------------------------------
+function cleanOutDir() {
+  if (!fs.existsSync(OUT_DIR)) return;
+  fs.rmSync(OUT_DIR, { recursive: true, force: true });
+}
+
+// ------------------------------------------------------------
+// 读取 seed（从 TS 源码里用正则抠 SEED_SNAPSHOT 不可靠，改用 subprocess 加载）
+//
+// 注意：我们不用 tsx/ts-node，直接运行同目录的 CJS/ESM 版 loader；
+// 这里选择从 .evaluations/_seed-export.json 读——
+// 如果没生成，就自己从 src/seed.ts 解析一遍。
+//
+// 更稳的做法：让 package.json 的 build:public 脚本在跑本脚本前先用
+// vite build-ssr/esbuild 把 seed 编译成 cjs/json；但为了不引新依赖，
+// 我们采用一个"简单但够用"的方案：用 esbuild-less 的纯 Node 动态 import
+// + .ts 转换——不行；所以本脚本直接从 .evaluations/_seed-export.json 读。
+// 生成这份 JSON 的逻辑放在 scripts/export-snapshot.mjs 里（也会顺带
+// dump 当前浏览器的 localStorage；两者合并得到最终 submissions）。
+// ------------------------------------------------------------
+
+/**
+ * 读 seed 作为基础层。
+ *
+ * 路径优先级：
+ *   1) .evaluations/_seed-snapshot.json （由 `npm run seed:dump` 生成，推荐）
+ *   2) 如果没有，抛出明确的错误提示用户跑 seed:dump
+ *
+ * seed 是类型安全的 TS 源码，直接在 Node 里 import .ts 会失败；
+ * 所以把 seed "物化" 成 JSON 是最简单的架构。
+ * 这个 JSON 也进 git，保证 CI 上无 Node 转译依赖就能 bake。
+ */
+function loadSeedSnapshot() {
+  const file = path.join(EV_DIR, "_seed-snapshot.json");
+  if (fs.existsSync(file)) {
+    const j = readJson(file);
+    log("log", `seed: loaded ${rel(file)} (${(j.queries ?? []).length} queries, ${(j.submissions ?? []).length} submissions)`);
+    return j;
+  }
+  die(
+    `Missing ${rel(file)}. Run \`npm run seed:dump\` first to materialize src/seed.ts into JSON. ` +
+    `This step decouples the bake script from TS toolchain.`
+  );
+  return null;
+}
+
+/**
+ * 读运行时 snapshot（可选）。
+ * 结构与 LabSnapshot 一致：{ version, exportedAt, products, queries, submissions }
+ */
+function loadRuntimeSnapshot() {
+  if (!fs.existsSync(RUNTIME_SNAPSHOT_PATH)) {
+    log("log", `runtime snapshot: ${rel(RUNTIME_SNAPSHOT_PATH)} not present; using seed only`);
+    return null;
+  }
+  const j = readJson(RUNTIME_SNAPSHOT_PATH);
+  log("log", `runtime snapshot: loaded ${rel(RUNTIME_SNAPSHOT_PATH)} (${(j.queries ?? []).length} queries, ${(j.submissions ?? []).length} submissions, exportedAt=${j.exportedAt ?? "?"})`);
+  return j;
+}
+
+function mergeSnapshots(seed, runtime) {
+  if (!runtime) return seed;
+  const byId = (arr) => {
+    const m = new Map();
+    for (const x of arr) m.set(x.id, x);
+    return m;
+  };
+  const merge = (seedArr, rtArr, kind) => {
+    const m = byId(seedArr);
+    let overridden = 0;
+    let added = 0;
+    for (const x of rtArr ?? []) {
+      if (m.has(x.id)) overridden++; else added++;
+      m.set(x.id, x);
+    }
+    if (overridden || added) {
+      log("log", `merge/${kind}: seed=${seedArr.length}, runtime=${(rtArr ?? []).length}, overridden=${overridden}, added=${added}`);
+    }
+    return Array.from(m.values());
+  };
+  return {
+    version: runtime.version ?? seed.version,
+    exportedAt: runtime.exportedAt ?? seed.exportedAt,
+    products: merge(seed.products ?? [], runtime.products ?? [], "products"),
+    queries: merge(seed.queries ?? [], runtime.queries ?? [], "queries"),
+    submissions: merge(seed.submissions ?? [], runtime.submissions ?? [], "submissions"),
+  };
+}
+
+// ------------------------------------------------------------
+// 扫 outbox
+// ------------------------------------------------------------
+function parseQueryCode(taskId) {
+  // 与 vite-plugins/evaluationBus.ts 的 parseQueryCode 对齐：
+  // 取第一段 "-" 之前的前缀作为 queryCode（EV-0001-o13pwo → "EV-0001"）
+  const m = taskId.match(/^([A-Z]+-\d+)/);
+  return m ? m[1] : undefined;
+}
+
+function listOutboxTasks() {
+  const outboxDir = path.join(EV_DIR, "outbox");
+  if (!fs.existsSync(outboxDir)) {
+    log("warn", `${rel(outboxDir)} not present; no evaluations will be baked`);
+    return [];
+  }
+  const taskDirs = fs
+    .readdirSync(outboxDir)
+    .filter((f) => fs.statSync(path.join(outboxDir, f)).isDirectory());
+
+  const tasks = [];
+  for (const taskId of taskDirs) {
+    const dir = path.join(outboxDir, taskId);
+    const files = fs
+      .readdirSync(dir)
+      .map((f) => {
+        const m = f.match(/^v(\d+)\.json$/);
+        if (!m) return null;
+        const full = path.join(dir, f);
+        const stat = fs.statSync(full);
+        return { v: Number(m[1]), file: f, full, mtime: stat.mtimeMs, size: stat.size };
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.v - b.v);
+    if (files.length === 0) continue;
+    tasks.push({
+      taskId,
+      queryCode: parseQueryCode(taskId),
+      versions: files,
+    });
+  }
+  return tasks;
+}
+
+// ------------------------------------------------------------
+// 产物烘焙
+// ------------------------------------------------------------
+function bakeStandard() {
+  const src = path.join(EV_DIR, "RUBRIC_STANDARD.md");
+  const content = readText(src);
+  const stat = fs.statSync(src);
+  const payload = {
+    path: rel(src),
+    mtime: stat.mtimeMs,
+    size: stat.size,
+    content,
+  };
+  const out = path.join(OUT_DIR, "standard.json");
+  writeJson(out, payload);
+  return out;
+}
+
+function bakeContract() {
+  const src = path.join(EV_DIR, "EVALUATION_CONTRACT.md");
+  const content = readText(src);
+  const stat = fs.statSync(src);
+  const payload = {
+    path: rel(src),
+    mtime: stat.mtimeMs,
+    size: stat.size,
+    content,
+  };
+  const out = path.join(OUT_DIR, "contract.json");
+  writeJson(out, payload);
+  return out;
+}
+
+function bakeProducts() {
+  const src = path.join(EV_DIR, "PRODUCTS.json");
+  const raw = readText(src);
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (err) {
+    die(`PRODUCTS.json is not valid JSON: ${err.message}`);
+    return null;
+  }
+  const stat = fs.statSync(src);
+  const payload = {
+    path: rel(src),
+    mtime: stat.mtimeMs,
+    size: stat.size,
+    updatedAt: parsed?.updatedAt ?? null,
+    products: Array.isArray(parsed?.products) ? parsed.products : [],
+  };
+  const out = path.join(OUT_DIR, "products.json");
+  writeJson(out, payload);
+  return out;
+}
+
+function bakeHealth(bakedAt) {
+  const out = path.join(OUT_DIR, "health.json");
+  writeJson(out, { ok: true, dir: "baked", bakedAt });
+  return out;
+}
+
+function bakeOutbox(tasks) {
+  const outboxOut = path.join(OUT_DIR, "outbox");
+  ensureDir(outboxOut);
+
+  // index.json
+  const indexItems = tasks
+    .map((t) => {
+      const latest = t.versions[t.versions.length - 1];
+      return {
+        taskId: t.taskId,
+        queryCode: t.queryCode,
+        latestVersion: latest.v,
+        latestMtime: latest.mtime,
+        versions: t.versions.map((v) => ({ v: v.v, mtime: v.mtime, size: v.size })),
+      };
+    })
+    .sort((a, b) => b.latestMtime - a.latestMtime);
+  writeJson(path.join(outboxOut, "index.json"), { results: indexItems });
+
+  // 每个 task：bundle.json + 所有 v{n}.json
+  const allPayloads = new Map(); // taskId -> latest payload (供 reportId 校验)
+  for (const t of tasks) {
+    const dir = path.join(outboxOut, t.taskId);
+    ensureDir(dir);
+    const versionPayloads = [];
+    for (const v of t.versions) {
+      const j = readJson(v.full);
+      versionPayloads.push({ v: v.v, payload: j });
+      writeJson(path.join(dir, `v${v.v}.json`), j);
+    }
+    const latest = versionPayloads[versionPayloads.length - 1];
+    const bundle = {
+      taskId: t.taskId,
+      latestVersion: latest.v,
+      versions: t.versions.map((v) => ({ v: v.v, mtime: v.mtime, size: v.size })),
+      latest: latest.payload,
+    };
+    writeJson(path.join(dir, "bundle.json"), bundle);
+    allPayloads.set(t.taskId, latest.payload);
+  }
+  return { indexCount: indexItems.length, allPayloads };
+}
+
+// ------------------------------------------------------------
+// 严格校验：outbox 里提到的 reportId 必须能在 submissions 中找到
+// ------------------------------------------------------------
+function validateReportIds(allPayloads, submissions) {
+  const subIds = new Set(submissions.map((s) => s.id));
+  const dangling = []; // {taskId, reportId, productName}
+  for (const [taskId, payload] of allPayloads) {
+    const items = payload?.summary?.overallScores ?? [];
+    for (const o of items) {
+      if (!subIds.has(o.reportId)) {
+        dangling.push({ taskId, reportId: o.reportId, productName: o.productName });
+      }
+    }
+  }
+  if (dangling.length === 0) {
+    log("log", `report-id integrity: ok (${submissions.length} submissions, ${allPayloads.size} outbox tasks)`);
+    return;
+  }
+  const lines = dangling.map((d) => `  · ${d.taskId}  reportId=${d.reportId}  (product=${d.productName})`);
+  const msg =
+    `Found ${dangling.length} dangling reportId(s) in outbox—these reports won't resolve to any submission:\n` +
+    lines.join("\n") +
+    `\n\nHint: run \`npm run export-snapshot\` to dump your local admin browser localStorage ` +
+    `into .evaluations/_runtime-snapshot.json, then re-run bake.`;
+  if (ALLOW_ORPHAN) {
+    log("warn", msg);
+  } else {
+    die(msg);
+  }
+}
+
+// ------------------------------------------------------------
+// 烘焙 public-bundle + reports
+// ------------------------------------------------------------
+function bakePublicBundle(snapshot, bakedAt) {
+  // 只发布 outbox 相关的 queries 与 submissions：
+  //   - 凡是在 outbox 里被引用过的 query.code → 全保留
+  //   - 凡是在 outbox 里被引用过的 submission.id → 全保留
+  //   - 其他"只在本地 localStorage 里但没评测结果"的数据不对外发布
+  //
+  // 这样可以避免管理员本地的实验性草稿、未完成 query 泄露到公网。
+  // 同时确保每条发布的评测都"有得看"（reportId 能落到 submission）。
+  //
+  // 注意：一个 query 如果压根没 outbox 任务，也会被裁掉——这是刻意的：
+  // 对外版只展示"已经评过的题"，没评的题按空态处理（通过 QueriesPage
+  // 的 outboxAgg 自然空过，不需要单独处理）。
+  const outboxDir = path.join(EV_DIR, "outbox");
+  let usedReportIds = new Set();
+  let usedQueryCodes = new Set();
+  if (fs.existsSync(outboxDir)) {
+    for (const taskId of fs.readdirSync(outboxDir)) {
+      const code = parseQueryCode(taskId);
+      if (code) usedQueryCodes.add(code);
+      const dir = path.join(outboxDir, taskId);
+      if (!fs.statSync(dir).isDirectory()) continue;
+      for (const file of fs.readdirSync(dir)) {
+        if (!/^v\d+\.json$/.test(file)) continue;
+        const j = readJson(path.join(dir, file), false);
+        for (const o of j?.summary?.overallScores ?? []) {
+          if (o.reportId) usedReportIds.add(o.reportId);
+        }
+      }
+    }
+  }
+
+  const queries = (snapshot.queries ?? []).filter((q) => usedQueryCodes.has(q.code));
+  const subs = (snapshot.submissions ?? []).filter((s) => usedReportIds.has(s.id));
+  // 裁掉 submission.content，改拆到 reports/{id}.md；只保留轻量元数据
+  const lightSubs = subs.map((s) => ({
+    ...s,
+    content: undefined,           // 正文转到 /data/reports/{id}.md
+    contentRef: `reports/${s.id}.md`,
+  }));
+
+  // 写每份 submission 正文
+  const reportsDir = path.join(OUT_DIR, "reports");
+  ensureDir(reportsDir);
+  for (const s of subs) {
+    writeText(path.join(reportsDir, `${s.id}.md`), s.content ?? "");
+  }
+
+  const bundle = {
+    bakedAt,
+    contractVersion: "1.0",
+    // 产品清单走 products.json（有独立端点），这里不重复；但为了首屏减少一次请求，
+    // 也内嵌一份（ProductsPage 仍走 products.json 以取 updatedAt/path 等元信息）
+    products: readJson(path.join(OUT_DIR, "products.json")).products,
+    queries,
+    submissions: lightSubs,
+    /** 用来在 UI 上展示"距今多久前 baked"；若显示陈旧可提示用户刷新/反馈 */
+    stats: {
+      queriesCount: queries.length,
+      submissionsCount: subs.length,
+      reportsCount: subs.length,
+    },
+  };
+  const out = path.join(OUT_DIR, "public-bundle.json");
+  const size = writeJson(out, bundle);
+  log("log", `public-bundle: ${bundle.stats.queriesCount} queries, ${bundle.stats.submissionsCount} submissions, reports=${subs.length}, ${size} bytes`);
+  return { out, bundle };
+}
+
+// ------------------------------------------------------------
+// Manifest：记录 bake 自身的元信息（方便排查"发布的是哪份"）
+// ------------------------------------------------------------
+function bakeManifest(bakedAt, extras) {
+  const manifest = {
+    bakedAt,
+    bakedBy: process.env.USER ?? process.env.USERNAME ?? "unknown",
+    bakedFromCwd: PROJECT_ROOT,
+    ...extras,
+  };
+  const out = path.join(OUT_DIR, "bake-manifest.json");
+  writeJson(out, manifest);
+  return out;
+}
+
+// ------------------------------------------------------------
+// 主流程
+// ------------------------------------------------------------
+function main() {
+  log("log", `project root: ${PROJECT_ROOT}`);
+  log("log", `output dir:   ${OUT_DIR}`);
+  cleanOutDir();
+  ensureDir(OUT_DIR);
+
+  const bakedAt = new Date().toISOString();
+
+  // 1) 数据层：seed + runtime snapshot 合并
+  const seed = loadSeedSnapshot();
+  const runtime = loadRuntimeSnapshot();
+  const snapshot = mergeSnapshots(seed, runtime);
+
+  // 2) 元数据产物
+  bakeStandard();
+  bakeContract();
+  bakeProducts();
+  bakeHealth(bakedAt);
+
+  // 3) outbox 产物
+  const outboxTasks = listOutboxTasks();
+  log("log", `outbox tasks: ${outboxTasks.length}`);
+  const { indexCount, allPayloads } = bakeOutbox(outboxTasks);
+  log("log", `outbox baked: ${indexCount} tasks, ${[...allPayloads.values()].length} latest payloads`);
+
+  // 4) 校验 reportId 完整性（失败即退出）
+  validateReportIds(allPayloads, snapshot.submissions ?? []);
+
+  // 5) public-bundle + reports/*.md
+  const { bundle } = bakePublicBundle(snapshot, bakedAt);
+
+  // 6) manifest
+  bakeManifest(bakedAt, {
+    seedHash: sha1(JSON.stringify(seed)),
+    runtimeSnapshotPresent: runtime !== null,
+    runtimeSnapshotHash: runtime ? sha1(JSON.stringify(runtime)) : null,
+    outboxTasksCount: outboxTasks.length,
+    publicBundleStats: bundle.stats,
+  });
+
+  log("log", `done. bakedAt=${bakedAt}`);
+}
+
+try {
+  main();
+} catch (err) {
+  log("error", "unexpected failure:", String(err?.stack ?? err));
+  process.exit(1);
+}

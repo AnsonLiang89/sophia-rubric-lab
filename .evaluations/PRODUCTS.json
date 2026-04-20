@@ -1,0 +1,63 @@
+{
+  "$schema": "评测主体清单（AI 产品列表） — 单一事实源。前端只读。编辑此文件并刷新页面即生效。",
+  "updatedAt": "2026-04-20T00:00:00.000Z",
+  "note": "order 字段仅作备注；实际渲染顺序由前端 sortProducts() 决定：SophiaAI 的版本永远在前（新版本在前），其他按此文件里的 order 升序。颜色规范：同一 name 的不同 version 使用同色系梯度，version 越新越饱和。",
+  "products": [
+    {
+      "id": "sophia-v5",
+      "name": "SophiaAI",
+      "version": "v5",
+      "vendor": "内部",
+      "color": "#C8941F",
+      "order": 1
+    },
+    {
+      "id": "sophia-v4",
+      "name": "SophiaAI",
+      "version": "v4",
+      "vendor": "内部",
+      "color": "#B08333",
+      "order": 2
+    },
+    {
+      "id": "sophia-v3",
+      "name": "SophiaAI",
+      "version": "v3",
+      "vendor": "内部",
+      "color": "#8F6B2B",
+      "order": 3
+    },
+    {
+      "id": "mirothink",
+      "name": "MiroThink",
+      "version": null,
+      "vendor": "外部对比",
+      "color": "#5A7A47",
+      "order": 10
+    },
+    {
+      "id": "manus",
+      "name": "Manus",
+      "version": null,
+      "vendor": "外部对比",
+      "color": "#C97B3E",
+      "order": 11
+    },
+    {
+      "id": "gemini",
+      "name": "Gemini",
+      "version": null,
+      "vendor": "Google",
+      "color": "#6B8CAE",
+      "order": 12
+    },
+    {
+      "id": "kimi",
+      "name": "Kimi",
+      "version": null,
+      "vendor": "Moonshot",
+      "color": "#8B6F9E",
+      "order": 13
+    }
+  ]
+}

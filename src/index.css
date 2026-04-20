@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-paper-50 text-ink-900 font-sans antialiased;
+  font-size: 15px;
+  line-height: 1.7;
+  font-feature-settings: "kern", "liga";
+}
+
+/* 滚动条 */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #e0d4b8;
+  border-radius: 10px;
+  border: 2px solid #fdfbf7;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #c8941f;
+}
+
+/* 文本选中 */
+::selection {
+  background: #f7e9c6;
+  color: #1f1b16;
+}
+
+/* Markdown 渲染样式 */
+.prose-report {
+  @apply text-ink-900;
+}
+.prose-report h1 {
+  @apply text-2xl font-bold mt-8 mb-4 text-ink-900 border-b border-paper-300 pb-2;
+}
+.prose-report h2 {
+  @apply text-xl font-semibold mt-7 mb-3 text-ink-900;
+}
+.prose-report h3 {
+  @apply text-lg font-semibold mt-5 mb-2 text-ink-700;
+}
+.prose-report h4 {
+  @apply text-base font-semibold mt-4 mb-2 text-ink-700;
+}
+.prose-report p {
+  @apply my-3 leading-relaxed;
+}
+.prose-report ul {
+  @apply my-3 ml-6 list-disc;
+}
+.prose-report ol {
+  @apply my-3 ml-6 list-decimal;
+}
+.prose-report li {
+  @apply my-1;
+}
+.prose-report strong {
+  @apply font-semibold text-ink-900;
+}
+.prose-report em {
+  @apply italic;
+}
+.prose-report blockquote {
+  @apply border-l-4 border-amber pl-4 my-4 text-ink-700 bg-amber-soft/30 py-2 rounded-r;
+}
+.prose-report code {
+  @apply bg-paper-100 px-1.5 py-0.5 rounded text-sm font-mono;
+}
+.prose-report pre {
+  @apply bg-ink-900 text-paper-50 p-4 rounded-lg my-4 overflow-x-auto text-sm;
+}
+.prose-report pre code {
+  @apply bg-transparent p-0;
+}
+.prose-report table {
+  @apply my-4 w-full border-collapse text-sm;
+}
+.prose-report th {
+  @apply bg-paper-100 border border-paper-300 px-3 py-2 text-left font-semibold;
+}
+.prose-report td {
+  @apply border border-paper-200 px-3 py-2 align-top;
+}
+.prose-report a {
+  @apply text-amber-dark underline decoration-amber/40 hover:decoration-amber underline-offset-2;
+}
+.prose-report hr {
+  @apply my-6 border-paper-300;
+}

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sophia's Rubric Lab</title>
+    <!--
+      GitHub Pages 对"真实存在的路径"以外的 URL 一律返回该 404.html。
+      这个脚本把路径编码进 query string 再 redirect 到 index.html，
+      index.html 里的 inline 脚本会把它 decode 回去交给 React Router。
+
+      pathSegmentsToKeep = 1 适用于 Project Page（https://user.github.io/repo/xxx）
+      即路径前缀 `/repo/` 要保留。User/Organization Page（https://user.github.io/xxx）
+      则应为 0。
+    -->
+    <script>
+      (function () {
+        var pathSegmentsToKeep = 1;
+        var l = window.location;
+        l.replace(
+          l.protocol +
+            "//" +
+            l.hostname +
+            (l.port ? ":" + l.port : "") +
+            l.pathname
+              .split("/")
+              .slice(0, 1 + pathSegmentsToKeep)
+              .join("/") +
+            "/?/" +
+            l.pathname
+              .slice(1)
+              .split("/")
+              .slice(pathSegmentsToKeep)
+              .join("/")
+              .replace(/&/g, "~and~") +
+            (l.search ? "&" + l.search.slice(1).replace(/&/g, "~and~") : "") +
+            l.hash
+        );
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>

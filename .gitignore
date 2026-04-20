@@ -1,0 +1,43 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Vite 烘焙出的静态数据产物（CI 每次重新生成）
+public/data/
+
+# Sophia 评测运行时本地数据
+#  - inbox 是"收件箱"，纯本地任务单，不入 git
+#  - _runtime-snapshot.json 是管理员机器 localStorage 导出的最新快照，不入 git
+#    （否则会天天污染 diff；它只在 CI 时由管理员本地推送前手动更新）
+.evaluations/inbox/*.json
+!.evaluations/inbox/.gitkeep
+# _runtime-snapshot.json 目前入 git 供 CI 烘焙使用（管理员每次更新评测后重新导出即可）
+# 如果将来想让它只保留本地、不入 git，把下面这行取消注释即可
+# .evaluations/_runtime-snapshot.json
+
+# 旧运行时通道（已废弃，保留忽略规则以防再生）
+.evaluations/pending/*.json
+.evaluations/result/*.json
+!.evaluations/pending/.gitkeep
+!.evaluations/result/.gitkeep
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

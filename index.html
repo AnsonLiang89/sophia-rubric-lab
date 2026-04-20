@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <title>Sophia's Rubric Lab · AI 深度研究报告评测台</title>
+    <meta name="description" content="基于 5 维 Rubric 的 AI 深度研究报告评测工作台：覆盖信源真实性、结构深度、洞察论证、风险披露、专业度时效。" />
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Sophia's Rubric Lab · AI 深度研究报告评测台" />
+    <meta property="og:description" content="基于 5 维 Rubric 的 AI 深度研究报告评测工作台：覆盖信源真实性、结构深度、洞察论证、风险披露、专业度时效。" />
+    <meta property="og:locale" content="zh_CN" />
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Sophia's Rubric Lab · AI 深度研究报告评测台" />
+    <meta name="twitter:description" content="基于 5 维 Rubric 的 AI 深度研究报告评测工作台。" />
+    <!--
+      GitHub Pages SPA 路由兼容：当用户刷新或直接访问 /sophia-rubric-lab/queries/xxx
+      时 GitHub Pages 会先返回 404.html。我们在 404.html 里把路径编码到 query
+      string 再跳回 index.html，这里把它解回 history.replaceState 让 React Router
+      接住。参考 rafgraph/spa-github-pages。
+    -->
+    <script>
+      (function () {
+        var l = window.location;
+        if (l.search && l.search.indexOf("?/") === 0) {
+          var hash = l.hash || "";
+          var decoded = l.search
+            .slice(2)
+            .split("&")
+            .map(function (s) {
+              return s.replace(/~and~/g, "&");
+            })
+            .join("?");
+          window.history.replaceState(
+            null,
+            "",
+            l.pathname.slice(0, -1) + decoded + hash
+          );
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
