@@ -1,17 +1,19 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
 import clsx from "clsx";
-import { useLab } from "../store";
-import { storage } from "../storage";
-import type { LabSnapshot } from "../types";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import BusErrorBanner from "./BusErrorBanner";
 import { IS_READONLY } from "../lib/dataSource";
 import { contractBus } from "../lib/contract";
+import { storage } from "../storage";
+
+/**
+ * 对外版（GitHub Pages）线上地址。
+ * 管理员版右上角的"对外版"按钮用它在新标签打开；
+ * 如果未来仓库改名 / 换域名，改这里一处即可。
+ */
+const PUBLIC_SITE_URL = "https://ansonliang89.github.io/sophia-rubric-lab/";
 
 export default function Layout() {
-  const { refresh } = useLab();
-  const fileRef = useRef<HTMLInputElement>(null);
-
   // ------------------------------------------------------------
   // Footer 展示对外版的 bakedAt（让访客知道数据新鲜度）
   // 只在 IS_READONLY 模式下拉，dev 下展示本地进程时间即可
@@ -34,41 +36,19 @@ export default function Layout() {
     })();
   }, []);
 
-  const handleExport = async () => {
-    const snap = await storage.exportAll();
-    const blob = new Blob([JSON.stringify(snap, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `rubric-lab-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const text = await file.text();
+  // ------------------------------------------------------------
+  // 对外更新：等价于原"快照"按钮，把本地 localStorage 导出到
+  // `.evaluations/_runtime-snapshot.json`，供下一次 bake/CI 使用。
+  // 真正的"推到公网"需要 `git commit && git push`（CI 会自动 bake+deploy），
+  // 这里只做"导出快照"——这是发布前的必经一步。
+  // 仅 dev 下可用（IS_READONLY=false）。
+  // ------------------------------------------------------------
+  const [publishing, setPublishing] = useState(false);
+  const handlePublishSnapshot = async () => {
+    if (publishing) return;
+    setPublishing(true);
     try {
-      const snap = JSON.parse(text) as LabSnapshot;
-      const mode = confirm("点击「确定」替换全部数据；点击「取消」合并导入") ? "replace" : "merge";
-      await storage.importAll(snap, mode);
-      await refresh();
-      alert("导入完成");
-    } catch {
-      alert("导入失败，文件格式不正确");
-    }
-    e.target.value = "";
-  };
-
-  /**
-   * 管理员导出运行时快照：把 localStorage 里的 products+queries+submissions
-   * 一键写到 `.evaluations/_runtime-snapshot.json`，供 bake 脚本合并到对外版。
-   * 仅 dev 下可用（IS_READONLY=false）。
-   */
-  const handleExportRuntime = async () => {
-    const snap = await storage.exportAll();
-    try {
+      const snap = await storage.exportAll();
       const resp = await contractBus.exportRuntimeSnapshot({
         version: snap.version ?? 2,
         products: snap.products ?? [],
@@ -77,17 +57,20 @@ export default function Layout() {
       });
       if (resp?.ok) {
         alert(
-          `✓ 已写入 .evaluations/_runtime-snapshot.json\n\n` +
+          `✓ 本地快照已写入 .evaluations/_runtime-snapshot.json\n\n` +
             `products: ${resp.stats.products}\n` +
             `queries:  ${resp.stats.queries}\n` +
             `submissions: ${resp.stats.submissions}\n\n` +
-            `接下来执行 \`npm run bake:public\` 烘焙对外版数据。`
+            `接下来用 \`git add . && git commit && git push\` 推到 GitHub，\n` +
+            `CI 会自动 bake + 部署到对外版（约 1~2 分钟）。`
         );
       } else {
-        alert("导出失败：bus 未响应，请检查 dev server 是否正常");
+        alert("对外更新失败：bus 未响应，请检查 dev server 是否正常");
       }
     } catch (err) {
-      alert(`导出失败：${(err as Error).message}`);
+      alert(`对外更新失败：${(err as Error).message}`);
+    } finally {
+      setPublishing(false);
     }
   };
 
@@ -140,39 +123,36 @@ export default function Layout() {
           </nav>
 
           <div className="ml-auto flex items-center gap-2">
-            {/* 管理员版（dev）才有导入导出、导出 runtime 快照；对外版全部隐藏 */}
+            {/* 管理员版（dev）独有的操作 */}
             {!IS_READONLY && (
               <>
                 <button
-                  onClick={() => void handleExportRuntime()}
-                  className="text-xs text-ink-500 hover:text-amber-dark px-2 py-1"
-                  title="把 localStorage 导出到 .evaluations/_runtime-snapshot.json，供 bake:public 烘焙对外版"
+                  onClick={() => void handlePublishSnapshot()}
+                  disabled={publishing}
+                  className={clsx(
+                    "text-xs px-2.5 py-1 rounded-md border transition-colors",
+                    publishing
+                      ? "text-ink-400 border-paper-200 cursor-wait"
+                      : "text-amber-dark border-amber/40 hover:bg-amber/10"
+                  )}
+                  title="把本地 localStorage 导出到 .evaluations/_runtime-snapshot.json；后续 git push 触发 CI 自动部署到对外版"
                 >
-                  ⬇ 快照
+                  {publishing ? "导出中…" : "⇪ 对外更新"}
                 </button>
-                <button
-                  onClick={() => fileRef.current?.click()}
-                  className="text-xs text-ink-500 hover:text-amber-dark px-2 py-1"
-                  title="导入 JSON"
+                <a
+                  href={PUBLIC_SITE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs px-2.5 py-1 rounded-md border border-paper-200 text-ink-500 hover:text-amber-dark hover:border-amber/40 transition-colors"
+                  title={`在新标签打开对外版：${PUBLIC_SITE_URL}`}
                 >
-                  ⇣ 导入
-                </button>
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept=".json"
-                  className="hidden"
-                  onChange={handleImport}
-                />
-                <button
-                  onClick={handleExport}
-                  className="text-xs text-ink-500 hover:text-amber-dark px-2 py-1"
-                  title="导出 JSON 快照"
-                >
-                  ⇡ 导出
-                </button>
+                  ↗ 对外版
+                </a>
               </>
             )}
+
+            {/* 对外版（prod）独有的操作：提供一个回管理员本地的提示链接（仅当开发者也打开该站时方便） */}
+            {/* 暂不做，对外访客看不到也不需要 */}
           </div>
         </div>
       </header>
@@ -186,7 +166,7 @@ export default function Layout() {
           Sophia's Rubric Lab ·{" "}
           {IS_READONLY
             ? "只读公开版 · 所有评测由 LLM（Claude Opus 扮演 Sophia）按标准打分"
-            : "本地数据存储 · 支持导出 JSON 迁移至云端"}
+            : "本地管理员版 · 评测产物沉淀到 .evaluations/outbox/"}
         </div>
         {IS_READONLY && bakedAt && (
           <div className="text-ink-400/80">
