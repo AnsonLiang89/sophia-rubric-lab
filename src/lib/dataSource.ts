@@ -160,7 +160,11 @@ export function makeDataSource(
       return rawFetch<T>("GET", busPath);
     },
 
-    write: async <T>(busPath, method, body) => {
+    write: async <T>(
+      busPath: string,
+      method: "POST" | "DELETE",
+      body?: unknown
+    ) => {
       if (IS_READONLY || isWriteEndpoint(method, busPath)) {
         if (IS_READONLY) throw new ReadOnlyError(`${method} ${busPath}`);
       }
