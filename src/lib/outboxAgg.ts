@@ -120,6 +120,35 @@ export function useOutboxAggregate(): OutboxAggregate {
     };
   }, [tick]);
 
+  // ============================================================
+  // 窗口焦点自动重拉（2026-04-20 新增）
+  //
+  // 背景：管理员版典型工作流是"在编辑器/LLM 里直接写 .evaluations/
+  // 的产物 JSON，然后切回浏览器查看"。这种场景下前端没有任何机会
+  // 感知到磁盘数据变化——ReportPage 因为 mount 时重拉所以看得到新
+  // 数据，但 QueriesPage / DashboardPage 的 useOutboxAggregate 只在
+  // 首次 mount 时拉一次，会停留在旧快照。
+  //
+  // 这里订阅两个事件让"切回来自动刷新"成为默认行为：
+  //   - window focus: 从其他应用/窗口切回浏览器
+  //   - document visibilitychange (visible): 同一窗口里从别的 tab
+  //     切回本 tab（focus 事件在这种情况下不一定触发）
+  //
+  // 刷新通过复用 tick 自增机制实现（不直接调 refresh()，避免闭包陷阱）。
+  // ============================================================
+  useEffect(() => {
+    const bump = () => setTick((v) => v + 1);
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") bump();
+    };
+    window.addEventListener("focus", bump);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.removeEventListener("focus", bump);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, []);
+
   const agg = useMemo<OutboxAggregate>(() => {
     const byQueryCode = new Map<string, QueryAgg>();
     const tasksByQueryCode = new Map<string, OutboxListItem[]>();
@@ -135,10 +164,19 @@ export function useOutboxAggregate(): OutboxAggregate {
     for (const [taskId, payload] of payloads.entries()) {
       const task = tasks.find((t) => t.taskId === taskId);
       if (!task || !task.queryCode) continue;
+      // 防御：payload 可能为 null / summary 缺失（例如 outbox 里 JSON 解析失败
+      // 被 bus 返回 null）——不能让一份坏数据把整个 Dashboard 炸成白屏
+      if (!payload || !payload.summary) {
+        console.warn(
+          `[outboxAgg] skip task ${taskId}: payload or summary missing`
+        );
+        continue;
+      }
 
       const byReport = new Map<string, PerReportAgg>();
       // overallScores 是骨架
-      for (const o of payload.summary.overallScores) {
+      const overallScores = payload.summary.overallScores ?? [];
+      for (const o of overallScores) {
         byReport.set(o.reportId, {
           reportId: o.reportId,
           productName: o.productName,
@@ -149,7 +187,8 @@ export function useOutboxAggregate(): OutboxAggregate {
         });
       }
       // 填 rubric 分 + 汇总 issueTags
-      for (const dim of payload.summary.rubric) {
+      const rubricDims = payload.summary.rubric ?? [];
+      for (const dim of rubricDims) {
         for (const s of dim.scores) {
           const cur = byReport.get(s.reportId);
           if (!cur) continue;

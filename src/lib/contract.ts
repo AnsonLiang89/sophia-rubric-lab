@@ -384,6 +384,55 @@ export const contractBus = {
     return busFetch<ProductsResponse>("GET", "/_bus/products");
   },
 
+  /**
+   * 幂等注册评测 query 的业务编号（EV-xxxx）。
+   *
+   * 流程：
+   *   前端 createQuery 时先调这个端点拿到后端分配的 code，再写 localStorage。
+   *   后端把所有分配记录持久化到 `.evaluations/_code-registry.json`，
+   *   因此：
+   *     - 多个 tab / 浏览器刷新 都不会分配到相同编号
+   *     - 同一个 queryId 重复注册 → 返回老 code（reused=true），幂等
+   *     - 后端永远基于磁盘上单一事实源算 nextNumber，前端无需关心
+   *
+   * prod 下走不到（readonly 模式会被 dataSource 拦截），因此只在管理员版生效。
+   */
+  registerCode(input: {
+    queryId: string;
+    preferredCode?: string;
+    registeredAt?: string;
+    note?: string;
+  }): Promise<
+    | {
+        ok: true;
+        reused: boolean;
+        code: string;
+        queryId: string;
+        registeredAt: string;
+        note?: string;
+      }
+    | null
+  > {
+    return busFetch("POST", "/_bus/register-code", input);
+  },
+
+  /** 读取完整编号注册簿（调试 / 管理员面板展示用） */
+  getRegistry(): Promise<{
+    version: 1;
+    prefix: string;
+    padWidth: number;
+    nextNumber: number;
+    entries: Array<{
+      code: string;
+      queryId: string;
+      registeredAt: string;
+      note?: string;
+    }>;
+    map: Record<string, string>;
+  } | null> {
+    return busFetch("GET", "/_bus/registry");
+  },
+
   submitInbox(task: InboxTask): Promise<{ ok: true; taskId: string; file: string } | null> {
     return busFetch("POST", "/_bus/inbox", task);
   },
@@ -427,7 +476,48 @@ export const contractBus = {
   ): Promise<{ ok: true; file: string; stats: { products: number; queries: number; submissions: number } } | null> {
     return busFetch("POST", "/_bus/runtime-snapshot", snapshot);
   },
+
+  /**
+   * 一键发布到对外版（GitHub Pages）。
+   *
+   * 串行跑：写 runtime-snapshot → npm run build:public → git add → commit → push
+   * 任一步失败返回 { ok: false, failedStep, steps: [...] }，前端据此展示具体错误日志。
+   * 成功返回 { ok: true, commitMessage, publicUrl, steps: [...] }。
+   *
+   * 注意：
+   *  - 这个请求可能跑 30 秒~2 分钟（build:public 是重操作），前端要做好 loading 态。
+   *  - 因为会执行 git push，所以只能在管理员版（dev）用，prod 下 dataSource 会拦截。
+   *  - busFetch 失败会抛 BusError，这里不 try/catch，让调用方自己决定怎么展示。
+   */
+  publishToPublic(
+    snapshot: { products: unknown[]; queries: unknown[]; submissions: unknown[]; version?: number }
+  ): Promise<PublishResult | null> {
+    return busFetch("POST", "/_bus/publish", snapshot);
+  },
 };
+
+// 发布流程每一步的日志条目
+export interface PublishStep {
+  name: string;
+  command: string;
+  ok: boolean;
+  code: number | null;
+  stdout: string;
+  stderr: string;
+  skipped?: boolean;
+  note?: string;
+}
+
+export interface PublishResult {
+  ok: boolean;
+  /** 失败时指明是哪一步挂的 */
+  failedStep?: string;
+  /** 成功时给出 commit message（前端可展示） */
+  commitMessage?: string;
+  /** 成功时给出对外版 URL（前端可做"打开新标签"入口） */
+  publicUrl?: string;
+  steps: PublishStep[];
+}
 
 // ------------------------------------------------------------
 // 便捷工具

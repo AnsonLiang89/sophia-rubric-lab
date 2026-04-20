@@ -14,10 +14,28 @@
  *   GET    /_bus/contract                  => {path, mtime, content}  // EVALUATION_CONTRACT.md 原文（面向 LLM 的工作协议）
  *   GET    /_bus/products                  => {path, mtime, updatedAt, products:[...]}  // PRODUCTS.json（评测主体清单，只读）
  *
+ *   GET    /_bus/registry                  => {version, prefix, padWidth, nextNumber, entries:[...], map:{queryId:code}}
+ *                                          // 编号注册簿全量（.evaluations/_code-registry.json）
+ *   POST   /_bus/register-code             body: { queryId, preferredCode?, registeredAt?, note? }
+ *                                          => { ok:true, reused, code, queryId, registeredAt, note? }
+ *                                          // 幂等注册新 query 的业务编号（EV-xxxx）；前端 createQuery 必须先调这个
+ *
  *   POST   /_bus/runtime-snapshot          body: LabSnapshot
  *                                          => 写 .evaluations/_runtime-snapshot.json
  *                                             （管理员一键把本地 localStorage 倒出来，供 bake 脚本合并）
  *   GET    /_bus/runtime-snapshot          => 读 _runtime-snapshot.json（没有返回 204）
+ *
+ *   POST   /_bus/publish                   body: LabSnapshot
+ *                                          => 一键发布到对外版：
+ *                                             1) 先写 _runtime-snapshot.json（同 runtime-snapshot）
+ *                                             2) 跑 seed:dump → bake:public → tsc -b → vite build
+ *                                                （等价 npm run build:public，但直接用 node/tsc/vite 二进制
+ *                                                 避免对 npm CLI 的依赖）
+ *                                             3) git add .evaluations/
+ *                                             4) git commit -m "publish: <时间戳>"（空改动时跳过，不算失败）
+ *                                             5) git push origin HEAD
+ *                                             任一步失败立即停止，返回 500 + logs 给前端展示
+ *                                             成功返回 200 + 全程 stdout/stderr 日志
  *
  *   POST   /_bus/inbox                     body: InboxTask
  *                                          => 写 inbox/{taskId}.json
@@ -36,6 +54,8 @@
 import type { Connect, Plugin } from "vite";
 import fs from "node:fs";
 import path from "node:path";
+import { spawn } from "node:child_process";
+import { CodeRegistry, reconcile } from "./codeRegistry";
 
 export function evaluationBusPlugin(baseDir = ".evaluations"): Plugin {
   return {
@@ -48,6 +68,25 @@ export function evaluationBusPlugin(baseDir = ".evaluations"): Plugin {
       const outboxDir = path.join(busRoot, "outbox");
       fs.mkdirSync(inboxDir, { recursive: true });
       fs.mkdirSync(outboxDir, { recursive: true });
+
+      // 启动期：挂载编号注册簿 + 跑一次 reconcile（幂等）
+      // - 把 seed / runtime snapshot 里的每条 query 都登记到 _code-registry.json
+      // - 对 code 冲突按 createdAt 先到先得地重新编号
+      // - 同步重命名 inbox/outbox 的文件/目录前缀，让它们跟新 code 对齐
+      const codeRegistry = new CodeRegistry(busRoot);
+      try {
+        reconcile(busRoot, codeRegistry, (msg) =>
+          // eslint-disable-next-line no-console
+          console.log(msg)
+        );
+      } catch (e) {
+        // reconcile 不应阻塞 dev server 启动——即使失败也允许手动修
+        // eslint-disable-next-line no-console
+        console.error(
+          "[codeRegistry] reconcile failed (non-fatal):",
+          (e as Error).message
+        );
+      }
 
       const MAX_BODY_BYTES = 2 * 1024 * 1024; // 2MB 上限，防止恶意大文件把内存撑爆
       const readBody = (req: Parameters<Connect.NextHandleFunction>[0]) =>
@@ -143,6 +182,80 @@ export function evaluationBusPlugin(baseDir = ".evaluations"): Plugin {
           // ---------- health ----------
           if (req.method === "GET" && url === "/_bus/health") {
             return send(res, 200, { ok: true, dir: baseDir });
+          }
+
+          // ---------- GET /registry （编号注册簿全量，只读） ----------
+          //
+          // 返回 _code-registry.json 原文 + queryId→code 映射表，
+          // 便于前端在刷新/排查时一次性拿到权威 code 映射。
+          if (req.method === "GET" && url === "/_bus/registry") {
+            return send(res, 200, {
+              ...codeRegistry.raw,
+              map: codeRegistry.exportMap(),
+            });
+          }
+
+          // ---------- POST /register-code ----------
+          //
+          // 幂等注册：给定 queryId，返回它对应的永久编号。
+          //
+          // 请求体：{
+          //   queryId: string;              // 必填；前端生成的 nanoid
+          //   preferredCode?: string;       // 可选；已有历史编号想保留可以传
+          //   registeredAt?: string;        // 可选；建议传 query.createdAt，按时间序入册
+          // }
+          // 响应体：{ ok: true, code, queryId, registeredAt, note?, reused: boolean }
+          //   · reused=true 表示 queryId 之前已注册过，直接复用老 code（幂等）
+          //   · reused=false 表示本次新分配的 code
+          //
+          // 前端 createQuery 必须先调这个端点拿到 code，再写 localStorage。
+          // 并发/多 tab 都安全：Registry 把 nextNumber 放在磁盘单一事实源，
+          // 并发请求在 Node 单线程中串行化，不会撞号。
+          if (req.method === "POST" && url === "/_bus/register-code") {
+            let raw: string;
+            try {
+              raw = await readBody(req);
+            } catch (e) {
+              const msg = String((e as Error).message ?? e);
+              if (msg.includes("body too large")) {
+                return send(res, 413, { error: msg });
+              }
+              return send(res, 400, { error: msg });
+            }
+            let payload: Record<string, unknown>;
+            try {
+              payload = JSON.parse(raw);
+            } catch {
+              return send(res, 400, { error: "invalid json" });
+            }
+            const queryId = payload.queryId;
+            if (typeof queryId !== "string" || queryId.length === 0) {
+              return send(res, 400, {
+                error: "queryId is required and must be a non-empty string",
+              });
+            }
+            // queryId 既要作为文件系统 key 也要避免路径穿越，这里按 taskId 同样的白名单校验
+            if (!/^[A-Za-z0-9._-]{1,128}$/.test(queryId) || queryId.includes("..")) {
+              return send(res, 400, {
+                error: `queryId contains unsafe characters or is too long: ${queryId}`,
+              });
+            }
+            const before = codeRegistry.lookupByQueryId(queryId);
+            if (before) {
+              return send(res, 200, { ok: true, reused: true, ...before });
+            }
+            const entry = codeRegistry.register(queryId, {
+              preferredCode:
+                typeof payload.preferredCode === "string"
+                  ? payload.preferredCode
+                  : undefined,
+              registeredAt:
+                typeof payload.registeredAt === "string"
+                  ? payload.registeredAt
+                  : undefined,
+              note: typeof payload.note === "string" ? payload.note : "api",
+            });
+            return send(res, 200, { ok: true, reused: false, ...entry });
           }
 
           // ---------- GET /standard （面向用户的评测标准 md 原文） ----------
@@ -262,6 +375,274 @@ export function evaluationBusPlugin(baseDir = ".evaluations"): Plugin {
             const j = readJson(file);
             if (!j) return send(res, 500, { error: "corrupt runtime snapshot" });
             return send(res, 200, j);
+          }
+
+          // ---------- POST /publish （一键发布到 GitHub Pages 对外版） ----------
+          //
+          // 职责：把"本地改的评测数据"稳定地推到公网。按顺序串行跑：
+          //   1. 写入 _runtime-snapshot.json（复用 runtime-snapshot 写入逻辑）
+          //   2. npm run build:public：dump-seed + bake-public-data + tsc -b + vite build
+          //      —— 任意失败 fail fast，保证坏数据不会上线
+          //   3. git add .evaluations/
+          //      —— public/data/ 在 .gitignore 里，CI 会现烤，不进仓库
+          //   4. git commit -m "publish: <iso 时间戳>"
+          //      —— 若没有任何改动（nothing to commit）跳过，不算失败
+          //   5. git push origin HEAD
+          //      —— 触发 GitHub Actions workflow 自动部署
+          //
+          // 返回：{ ok: true/false, steps: [{name, ok, code, stdout, stderr}], ... }
+          // 前端据此渲染进度条/日志。
+          //
+          // 为什么只 add .evaluations/：
+          // - 本项目评测数据沉淀在 .evaluations/，这是真正要进仓库的源数据
+          // - 烘焙产物 public/data/ 在 .gitignore 里，CI 会基于 .evaluations/ 重新烘焙
+          // - 不 add src/：避免开发者本地半成品代码被意外推上去（方案 A-A）
+          if (req.method === "POST" && url === "/_bus/publish") {
+            let raw: string;
+            try {
+              raw = await readBody(req);
+            } catch (e) {
+              const msg = String((e as Error).message ?? e);
+              if (msg.includes("body too large")) {
+                return send(res, 413, { error: msg });
+              }
+              return send(res, 400, { error: msg });
+            }
+            let parsed: Record<string, unknown>;
+            try {
+              parsed = JSON.parse(raw);
+            } catch {
+              return send(res, 400, { error: "invalid json" });
+            }
+            for (const k of ["products", "queries", "submissions"] as const) {
+              if (!Array.isArray(parsed[k])) {
+                return send(res, 400, {
+                  error: `snapshot.${k} must be an array`,
+                });
+              }
+            }
+
+            // ===== Step 1：写 _runtime-snapshot.json =====
+            const snapshotFile = path.join(busRoot, "_runtime-snapshot.json");
+            const snapshotPayload = {
+              version: typeof parsed.version === "number" ? parsed.version : 2,
+              exportedAt: new Date().toISOString(),
+              products: parsed.products,
+              queries: parsed.queries,
+              submissions: parsed.submissions,
+            };
+            try {
+              fs.writeFileSync(snapshotFile, JSON.stringify(snapshotPayload, null, 2));
+            } catch (e) {
+              return send(res, 200, {
+                ok: false,
+                failedStep: "write-snapshot",
+                error: (e as Error).message,
+              });
+            }
+
+            // ===== 工具：跑一个命令，收集 stdout/stderr =====
+            // 重要：vite dev server 在 WorkBuddy managed node 下运行时，
+            // 子进程继承的 PATH 不一定包含 npm。我们主动从 process.execPath
+            // 推断出 node 二进制目录（同目录通常有 npm），加到 PATH 前面
+            // 确保 spawn("npm") / spawn("git") 都能找到。
+            const nodeBinDir = path.dirname(process.execPath);
+            const augmentedPath = `${nodeBinDir}${path.delimiter}${process.env.PATH ?? ""}`;
+            interface StepResult {
+              name: string;
+              command: string;
+              ok: boolean;
+              code: number | null;
+              stdout: string;
+              stderr: string;
+              skipped?: boolean;
+              note?: string;
+            }
+            const runStep = (
+              name: string,
+              cmd: string,
+              args: string[]
+            ): Promise<StepResult> =>
+              new Promise((resolve) => {
+                const child = spawn(cmd, args, {
+                  cwd: root,
+                  shell: false,
+                  env: { ...process.env, PATH: augmentedPath },
+                });
+                let out = "";
+                let err = "";
+                child.stdout.on("data", (c) => {
+                  out += c.toString();
+                });
+                child.stderr.on("data", (c) => {
+                  err += c.toString();
+                });
+                child.on("close", (code) => {
+                  resolve({
+                    name,
+                    command: `${cmd} ${args.join(" ")}`.trim(),
+                    ok: code === 0,
+                    code,
+                    stdout: out,
+                    stderr: err,
+                  });
+                });
+                child.on("error", (e) => {
+                  resolve({
+                    name,
+                    command: `${cmd} ${args.join(" ")}`.trim(),
+                    ok: false,
+                    code: null,
+                    stdout: out,
+                    stderr: err + "\n[spawn error] " + (e as Error).message,
+                  });
+                });
+              });
+
+            const steps: StepResult[] = [
+              {
+                name: "write-snapshot",
+                command: `write .evaluations/_runtime-snapshot.json`,
+                ok: true,
+                code: 0,
+                stdout:
+                  `products: ${(snapshotPayload.products as unknown[]).length}, ` +
+                  `queries: ${(snapshotPayload.queries as unknown[]).length}, ` +
+                  `submissions: ${(snapshotPayload.submissions as unknown[]).length}`,
+                stderr: "",
+              },
+            ];
+
+            // ===== Step 2：build:public =====
+            // 直接按 package.json 里 "build:public" 的顺序拆成三个子步骤跑，
+            // 避免依赖 npm CLI 本身（某些 managed node 场景下 spawn("npm") 不稳）。
+            // 原定义：npm run seed:dump && npm run bake:public && tsc -b && vite build
+            const nodeExe = process.execPath; // 使用当前 vite 跑着的同一个 node
+            const tscBin = path.join(root, "node_modules", ".bin", "tsc");
+            const viteBin = path.join(root, "node_modules", ".bin", "vite");
+
+            // 2a. seed:dump
+            const seedDumpStep = await runStep(
+              "seed:dump",
+              nodeExe,
+              [
+                "--experimental-strip-types",
+                path.join(root, "scripts/dump-seed.mjs"),
+              ]
+            );
+            steps.push(seedDumpStep);
+            if (!seedDumpStep.ok) {
+              return send(res, 200, {
+                ok: false,
+                failedStep: "seed:dump",
+                steps,
+              });
+            }
+
+            // 2b. bake:public
+            const bakeStep = await runStep("bake:public", nodeExe, [
+              path.join(root, "scripts/bake-public-data.mjs"),
+            ]);
+            steps.push(bakeStep);
+            if (!bakeStep.ok) {
+              return send(res, 200, {
+                ok: false,
+                failedStep: "bake:public",
+                steps,
+              });
+            }
+
+            // 2c. tsc -b（typecheck）
+            const tscStep = await runStep("tsc -b", tscBin, ["-b"]);
+            steps.push(tscStep);
+            if (!tscStep.ok) {
+              return send(res, 200, {
+                ok: false,
+                failedStep: "tsc -b",
+                steps,
+              });
+            }
+
+            // 2d. vite build（出 public 站点 → dist/）
+            const viteBuildStep = await runStep("vite build", viteBin, [
+              "build",
+            ]);
+            steps.push(viteBuildStep);
+            if (!viteBuildStep.ok) {
+              return send(res, 200, {
+                ok: false,
+                failedStep: "vite build",
+                steps,
+              });
+            }
+
+            // ===== Step 3：git add =====
+            // 注意：public/data/ 已在 .gitignore 中，CI 构建时会重新烘焙，
+            // 因此这里不 add。只 add 真正需要进仓库的 .evaluations/ 即可。
+            const addStep = await runStep("git add", "git", [
+              "add",
+              ".evaluations/",
+            ]);
+            steps.push(addStep);
+            if (!addStep.ok) {
+              return send(res, 200, {
+                ok: false,
+                failedStep: "git add",
+                steps,
+              });
+            }
+
+            // ===== Step 4：git commit（允许 nothing to commit） =====
+            const commitMsg = `publish: ${new Date().toISOString()}`;
+            const commitStep = await runStep("git commit", "git", [
+              "commit",
+              "-m",
+              commitMsg,
+            ]);
+            // git commit 在没有改动时返回非 0，但 stdout 会包含 "nothing to commit"。
+            // 这种情况不算失败，只是"没有新内容要推"。
+            const nothingToCommit =
+              !commitStep.ok &&
+              /nothing to commit|no changes added to commit/i.test(
+                commitStep.stdout + commitStep.stderr
+              );
+            if (nothingToCommit) {
+              commitStep.ok = true;
+              commitStep.skipped = true;
+              commitStep.note = "nothing to commit (working tree clean)";
+            }
+            steps.push(commitStep);
+            if (!commitStep.ok) {
+              return send(res, 200, {
+                ok: false,
+                failedStep: "git commit",
+                steps,
+              });
+            }
+
+            // ===== Step 5：git push =====
+            // 即使上一步"没东西可 commit"，也还是 push 一次——
+            // 因为可能之前本地已 commit 但没 push，这一步能把它推上去。
+            const pushStep = await runStep("git push", "git", [
+              "push",
+              "origin",
+              "HEAD",
+            ]);
+            steps.push(pushStep);
+            if (!pushStep.ok) {
+              return send(res, 200, {
+                ok: false,
+                failedStep: "git push",
+                steps,
+              });
+            }
+
+            return send(res, 200, {
+              ok: true,
+              commitMessage: commitMsg,
+              publicUrl: "https://ansonliang89.github.io/sophia-rubric-lab/",
+              steps,
+            });
           }
 
           // ---------- POST /inbox ----------

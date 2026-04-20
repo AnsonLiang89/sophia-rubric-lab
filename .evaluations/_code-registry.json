@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "prefix": "EV",
+  "padWidth": 4,
+  "nextNumber": 7,
+  "entries": [
+    {
+      "code": "EV-0001",
+      "queryId": "q-bd-2026",
+      "registeredAt": "2026-04-16T09:00:00.000Z",
+      "note": "seed"
+    },
+    {
+      "code": "EV-0002",
+      "queryId": "l1DZ0K2UWT",
+      "registeredAt": "2026-04-19T11:28:18.086Z",
+      "note": "runtime-snapshot"
+    },
+    {
+      "code": "EV-0003",
+      "queryId": "AcSxYamRyN",
+      "registeredAt": "2026-04-19T19:19:20.137Z",
+      "note": "runtime-snapshot"
+    },
+    {
+      "code": "EV-0004",
+      "queryId": "O5METM9UXn",
+      "registeredAt": "2026-04-20T02:15:18.419Z",
+      "note": "runtime-snapshot"
+    },
+    {
+      "code": "EV-0005",
+      "queryId": "vW5Ow0yQXI",
+      "registeredAt": "2026-04-20T06:19:07.976Z",
+      "note": "runtime-snapshot"
+    },
+    {
+      "code": "EV-0006",
+      "queryId": "i3KOj8ZY6A",
+      "registeredAt": "2026-04-20T06:25:01.854Z",
+      "note": "runtime-snapshot"
+    }
+  ]
+}

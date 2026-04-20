@@ -224,6 +224,67 @@ function mergeSnapshots(seed, runtime) {
 }
 
 // ------------------------------------------------------------
+// 编号注册簿一致性校验（架构硬约束）
+// ------------------------------------------------------------
+// bake 脚本不该再"猜" code 是什么——编号的单一事实源是 _code-registry.json。
+// 这里做两件事：
+//   1) 如果注册簿存在：把每条 query.code 强制对齐到注册簿上的值（防御式纠错）
+//   2) 校验合并后的 queries 数组中 code 全局唯一，若发现冲突直接 fail fast
+//      （如果冲突，说明前端越过 register-code 端点直接造了 query，这是 bug）
+//
+// 注册簿缺失时（冷启动 / 老工程） 只做唯一性校验，给个 warn 就继续，
+// 避免阻塞首次烘焙。
+function alignWithCodeRegistry(snapshot) {
+  const regFile = path.join(EV_DIR, "_code-registry.json");
+  let registry = null;
+  if (fs.existsSync(regFile)) {
+    registry = readJson(regFile, false);
+  }
+  const queries = snapshot.queries ?? [];
+
+  // Step A：注册簿存在时，按 queryId 同步 code
+  if (registry && Array.isArray(registry.entries)) {
+    const byQueryId = new Map(
+      registry.entries.map((e) => [e.queryId, e.code])
+    );
+    let fixed = 0;
+    for (const q of queries) {
+      if (!q?.id) continue;
+      const authoritative = byQueryId.get(q.id);
+      if (authoritative && q.code !== authoritative) {
+        log("warn", `query ${q.id}: code ${q.code} → ${authoritative} (registry)`);
+        q.code = authoritative;
+        fixed++;
+      }
+    }
+    if (fixed) log("log", `code-registry: aligned ${fixed} query code(s) to registry`);
+  } else {
+    log("warn", `code-registry: ${rel(regFile)} not found; skipping authoritative alignment`);
+  }
+
+  // Step B：全局唯一性校验
+  const codeCounts = new Map();
+  for (const q of queries) {
+    if (!q?.code) continue;
+    const list = codeCounts.get(q.code) ?? [];
+    list.push(q.id);
+    codeCounts.set(q.code, list);
+  }
+  const dupes = [...codeCounts.entries()].filter(([, ids]) => ids.length > 1);
+  if (dupes.length > 0) {
+    const lines = dupes.map(
+      ([code, ids]) => `  · ${code} → queryIds: ${ids.join(", ")}`
+    );
+    die(
+      `Found duplicate query codes after merge (registry invariant violated):\n` +
+        lines.join("\n") +
+        `\n\nHint: delete ${rel(regFile)} then restart dev server — reconcile will reassign unique codes.`
+    );
+  }
+  log("log", `code-registry: uniqueness check passed (${queries.length} queries)`);
+}
+
+// ------------------------------------------------------------
 // 扫 outbox
 // ------------------------------------------------------------
 function parseQueryCode(taskId) {
@@ -504,6 +565,11 @@ function main() {
   const seed = loadSeedSnapshot();
   const runtime = loadRuntimeSnapshot();
   const snapshot = mergeSnapshots(seed, runtime);
+
+  // 1.5) 注册簿对齐 + 全局唯一性校验（失败即退出）
+  //      从 2026-04-20 架构升级起，code 的单一事实源是 _code-registry.json。
+  //      任何 code 冲突都会在这里被识破并 fail fast。
+  alignWithCodeRegistry(snapshot);
 
   // 2) 元数据产物
   bakeStandard();

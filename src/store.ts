@@ -160,15 +160,33 @@ export const useLab = create<LabState>((set, get) => ({
       return { ...(q as Query), code: "", id: "", createdAt: "", updatedAt: "" } as Query;
     }
     const now = new Date().toISOString();
-    // 自动分配下一个 EV-xxxx 编号
-    const existing = get().queries;
-    let maxNum = 0;
-    for (const x of existing) {
-      const m = x.code?.match(/^EV-(\d+)$/);
-      if (m) maxNum = Math.max(maxNum, parseInt(m[1], 10));
+    // 先本地生成 queryId（稳定主键）。注意：code 不再由前端"猜"。
+    const id = nanoid(10);
+    // 把编号分配交给后端编号注册簿：
+    //   - 后端读 `.evaluations/_code-registry.json` 里单一事实源的 nextNumber
+    //   - 并发 / 多 tab / 刷新 都不会撞号（Node 单线程序列化 + 原子落盘）
+    //   - 幂等：重试只会复用同一个 code（reused=true）
+    // 若调用失败（bus 中间件不可达），此时不走"前端瞎猜"兜底——直接抛错，
+    // 因为继续下去必然产生脏数据。用户可刷新/重启 dev server 再试。
+    const providedCode = (q as Query).code;
+    const registered = await contractBus.registerCode({
+      queryId: id,
+      preferredCode: providedCode || undefined,
+      registeredAt: now,
+      note: "createQuery",
+    });
+    if (!registered || !registered.code) {
+      throw new Error(
+        "无法向编号注册簿申请编号（_bus/register-code 未返回）。请确认 dev server 在运行后重试。"
+      );
     }
-    const code = (q as Query).code || `EV-${String(maxNum + 1).padStart(4, "0")}`;
-    const item: Query = { ...(q as Query), code, id: nanoid(10), createdAt: now, updatedAt: now };
+    const item: Query = {
+      ...(q as Query),
+      code: registered.code,
+      id,
+      createdAt: now,
+      updatedAt: now,
+    };
     await storage.upsertQuery(item);
     await get().refresh();
     return item;
