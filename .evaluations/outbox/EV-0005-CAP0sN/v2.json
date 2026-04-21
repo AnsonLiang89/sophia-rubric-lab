@@ -1,0 +1,420 @@
+{
+  "taskId": "EV-0005-CAP0sN",
+  "version": 2,
+  "evaluator": "Sophia (Claude-Opus-4.7 via WorkBuddy)",
+  "evaluatedAt": "2026-04-21T21:00:00+08:00",
+  "contractVersion": "2.0",
+  "summary": {
+    "overallScores": [
+      {
+        "reportId": "daNcDpqARK",
+        "productName": "MiroThink",
+        "score": 9.2,
+        "verdict": "卓越",
+        "vetoTriggered": false
+      },
+      {
+        "reportId": "yKzzT3mX-g",
+        "productName": "Manus",
+        "score": 7.2,
+        "verdict": "优秀",
+        "vetoTriggered": false
+      },
+      {
+        "reportId": "imXMky8VQu",
+        "productName": "Gemini",
+        "score": 6.9,
+        "verdict": "合格",
+        "vetoTriggered": false
+      },
+      {
+        "reportId": "ZnPjNHpT5X",
+        "productName": "SophiaAI",
+        "score": 4.8,
+        "verdict": "待改进",
+        "vetoTriggered": true,
+        "vetoReason": "R1 触发一票否决：报告连续呈现多个精确区间的核心定量（『中国方案 30 年全生命周期 449-619 亿美元』『德国方案 830-1157 亿美元』『2026-2035 新业态累计增量收益 558-665 亿美元』『极端情景 150-200 亿美元组合优惠』），均无任何信源标注，实质等同于编造数据。在高决策风险的政策/金融分析场景下，此类不可核查的精确定量可直接误导决策，按契约 §3.3 判定为编造信源级重大事实错误。总分封顶 6.9；本次实际加权和 4.8，仍在封顶之下，因此不做额外削减。"
+      },
+      {
+        "reportId": "TQx7ZXaoGM",
+        "productName": "Kimi",
+        "score": 3.7,
+        "verdict": "不合格",
+        "vetoTriggered": false
+      }
+    ],
+    "rubric": [
+      {
+        "dimensionId": "R1",
+        "name": "准确性",
+        "weight": 0.40,
+        "scores": [
+          {
+            "reportId": "daNcDpqARK",
+            "score": 8,
+            "tier": "A",
+            "confidence": "high",
+            "comment": "22 条全部带 URL 的参考文献，一手源（gov.cn、VnExpress、Reuters、Siemens 官方新闻稿、Railtech、Railway Supply）占比显著；核心数字——84 亿美元跨境铁路、36-37% GDP 负债率、Velaro Novo 型号、越南《Decree No. 319/2025/ND-CP》——逐条可回溯到信源。未给到 S 档主要是少量数字（如跨境铁路 84 亿美元）与多方口径存在 ±5% 的小偏差，且并未强调自身口径。口径整体统一、时效对齐 2026-04 苏林访华节点，无事实硬伤。",
+            "issueTags": []
+          },
+          {
+            "reportId": "yKzzT3mX-g",
+            "score": 6,
+            "tier": "B",
+            "confidence": "high",
+            "comment": "13 条文献以中文二手媒体（BBC 中文、联合早报、观察者网）为主，仅少量 Reuters 等一手源；关键定量——332 亿美元五年财政预算、673 亿美元总投资、广宁线 120.2 公里/381 亿元、2026-Q1 对华贸易逆差 333 亿——基本可核实，但原始出处需经二级跳转。未出现量级/主体/时间错位，也无编造信源嫌疑，信源层面『硬不硬』是主要扣分原因。",
+            "issueTags": []
+          },
+          {
+            "reportId": "imXMky8VQu",
+            "score": 6,
+            "tier": "B",
+            "confidence": "medium",
+            "comment": "33 条文献信源量最大；但存在一处局部事实瑕疵：文中把越南现任领导决策主体写成阮富仲，而 2026 年时点实际已是苏林（总书记+国家主席），属于主体+时效双重错位。经审查该误述出现在历史回顾段落，并非核心结论的论证基础，主线论证仍以正确的 2026 时政锚点展开——按契约 §3.3，未达『一票否决』级（核心结论未建立在错误事实上），按重扣处理，压到 B 档。",
+            "issueTags": [
+              "事实错误",
+              "数据过期"
+            ]
+          },
+          {
+            "reportId": "ZnPjNHpT5X",
+            "score": 4,
+            "tier": "C",
+            "confidence": "high",
+            "comment": "部分外部可核数字（第 98/NQ-CP 号决议、总投资 670 亿美元、36-37% GDP 负债率）对得上；但报告的定量核心——『中国方案 30 年全生命周期 449-619 亿美元 vs 德国 830-1157 亿美元』『2026-2035 新业态累计增量收益 558-665 亿美元』『极端情景 150-200 亿美元组合优惠』『2026-Q2 七个跟踪节点阈值预警』——均无任何出处标注，是典型的 LLM 自编精确区间。在涉及千亿美元量级决策的场景下，连续无源的精确定量是重大事实风险。按契约 §3.3 判定为『编造信源』级重大错误，触发一票否决（见 overallScores 的 vetoReason）。",
+            "issueTags": [
+              "未标注信源",
+              "事实错误"
+            ]
+          },
+          {
+            "reportId": "TQx7ZXaoGM",
+            "score": 4,
+            "tier": "C",
+            "confidence": "high",
+            "comment": "全文零参考文献，大量定性断言与常识性数字（670 亿、2300 亿贸易额、4.5 万公里中国高铁）均无标注。但所用定量多为大方向正确的常识性宏观数字，未出现显著量级/主体错位，也不到『连续精确编造区间』的程度，因此未触发一票否决，仅按信源空白做重扣。",
+            "issueTags": [
+              "未标注信源"
+            ]
+          }
+        ]
+      },
+      {
+        "dimensionId": "R2",
+        "name": "相关性",
+        "weight": 0.15,
+        "scores": [
+          {
+            "reportId": "daNcDpqARK",
+            "score": 10,
+            "tier": "S",
+            "confidence": "high",
+            "comment": "最直接、最正面回应了 query 核心诉求——『未来越南引入中国高铁的概率有多大』。给出了分场景的概率区间：跨境联通段（昆明-河内-海防）90%+、北部区域线（广宁线）已定、南北主干 2030 前启动概率 <20%、2030-2035 技术路线仍有 30-40% 博弈空间。紧扣 2026-04 苏林访华+32 份协议核心时政锚点，并显式讨论了苏林亲乘复兴号与 4.12 广宁线奠基日期仅差 5 天这个关键时间并置。",
+            "issueTags": []
+          },
+          {
+            "reportId": "yKzzT3mX-g",
+            "score": 8,
+            "tier": "A",
+            "confidence": "high",
+            "comment": "正面给出概率判断（跨境段 70-80%、南北干线 15-25%、区域线 <5%），锚定了苏林访华与 332 亿预算。相比 MiroThink 略欠的是场景推演过程相对线性、未讨论技术标准博弈（米轨 vs 标轨）这种关键变量。",
+            "issueTags": []
+          },
+          {
+            "reportId": "imXMky8VQu",
+            "score": 8,
+            "tier": "A",
+            "confidence": "medium",
+            "comment": "给出了概率矩阵（部分段中高、全网中低）并锚定 2026 时政节点；但阮富仲误述这一局部瑕疵会让读者对相关性判断的『时效校准』产生疑虑，稍微拖累了正面回答 query 的干净度。",
+            "issueTags": []
+          },
+          {
+            "reportId": "ZnPjNHpT5X",
+            "score": 6,
+            "tier": "B",
+            "confidence": "medium",
+            "comment": "搭建了『中国方案综合评分』和概率矩阵框架，但正面回答『概率多大』的力度较弱——更多笔墨花在无源的定量装饰上（成本对比表、报价对比表），而非直接推导到概率数字。核心问题是在用『看起来很专业的数字』替代『对 query 的正面回答』。",
+            "issueTags": []
+          },
+          {
+            "reportId": "TQx7ZXaoGM",
+            "score": 2,
+            "tier": "D",
+            "confidence": "high",
+            "comment": "Query 明确要求『结合最新的时政新闻』，但全文完全没有提及 2026-04 苏林访华+32 份协议这个最核心的时政锚点。失去时效锚点之后，概率判断变成泛泛的『中短期进展有限、长期仍有可能』，这对 query 所需的『当前判断』几乎没有相关性。R2 的致命伤。",
+            "issueTags": [
+              "时效缺位"
+            ]
+          }
+        ]
+      },
+      {
+        "dimensionId": "R3",
+        "name": "论证深度",
+        "weight": 0.20,
+        "scores": [
+          {
+            "reportId": "daNcDpqARK",
+            "score": 10,
+            "tier": "S",
+            "confidence": "high",
+            "comment": "推导链完整：政治动因（苏林访华+32 协议）→ 财政约束（36-37% 负债率+国会审议）→ 技术路线博弈（米轨 vs 标轨+Siemens Velaro Novo 已签）→ 地缘因素（泛亚铁路走廊战略）→ 监管障碍（Decree 319）。反事实与案例支撑显式：① 印尼雅万高铁作为成功案例的局限性分析；② 日韩高铁历史上退出越南谈判的先例；③ 河内轻轨 2A 线延期的阴影。每一个观点后面都跟着可溯源的证据或案例。",
+            "issueTags": []
+          },
+          {
+            "reportId": "yKzzT3mX-g",
+            "score": 8,
+            "tier": "A",
+            "confidence": "medium",
+            "comment": "推导链合理但偏线性：外热内冷 → 跨境 vs 南北分层 → 时间节点。反事实仅含日本竞争的浅层对比，论证密度低于 MiroThink，但结论与证据之间的对应关系基本清晰。",
+            "issueTags": []
+          },
+          {
+            "reportId": "imXMky8VQu",
+            "score": 8,
+            "tier": "A",
+            "confidence": "medium",
+            "comment": "多角度论证（政经/技术/金融/地缘），含日法竞争对比与标准之争；但部分段落观点与证据绑定较松散，加上阮富仲误述对论证严谨度的整体拉低，不到 S 档。",
+            "issueTags": []
+          },
+          {
+            "reportId": "ZnPjNHpT5X",
+            "score": 4,
+            "tier": "C",
+            "confidence": "high",
+            "comment": "论证结构看似完整（五情景矩阵、阈值预警规则、对冲方案），但核心问题是——大量关键观点的『证据支撑』本身是无源的自编数字，整条推导链的可信度被釜底抽薪。从 v2 契约『是否有合理推导+证据支撑』的角度看，缺可核查的证据支撑是 R3 的致命伤，压到 C 档。",
+            "issueTags": [
+              "证据不足"
+            ]
+          },
+          {
+            "reportId": "TQx7ZXaoGM",
+            "score": 4,
+            "tier": "C",
+            "confidence": "medium",
+            "comment": "论证框架完整（七章三十节）但推导深度薄——几乎所有表格都是定性分类或分段赋值，而非从证据推导结论；竞争对手对比、敏感性分析等都停留在形式层面，没有实际的对照数据。零信源进一步削弱了论证的可信度。",
+            "issueTags": []
+          }
+        ]
+      },
+      {
+        "dimensionId": "R4",
+        "name": "完备性",
+        "weight": 0.10,
+        "scores": [
+          {
+            "reportId": "daNcDpqARK",
+            "score": 10,
+            "tier": "S",
+            "confidence": "high",
+            "comment": "关键维度全覆盖：政治（苏林执政风格+中越关系）、财政（负债率+国会预算权）、技术（米轨/标轨+Siemens Velaro Novo 已定）、地缘（日法韩竞争+泛亚走廊）、监管（Decree 319）、风险（历史案例/成本超支/政治更迭）、时间窗口（2026-2028 决策窗+2030 启动+2035 完工）。连 ODA 贷款利率敏感性都有讨论。",
+            "issueTags": []
+          },
+          {
+            "reportId": "yKzzT3mX-g",
+            "score": 8,
+            "tier": "A",
+            "confidence": "high",
+            "comment": "主要维度齐全（政治/财政/技术/竞争/时间表），略弱于 MiroThink 的是技术输出许可、国内产能约束、监管细节（Decree 319）未涉及。",
+            "issueTags": []
+          },
+          {
+            "reportId": "imXMky8VQu",
+            "score": 8,
+            "tier": "A",
+            "confidence": "medium",
+            "comment": "维度覆盖广（政经/融资/技术/地缘/标准之争），Decree 319 未提，但整体完备性高于 Manus 的某些维度。",
+            "issueTags": []
+          },
+          {
+            "reportId": "ZnPjNHpT5X",
+            "score": 6,
+            "tier": "B",
+            "confidence": "medium",
+            "comment": "框架看似完备（五情景矩阵、阈值规则、对冲方案），但部分维度被无源定量装饰掩盖了实质内容——例如地缘风险段只给出概率数字而缺乏机制说明，技术路线维度缺少对 Velaro Novo 已签事实的讨论。",
+            "issueTags": []
+          },
+          {
+            "reportId": "TQx7ZXaoGM",
+            "score": 4,
+            "tier": "C",
+            "confidence": "high",
+            "comment": "基础维度覆盖，但缺多个关键项：① 核心时政锚点缺位；② 竞争对手（Siemens/日法韩）对比缺席；③ 监管细节（Decree 319）未涉及；④ 风险披露和时间窗口偏薄。完备性是 5 份里最弱的。",
+            "issueTags": [
+              "维度遗漏"
+            ]
+          }
+        ]
+      },
+      {
+        "dimensionId": "R5",
+        "name": "决策价值",
+        "weight": 0.15,
+        "scores": [
+          {
+            "reportId": "daNcDpqARK",
+            "score": 10,
+            "tier": "S",
+            "confidence": "high",
+            "comment": "信息熵增量极高：分场景概率 + 2026-2028 决策窗口 + 2030 前项目启动判断 + 可操作的触发事件监测清单（国会审议进度、ODA 利率谈判、标准轨招标发布）。给到读者的是一张『下一步看什么、什么时候看、看到什么信号代表什么概率变化』的实操地图，启发性与可操作性都是 5 份里最强。",
+            "issueTags": []
+          },
+          {
+            "reportId": "yKzzT3mX-g",
+            "score": 8,
+            "tier": "A",
+            "confidence": "medium",
+            "comment": "给到了分段概率判断+关键时间节点+观察指标，启发性中等偏上；相比 MiroThink 缺的是那一层『反直觉洞察』——例如 MiroThink 点出『中方可能主动放弃广宁线竞标』这种少数派判断，Manus 没有。",
+            "issueTags": []
+          },
+          {
+            "reportId": "imXMky8VQu",
+            "score": 6,
+            "tier": "B",
+            "confidence": "medium",
+            "comment": "结论清晰但偏描述性；提供了时间表和概率矩阵，但『下一步关注什么』的可操作性指引较虚，而且阮富仲误述会让读者对整体判断的可信度打折，进一步侵蚀决策价值。",
+            "issueTags": []
+          },
+          {
+            "reportId": "ZnPjNHpT5X",
+            "score": 6,
+            "tier": "B",
+            "confidence": "medium",
+            "comment": "形式上给了『阈值预警规则』和『对冲方案组合』这些看起来高价值的决策产物，但底层数字不可核查，读者实际无法按这些规则去行动——决策价值被真实性问题严重拖累。形式丰富，实质打折。",
+            "issueTags": []
+          },
+          {
+            "reportId": "TQx7ZXaoGM",
+            "score": 4,
+            "tier": "C",
+            "confidence": "medium",
+            "comment": "结论泛泛（『中短期进展有限、长期仍有可能』），信息熵增量低；缺时效锚点导致『现在该看什么』无从谈起，独特洞察稀缺。",
+            "issueTags": []
+          }
+        ]
+      }
+    ],
+    "extraDimensions": [
+      {
+        "id": "X1",
+        "name": "时政锚点精准度",
+        "description": "观察用扩展维度，不纳入总分权重。评估各报告对 2026-04 苏林访华+32 份协议这个核心时政锚点的识别与运用程度。之所以不激活纳入总分，是因为该维度在 R2 相关性中已被充分体现，重复计分会造成偏误。",
+        "activated": false,
+        "scores": [
+          {
+            "reportId": "daNcDpqARK",
+            "score": 10,
+            "tier": "S",
+            "confidence": "high",
+            "comment": "精准捕捉苏林亲乘复兴号与 4.12 广宁线奠基仅差 5 天这一关键时间并置，并把它作为报告核心张力展开。"
+          },
+          {
+            "reportId": "yKzzT3mX-g",
+            "score": 8,
+            "tier": "A",
+            "confidence": "high",
+            "comment": "锚定了苏林访华+332 亿预算的宏观背景，但对关键时间并置的敏感度不及 MiroThink。"
+          },
+          {
+            "reportId": "imXMky8VQu",
+            "score": 8,
+            "tier": "A",
+            "confidence": "medium",
+            "comment": "主体锚点正确但阮富仲误述暴露了对越南领导层变迁的时效校准不够精确。"
+          },
+          {
+            "reportId": "ZnPjNHpT5X",
+            "score": 6,
+            "tier": "B",
+            "confidence": "medium",
+            "comment": "提到了访华与协议，但重心放在自编的技术/财务指标上，时政锚点未成为论证主轴。"
+          },
+          {
+            "reportId": "TQx7ZXaoGM",
+            "score": 2,
+            "tier": "D",
+            "confidence": "high",
+            "comment": "完全绕开 2026-04 苏林访华+32 份协议，时政锚点彻底缺位。"
+          }
+        ]
+      }
+    ],
+    "sbs": {
+      "pairs": [
+        {
+          "leftReportId": "daNcDpqARK",
+          "rightReportId": "yKzzT3mX-g",
+          "winner": "daNcDpqARK",
+          "scoreDiff": 2.0,
+          "verdict": "MiroThink 明显胜出。9.2 vs 7.2，差 2 分。MiroThink 在信源一手性（22 条带 URL）、反直觉洞察（主动放弃广宁线竞标的少数派判断）、时间并置精准度（苏林乘复兴号 vs 4.12 奠基差 5 天）三项上对 Manus 形成碾压。Manus 结构清晰、判断方向正确，但论证深度和决策价值略逊一筹。"
+        },
+        {
+          "leftReportId": "daNcDpqARK",
+          "rightReportId": "imXMky8VQu",
+          "winner": "daNcDpqARK",
+          "scoreDiff": 2.3,
+          "verdict": "MiroThink 明显胜出。9.2 vs 6.9，差 2.3 分。Gemini 的阮富仲误述在 R1 被压到 B 档是最主要的差距来源。除此之外 Gemini 论证维度广、文献量大，在结构完备性上接近 MiroThink，但时效校准失分让它无法触及优秀档。"
+        },
+        {
+          "leftReportId": "daNcDpqARK",
+          "rightReportId": "ZnPjNHpT5X",
+          "winner": "daNcDpqARK",
+          "scoreDiff": 4.4,
+          "verdict": "MiroThink 压倒性胜出。9.2 vs 4.8，差 4.4 分。SophiaAI 触发一票否决——连续精确区间定量（449-619 亿、830-1157 亿、558-665 亿、150-200 亿）全部无源，实质等同编造。MiroThink 恰好相反，每一个关键数字都可以顺着 URL 回溯到一手信源，形成极端反差。"
+        },
+        {
+          "leftReportId": "daNcDpqARK",
+          "rightReportId": "TQx7ZXaoGM",
+          "winner": "daNcDpqARK",
+          "scoreDiff": 5.5,
+          "verdict": "MiroThink 压倒性胜出。9.2 vs 3.7，差 5.5 分。Kimi 完全绕开 2026-04 苏林访华这个核心时政锚点，R2 相关性直接打到 D 档；MiroThink 则把这个锚点当作论证主轴，形成两端极值对比。"
+        },
+        {
+          "leftReportId": "yKzzT3mX-g",
+          "rightReportId": "imXMky8VQu",
+          "winner": "yKzzT3mX-g",
+          "scoreDiff": 0.3,
+          "verdict": "Manus 以 0.3 分微弱胜出（7.2 vs 6.9），实际上是基本平手。Manus 强在决策价值（R5=8 vs Gemini=6），Gemini 强在论证维度广度（文献量 33 vs 13），但 Gemini 的阮富仲误述把它压到合格档顶端，未能触及优秀档。"
+        },
+        {
+          "leftReportId": "yKzzT3mX-g",
+          "rightReportId": "ZnPjNHpT5X",
+          "winner": "yKzzT3mX-g",
+          "scoreDiff": 2.4,
+          "verdict": "Manus 明显胜出。7.2 vs 4.8，差 2.4 分。核心差距在 R1——Manus 6 分（信源二手但可核查）vs SophiaAI 4 分（触发 veto 封顶）。这一对是『朴素但真实』胜过『华丽但不可核查』的典型。"
+        },
+        {
+          "leftReportId": "yKzzT3mX-g",
+          "rightReportId": "TQx7ZXaoGM",
+          "winner": "yKzzT3mX-g",
+          "scoreDiff": 3.5,
+          "verdict": "Manus 明显胜出。7.2 vs 3.7，差 3.5 分。Manus 全维度均衡优势（R2 8 vs 2 是最大差值来源），Kimi 在时政锚点缺位、信源空白、论证偏浅三个问题上全面落后。"
+        },
+        {
+          "leftReportId": "imXMky8VQu",
+          "rightReportId": "ZnPjNHpT5X",
+          "winner": "imXMky8VQu",
+          "scoreDiff": 2.1,
+          "verdict": "Gemini 明显胜出。6.9 vs 4.8，差 2.1 分。Gemini 虽然有阮富仲误述的局部瑕疵，但整体信源可核查度和论证深度都优于触发 veto 的 SophiaAI。这一对说明：局部事实瑕疵（Gemini）远比系统性无源定量（SophiaAI）更容易被原谅。"
+        },
+        {
+          "leftReportId": "imXMky8VQu",
+          "rightReportId": "TQx7ZXaoGM",
+          "winner": "imXMky8VQu",
+          "scoreDiff": 3.2,
+          "verdict": "Gemini 明显胜出。6.9 vs 3.7，差 3.2 分。最大差值来源是 R2（8 vs 2）——Gemini 正面回答了 query 并锚定时政，Kimi 完全绕开。"
+        },
+        {
+          "leftReportId": "ZnPjNHpT5X",
+          "rightReportId": "TQx7ZXaoGM",
+          "winner": "ZnPjNHpT5X",
+          "scoreDiff": 1.1,
+          "verdict": "SophiaAI 以 1.1 分小幅胜出（4.8 vs 3.7），但这是『待改进』对『不合格』的对比，两份报告都存在结构性问题。SophiaAI 胜在结构完整度和相关性（R2=6 vs 2），Kimi 输在时政锚点缺位；但 SophiaAI 触发 veto 说明它的结构完整度某种程度上是用无源定量堆出来的伪专业，实际可信度未必高于 Kimi 的朴素常识判断。"
+        }
+      ],
+      "overallWinner": "daNcDpqARK",
+      "overallNote": "MiroThink 毫无悬念拿下本次评测的综合第一（9.2 卓越档）。第二梯队 Manus 7.2 / Gemini 6.9 基本平手（优秀档底端 vs 合格档顶端）。末尾梯队 SophiaAI 4.8 触发 veto 落入待改进、Kimi 3.7 因时政锚点完全缺位落入不合格。本次评测最关键的鉴别力来自两项硬约束：① R1 一票否决（识别 SophiaAI 的系统性无源定量）；② R2 相关性（识别 Kimi 对核心时政锚点的绕开）。这正是 v2.0 契约相较 v1.0 的核心增量——把『数字对不对』和『是否正面回答问题』这两件事提到了硬约束的级别。"
+    }
+  },
+  "report": "# EV-0005 · 越南引入中国高铁概率 —— AI 横评（v2.0 契约首版）\n\n## 零、基本信息\n\n- **Query**：结合最新的时政新闻，判断未来越南引入中国高铁的概率有多大？\n- **时政锚点**：2026-04 越南总书记苏林访华，双方签署 32 份协议，含跨境铁路合作备忘录\n- **候选报告**：MiroThink / Manus / Gemini / SophiaAI v4 / Kimi，共 5 份\n- **契约版本**：v2.0（档位打分 + 一票否决 + R1 准确性权重 0.40）\n- **v1 对比**：本次 v2 是 v1 同题重评，用来检验新契约的鉴别力\n\n---\n\n## 一、总评排名（档位制，v2.0）\n\n| 排名 | 产品 | 总分 | 档位 | Veto | 一句话定性 |\n|---|---|---|---|---|---|\n| 🥇 | MiroThink | **9.2** | 🏆 卓越 | ❌ | 信源、论证、决策价值三维度 S 档，当之无愧的天花板 |\n| 🥈 | Manus | **7.2** | ⭐ 优秀 | ❌ | 信源朴素但可核查，判断方向正确，决策价值扎实 |\n| 🥉 | Gemini | **6.9** | ✅ 合格（顶端） | ❌ | 维度覆盖广，但阮富仲时效错位把它卡在优秀档门外 |\n| 4 | SophiaAI | **4.8** | ⚠️ 待改进 | ✅ | 结构最华丽但连续无源精确定量触发一票否决 |\n| 5 | Kimi | **3.7** | ❌ 不合格 | ❌ | 完全绕开 2026-04 苏林访华核心锚点，R2 致命失分 |\n\n---\n\n## 二、v2 vs v1 对照：新契约抓到了什么\n\n本次 v2 评测相较 v1（均为 Sophia 本人评测，仅契约版本不同）的三大变化：\n\n### 2.1 鉴别力拉开：原本 7.0 三兄弟分化\n\nv1 下，Manus / Gemini / SophiaAI 三家并列 7.0 合格档，鉴别力不足。v2 下：\n\n- **Manus 7.0 → 7.2**（基本稳定，优秀档底端）\n- **Gemini 7.0 → 6.9**（掉到合格档，阮富仲误述在 v2 的 R1 权重 0.40 下被放大）\n- **SophiaAI 7.0 → 4.8**（触发 veto，从合格跌到待改进，-2.2 分）\n\n分化的原因是 v2.0 把 R1 权重从 0.25 抬到 0.40，并引入一票否决规则。SophiaAI 那些在 v1 下仅被标注『未标注信源』的定量瑕疵，在 v2 下被识别为系统性编造信源风险，触发封顶机制。\n\n### 2.2 天花板与地板同步拉开\n\n- 天花板 MiroThink：8.5 → 9.2（+0.7），触及卓越档\n- 地板 Kimi：6.5 → 3.7（-2.8），落入不合格档\n\n最大值和最小值的差从 v1 的 2.0 分拉到 v2 的 5.5 分——档位制+权重再分配让评测的信号强度显著提升。\n\n### 2.3 档位直觉 vs 小数凑分\n\nv1 工作流里我需要花时间『微调维度分让加权和靠近 0.5 精度点』（这在旧 memory 里有专门的踩坑记录）。v2 档位制下完全不需要这一步：5 档映射（10/8/6/4/2）+ 5 个维度权重（40/15/20/10/15，分母 20）让加权和天然落在精度 0.1 的网格上。例如 MiroThink 的 8/10/10/10/10 直接算出 9.2，不需要任何凑分。\n\n---\n\n## 三、R1~R5 分项打分全图\n\n| 报告 | R1(0.40) | R2(0.15) | R3(0.20) | R4(0.10) | R5(0.15) | **总分** |\n|---|---|---|---|---|---|---|\n| MiroThink | **A** 8 | **S** 10 | **S** 10 | **S** 10 | **S** 10 | **9.2** |\n| Manus | **B** 6 | **A** 8 | **A** 8 | **A** 8 | **A** 8 | **7.2** |\n| Gemini | **B** 6 | **A** 8 | **A** 8 | **A** 8 | **B** 6 | **6.9** |\n| SophiaAI | **C** 4 ⚠️veto | **B** 6 | **C** 4 | **B** 6 | **B** 6 | **4.8** |\n| Kimi | **C** 4 | **D** 2 | **C** 4 | **C** 4 | **C** 4 | **3.7** |\n\n观察维度走势：\n\n- **R1 准确性是本次最主要的鉴别力**：8/6/6/4/4 的阶梯，直接把 5 份拉开档次\n- **R2 相关性是识别 Kimi 的关键**：除了 Kimi 落到 D 档（2 分），其他四家都在 A/B 档（6-10 分）\n- **R3 论证深度把 SophiaAI 进一步拉低**：因为无源定量同时摧毁了『证据支撑』\n- **R4 完备性分化最小**：8/8/8/6/4，说明大家都想『面面俱到』\n- **R5 决策价值与 R3 强相关**：论证深度高的报告决策价值也高\n\n---\n\n## 四、一票否决详解：SophiaAI 为什么被 veto\n\n契约 §3.3 定义一票否决的 5 类重大事实错误：① 量级错误 ② 主体错误 ③ 时间错误 ④ 因果错误 ⑤ 编造信源。\n\nSophiaAI 触发的是第 5 类。具体证据链：\n\n| 文中定量 | 问题 |\n|---|---|\n| 『中国方案 30 年全生命周期 449-619 亿美元』 | 精确到亿的区间、无信源标注 |\n| 『德国方案 30 年全生命周期 830-1157 亿美元』 | 精确到亿的区间、无信源标注 |\n| 『2026-2035 新业态累计增量收益 558-665 亿美元』 | 精确到亿的区间、无信源标注 |\n| 『极端情景下 150-200 亿美元组合优惠』 | 精确到亿的区间、无信源标注 |\n| 『短期概率 42-44% ± 2%，长期 76-78% ± 2%』 | 精确到 1% 的置信区间、无推导 |\n\n单一无源数字可以原谅——毕竟作者可能只是省略了脚注。但**连续多个精确到亿的区间定量**，且**覆盖了报告的核心论证轴心**，这就构成了系统性的『不可核查定量』——在决策场景下，这类伪专业数字比粗略估算更危险，因为它伪装成了可信度。\n\n按契约 §3.3：判定为『编造信源级重大事实错误』，总分封顶 6.9。本次 SophiaAI 加权和 4.8 低于封顶值，因此不做额外削减；若加权和高于 6.9，则会被强制压到 6.9。\n\n---\n\n## 五、Gemini 局部瑕疵 vs SophiaAI 系统瑕疵：为什么一个保住合格、一个被 veto\n\n这是本次评测里最有教学意义的一对对比。两家都在 R1 层面有事实问题，但性质不同：\n\n- **Gemini**：在历史回顾段落里把越南总书记写成阮富仲（2026 年实际已是苏林）。这是**主体+时间双重错位**，严格按契约文义可以触发一票否决。但实际判定时要看：① 错位是否作为核心结论的论证基础？② 主线论证是否基于正确事实？\n  - 答：阮富仲误述出现在次要段落，核心结论（苏林访华+跨境铁路合作）是基于正确的 2026 时政锚点。所以按**局部瑕疵**处理，R1 重扣到 B 档（6 分），不触发 veto。\n\n- **SophiaAI**：核心论证链的关键定量（成本、收益、概率置信区间）全部无源自编。错位不是局部段落，而是**贯穿整份报告的核心数字骨架**。所以触发 veto。\n\n> **方法论总结**：一票否决的触发不仅看错误类型，也看错误在论证中的结构位置。『错在边角』和『错在骨架』是量变到质变的差别。\n\n---\n\n## 六、Kimi 为什么从合格（v1 6.5）跌到不合格（v2 3.7）\n\nv1 下 Kimi 6.5 合格、v2 下 3.7 不合格，-2.8 分的掉档幅度最大。主要原因：\n\n1. **R2 相关性独立成维后被放大**：v1 下『是否正面回应 query』被分散在多个维度里，Kimi 绕开核心锚点只在 R1『时效』里小扣；v2 下 R2 独立成维并给到 0.15 权重，Kimi 直接打到 D 档（2 分），单独拉低总分 0.9\n2. **R3 论证深度更严格**：v2 明确要求『观点要有合理推导和证据支撑』，Kimi 零信源+点到即止，被压到 C 档\n3. **R5 决策价值重定义**：v2 强调信息熵增量和可操作性，Kimi 的泛泛结论无法提供『现在该看什么』的实操指引\n\nv2.0 对『时效 + 相关性 + 决策价值』的三重硬约束，恰好打中了 Kimi 的三个弱项。\n\n---\n\n## 七、扩展维度 X1 观察：时政锚点精准度\n\n本次未激活 X1 纳入总分（避免与 R2 重复计分），但作为观察维度给出打分：\n\n- MiroThink 10（S）：精准捕捉苏林乘复兴号与 4.12 广宁线奠基差 5 天的时间并置\n- Manus 8（A）：锚定了访华+预算，但时间并置敏感度稍逊\n- Gemini 8（A）：主体锚点正确，但阮富仲误述暴露时效校准不精\n- SophiaAI 6（B）：提到锚点但被无源定量喧宾夺主\n- Kimi 2（D）：完全缺位\n\n这组分数与 R2 高度相关（R² 趋近 1），正是因此不再重复纳入总分。\n\n---\n\n## 八、SBS 结论速览\n\n10 对对比中最关键的三对：\n\n| 对比 | 胜负 | 教学意义 |\n|---|---|---|\n| MiroThink vs SophiaAI (+4.4) | MiroThink 完胜 | 可核查信源 vs 伪专业定量的极端反差 |\n| Manus vs SophiaAI (+2.4) | Manus 胜 | 朴素但真实 优于 华丽但不可核查 |\n| Gemini vs SophiaAI (+2.1) | Gemini 胜 | 局部瑕疵 比 系统无源 更容易被原谅 |\n\n整体胜者：**MiroThink**，10 对中赢 4 对，差值 2.0 / 2.3 / 4.4 / 5.5，全面领先。\n\n---\n\n## 九、评测官反思\n\nv2.0 契约首次实战，三点感受：\n\n1. **档位制确实快**：25 个维度打分凭直觉判 S/A/B/C/D，比起 v1 的 0.5 精度小数打分快了一倍，且不再需要『凑分工作流』\n2. **R1 权重 0.40 的震慑力**：SophiaAI 从 7.0 到 4.8 的 -2.2 分掉档，主要来自 R1 权重抬升和 veto 机制双重作用。这对那些靠『结构华丽但数据注水』的报告是强烈警告\n3. **一票否决的心理门槛要把握好**：第一次写 veto 时我确实犹豫了——『未标注信源』到什么程度算『编造信源』？我的判断标准是：看**错位是在骨架还是边角**。SophiaAI 是骨架错位（核心论证轴心），Gemini 是边角错位（历史回顾段落），Kimi 是信源空白但非虚构精确数字。三者的差别是档位差而非档内差\n\n下次再跑 v2 评测时，我会把『骨架 vs 边角』这个判断维度前置到 Phase 1 R1 自检的决策树里，让 veto 触发更可预期。\n\n---\n\n*评测完成于 2026-04-21 21:00，契约版本 v2.0，评测官 Sophia*\n"
+}

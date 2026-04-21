@@ -1,17 +1,25 @@
-# Sophia Rubric Lab · 评测契约 v1
+# Sophia Rubric Lab · 评测契约 v2
 
 > 这是一份给 **LLM 评测官（Sophia）** 和 **Sophia Rubric Lab 网站** 共同遵守的工作契约。
 >
 > 网站只做两件事：**收任务（inbox）** 和 **展示结果（outbox）**。
 > 真正的评测由用户在 WorkBuddy 对话框里调用 LLM 完成，多轮对话迭代打磨，产物写回 outbox，网站自动渲染。
 >
-> LLM 在开始任何评测任务前，**必须先完整读一遍本文件**。
+> LLM 在开始任何评测任务前，**必须先完整读一遍本文件 + `RUBRIC_STANDARD.md`**。
 
 > 📎 **相关文档**
 > - 目录全局索引：`./README.md`
 > - 打分维度与宗旨（事实源）：`./RUBRIC_STANDARD.md`
 > - 评测主体清单（事实源）：`./PRODUCTS.json`
 > - 工程侧沉淀与历史踩坑：项目根 `.workbuddy/memory/MEMORY.md`
+
+> 🆕 **契约版本 2.0（2026-04-21 生效）**，较 1.0 的主要变化：
+> - R1~R5 维度定义全面重构（详见 `RUBRIC_STANDARD.md`）
+> - R1 权重 0.25 → 0.40
+> - 打分机制从"0.5 精度"改为"5 档制"（只允许 10/8/6/4/2）
+> - 引入「一票否决」硬规则（R1 重大事实错误 → 总分封顶 6.9）
+> - 扩展维度升级：允许激活 1 个纳入总分
+> - `overallScore` 精度约束从 ±0.1 改为"必须等于加权和"（档位制下天然是有限精度）
 
 ---
 
@@ -37,6 +45,8 @@
 ```
 .evaluations/
 ├── EVALUATION_CONTRACT.md   # 本文件（方法论单一事实源）
+├── RUBRIC_STANDARD.md       # 打分标准（单一事实源）
+├── PRODUCTS.json            # 评测主体清单
 ├── inbox/                   # 网站写入的待评测任务
 │   └── {taskId}.json
 └── outbox/                  # LLM 写回的评测产物（按 taskId 分文件夹）
@@ -102,29 +112,56 @@
   "taskId": "EV-0001-dlqvY6",
   "version": 1,
   "evaluator": "Sophia (Claude-Opus-4.7 via WorkBuddy)",
-  "evaluatedAt": "2026-04-19T14:30:00.000Z",
-  "contractVersion": "1.0",
+  "evaluatedAt": "2026-04-21T14:30:00.000Z",
+  "contractVersion": "2.0",
 
   "summary": {
     "overallScores": [
-      { "reportId": "sub_abc123", "productName": "SophiaAI", "score": 7.8, "verdict": "优秀" },
-      { "reportId": "sub_def456", "productName": "MiroThink", "score": 6.2, "verdict": "合格" }
+      {
+        "reportId": "sub_abc123",
+        "productName": "SophiaAI",
+        "score": 8.4,
+        "verdict": "优秀",
+        "vetoTriggered": false
+      },
+      {
+        "reportId": "sub_def456",
+        "productName": "MiroThink",
+        "score": 6.9,
+        "verdict": "合格",
+        "vetoTriggered": true,
+        "vetoReason": "R1 存在关键数字量级错误（600 亿 vs 600 万），触发一票否决"
+      }
     ],
 
     "rubric": [
       {
         "dimensionId": "R1",
-        "name": "信源与数据真实性",
-        "weight": 0.25,
+        "name": "准确性",
+        "weight": 0.40,
         "scores": [
-          { "reportId": "sub_abc123", "score": 8.0, "comment": "引用 7 条一手数据……", "issueTags": [] },
-          { "reportId": "sub_def456", "score": 6.5, "comment": "部分数据无出处……", "issueTags": ["未标注信源"] }
+          {
+            "reportId": "sub_abc123",
+            "score": 10,
+            "tier": "S",
+            "comment": "5 个子项全部过关：事实/数字/口径/语境/信源皆可核查",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "sub_def456",
+            "score": 6,
+            "tier": "B",
+            "comment": "核心数字有量级错误（600 亿被写成 600 万），触发一票否决",
+            "confidence": "high",
+            "issueTags": ["数字量级错", "事实错误"]
+          }
         ]
       },
-      { "dimensionId": "R2", "name": "结构与定量深度", "weight": 0.20, "scores": [ ... ] },
-      { "dimensionId": "R3", "name": "洞察与论证", "weight": 0.25, "scores": [ ... ] },
-      { "dimensionId": "R4", "name": "风险披露与决策价值", "weight": 0.20, "scores": [ ... ] },
-      { "dimensionId": "R5", "name": "专业度与时效", "weight": 0.10, "scores": [ ... ] }
+      { "dimensionId": "R2", "name": "相关性", "weight": 0.15, "scores": [ ... ] },
+      { "dimensionId": "R3", "name": "论证深度", "weight": 0.20, "scores": [ ... ] },
+      { "dimensionId": "R4", "name": "完备性", "weight": 0.10, "scores": [ ... ] },
+      { "dimensionId": "R5", "name": "决策价值", "weight": 0.15, "scores": [ ... ] }
     ],
 
     "extraDimensions": [
@@ -132,9 +169,11 @@
         "dimensionId": "X1",
         "name": "本地化适配度",
         "rationale": "此 Query 涉及跨文化 BD，本地化敏感度是关键差异点",
+        "activated": true,
+        "weight": 0.10,
         "scores": [
-          { "reportId": "sub_abc123", "score": 8.5, "comment": "提到了目标市场的监管差异……" },
-          { "reportId": "sub_def456", "score": 5.0, "comment": "完全忽略本地化……" }
+          { "reportId": "sub_abc123", "score": 8, "tier": "A", "comment": "提到目标市场监管差异" },
+          { "reportId": "sub_def456", "score": 4, "tier": "C", "comment": "完全忽略本地化" }
         ]
       }
     ],
@@ -145,8 +184,8 @@
           "productA": "SophiaAI",
           "productB": "MiroThink",
           "winner": "A",
-          "margin": "明显优势",
-          "keyReason": "A 在 R1/R3/X1 全面领先，R4 风险披露更完整"
+          "margin": "压倒性",
+          "keyReason": "A 在 R1/R3 全面领先；B 因 R1 量级错误触发一票否决，总分封顶 6.9"
         }
       ]
     }
@@ -160,18 +199,84 @@
 
 | 字段 | 约束 |
 |---|---|
-| `summary.overallScores[].score` | [0, 10]，0.5 精度 |
-| `summary.overallScores[].verdict` | 枚举：`卓越` / `优秀` / `合格` / `待改进` / `不合格` |
-| `summary.rubric` | **必须包含 R1~R5 全部 5 个维度**，顺序、id、权重与 `RUBRIC_STANDARD.md §二` 一致（R1=0.25, R2=0.20, R3=0.25, R4=0.20, R5=0.10） |
+| `contractVersion` | 必须为 `"2.0"`（本契约版本） |
+| `summary.overallScores[].score` | [0, 10]，**必须等于** `Σ(Ri.score × Ri.weight)` 的结果；触发一票否决时**封顶 6.9** |
+| `summary.overallScores[].verdict` | 枚举：`卓越` / `优秀` / `合格` / `待改进` / `不合格`，按 `RUBRIC_STANDARD.md §三` 的评级档位 |
+| `summary.overallScores[].vetoTriggered` | 布尔值，必填。`true` 表示 R1 触发一票否决 |
+| `summary.overallScores[].vetoReason` | `vetoTriggered=true` 时**必填**，说明触发原因（哪种关键错误） |
+| `summary.rubric` | **必须包含 R1~R5 全部 5 个维度**，顺序、id、name、weight 与 `RUBRIC_STANDARD.md §二` 完全一致 |
+| `summary.rubric[].weight` | R1=0.40, R2=0.15, R3=0.20, R4=0.10, R5=0.15（激活 X 时等比缩减） |
 | `summary.rubric[].scores` | **必须覆盖 candidates 里每一份报告** |
-| `summary.rubric[].scores[].score` | [0, 10]，0.5 精度（与总分同精度） |
-| `summary.extraDimensions` | 可选；如有则 `dimensionId` 用 `X1`/`X2`/`X3`，数量 ≤ 3；分数范围与 R1~R5 相同 |
+| `summary.rubric[].scores[].score` | **只能是 10 / 8 / 6 / 4 / 2 中的一个整数**，禁止小数，禁止档间分 |
+| `summary.rubric[].scores[].tier` | **必填**，值必须与 score 对应：10→`"S"` / 8→`"A"` / 6→`"B"` / 4→`"C"` / 2→`"D"` |
+| `summary.rubric[].scores[].comment` | 必填，简明说明打分依据 |
+| `summary.rubric[].scores[].confidence` | 必填，枚举：`high` / `medium` / `low` |
+| `summary.rubric[].scores[].issueTags` | 数组，可空；优先使用 `RUBRIC_STANDARD.md §五` 词表 |
+| `summary.extraDimensions` | 可选；数量 ≤ 3；`dimensionId` 用 `X1`/`X2`/`X3`；分数同样是 10/8/6/4/2 五档整数 + `tier` 字段 |
+| `summary.extraDimensions[].activated` | 布尔值，必填。`true` 表示纳入总分加权计算 |
+| `summary.extraDimensions[].weight` | `activated=true` 时必填，枚举：`0.05` / `0.10` / `0.15`；`activated=false` 时省略或置 null |
 | `summary.sbs` | candidates ≥ 2 时**必填**；candidates = 1 时可省略或置 null |
 | `report` | 必填；markdown 格式；不设章节硬约束，由你判断 |
 
 ### 3.2 overallScore 计算
 
-`overallScore = Σ(Ri.score × Ri.weight)`，只算 R1~R5，**extra 维度不计入总分**（作为开放观察项，权重由人工心证）。
+**基本情况**（未激活扩展维度）：
+
+```
+overallScore = R1.score × 0.40 + R2.score × 0.15 + R3.score × 0.20 + R4.score × 0.10 + R5.score × 0.15
+```
+
+档位制下，每个维度只能取 10/8/6/4/2，所以 overallScore 天然是一个有限精度的小数（通常 1 位小数足够）。**不允许反向凑分**——先打档位，再算加权和即可。
+
+**激活扩展维度时**（最多 1 个）：
+
+R1~R5 原权重（40/15/20/10/15）按比例等比缩减，使 R1~R5 + Xn 权重总和仍为 1.0：
+
+```
+# 示例：激活 X1 权重 0.10
+缩减系数 = (1.00 - 0.10) / 1.00 = 0.90
+R1 新权重 = 0.40 × 0.90 = 0.36
+R2 新权重 = 0.15 × 0.90 = 0.135
+R3 新权重 = 0.20 × 0.90 = 0.18
+R4 新权重 = 0.10 × 0.90 = 0.09
+R5 新权重 = 0.15 × 0.90 = 0.135
+X1 权重 = 0.10
+overallScore = Σ(所有维度.score × 新权重)
+```
+
+缩减后的 R1~R5 权重**必须同步写入** `summary.rubric[].weight` 字段，不能继续沿用 40/15/20/10/15。
+
+### 3.3 一票否决（硬规则）
+
+如果 R1 判定存在「重大事实错误」（定义见 `RUBRIC_STANDARD.md §R1`），则：
+
+1. **必须**设置 `overallScores[].vetoTriggered = true`
+2. **必须**填写 `vetoReason` 说明具体触发原因
+3. 计算出的加权和如果 > 6.9，**必须封顶为 6.9**（直接取 `min(加权和, 6.9)`）
+4. `verdict` 最高只能标到 `"合格"`（即使封顶后的 6.9 按档位属于合格上限）
+
+触发条件（满足任一即触发）：
+- 关键数字量级错误
+- 关键主体搞错
+- 关键时间错位
+- 关键因果颠倒
+- 编造信源
+
+"关键"指"这条信息如果用户相信了会影响决策"。非关键位置的小错只在 R1 内扣档（例如从 S 降到 A 或 B），不触发一票否决。
+
+### 3.4 tier 与 score 的对应关系
+
+打分时建议的心理路径：**先判档位（凭直觉），再机械映射 score**。
+
+| tier | score | 一句话锚点 |
+|---|---|---|
+| `"S"` | 10 | 业内最强水平，挑不出毛病 |
+| `"A"` | 8 | 明显高于平均，可直接交付 |
+| `"B"` | 6 | 基本可用但有明显短板 |
+| `"C"` | 4 | 有显著缺陷 |
+| `"D"` | 2 | 结构性问题，不可用 |
+
+tier 和 score 必须严格一一对应，不允许错配（例如 `tier="A", score=7` 是非法的）。
 
 ---
 
@@ -187,7 +292,7 @@
 > - `RUBRIC_STANDARD.md` — 评测标准（给人看 + 给 LLM 打分时参考）
 > - `EVALUATION_CONTRACT.md` — 工作协议（给 LLM 工作时读，定义 JSON 结构和流程）
 
-> **打分相关的硬约束（R1~R5 必填 / 权重 / 分数精度 / overallScore 计算 / 扩展维度规则）已全部列在 §3.1 与 §3.2。**
+> **打分相关的硬约束（R1~R5 必填 / 权重 / 档位 / overallScore 计算 / 一票否决 / 扩展维度规则）已全部列在 §3.1 ~ §3.4。**
 > 本节不再重复，只补充一条：issueTags 优先使用 RUBRIC_STANDARD.md §五 的推荐词表，必要时可自造但应尽量复用既有标签。
 
 ---
@@ -197,24 +302,53 @@
 用户在 WorkBuddy 对话框说 "**评测 EV-0001-dlqvY6**" 时：
 
 1. **读工作协议**：`read_file .evaluations/EVALUATION_CONTRACT.md`（如果还没读过）
-2. **读评测标准**：`read_file .evaluations/RUBRIC_STANDARD.md`（rubric 宗旨 / R1~R5 定义 / 权重 / 评级档位 / SBS 规则 / issueTags 词表）
+2. **读评测标准**：`read_file .evaluations/RUBRIC_STANDARD.md`（rubric 宗旨 / R1~R5 定义 / 权重 / 档位制 / 一票否决 / 评级档位 / SBS 规则 / issueTags 词表）
 3. **读任务**：`read_file .evaluations/inbox/EV-0001-dlqvY6.json`
 4. **思考打分**：不急着写文件，先在对话里理顺思路、拉数据、列骨架
-5. **写 v1**：
+5. **R1 自检**：逐份报告**先检查有没有"重大事实错误"**——这是一票否决的前置步骤，不要跳过
+6. **档位打分**：按 R1~R5 顺序，**先判 tier（凭直觉打 S/A/B/C/D），再机械映射 score**（10/8/6/4/2）
+7. **算 overallScore**：加权和直接写入，触发一票否决则封顶 6.9
+8. **写扩展维度**（可选）：如有垂直能力差异，追加 X1~X3；决定是否激活
+9. **写 v1**：
    - `list_dir .evaluations/outbox/EV-0001-dlqvY6/` 确认版本号
    - 不存在就创建目录，写 `v1.json`
-6. **多轮迭代**：用户提出修改意见后，生成 `v2.json` / `v3.json`，历史版本保留
-7. **告知用户**：给出 outbox 路径和版本号，让用户回网站点"刷新"
+10. **多轮迭代**：用户提出修改意见后，生成 `v2.json` / `v3.json`，历史版本保留
+11. **告知用户**：给出 outbox 路径和版本号，让用户回网站点"刷新"
 
-### 5.1 产物自检清单（写文件前过一遍）
+### 5.1 产物自检清单（写文件前过一遍，必做）
 
-- [ ] `summary.rubric` 覆盖 R1~R5 全部 5 项，id/权重与 RUBRIC_STANDARD.md 一致
+**结构：**
+
+- [ ] `contractVersion` = `"2.0"`
+- [ ] `summary.rubric` 覆盖 R1~R5 全部 5 项，id/name/weight 与 RUBRIC_STANDARD.md 一致
 - [ ] 每个维度的 `scores` 覆盖 inbox 里全部 candidates
-- [ ] `overallScores` 的 score 等于加权和（允许 ±0.1 浮动）
+
+**打分：**
+
+- [ ] 每个 `score` 都是 10 / 8 / 6 / 4 / 2 中的一个整数（**禁止小数**）
+- [ ] 每个 `tier` 字段存在且与 score 严格对应（S=10 / A=8 / B=6 / C=4 / D=2）
+- [ ] 每个 `confidence` 字段存在（high / medium / low）
+- [ ] `overallScore` **等于**加权和（触发一票否决时封顶 6.9）
 - [ ] `overallScores[].verdict` 按 RUBRIC_STANDARD.md 的评级档位打标签
+
+**一票否决：**
+
+- [ ] `overallScores[].vetoTriggered` 每条都有布尔值
+- [ ] 触发一票否决的，`vetoReason` 必填，总分 ≤ 6.9，verdict ≤ "合格"
+- [ ] 未触发的，vetoTriggered=false
+
+**扩展维度：**
+
+- [ ] 每个扩展维度有 `rationale`
+- [ ] 每个扩展维度有 `activated` 布尔值
+- [ ] 激活的 X 维度有合法的 `weight`（0.05 / 0.10 / 0.15），且 R1~R5 权重已等比缩减
+
+**其他：**
+
 - [ ] candidates ≥ 2 时 `sbs.pairs` 不为空
-- [ ] `report` markdown 渲染无明显坏掉的地方（表格闭合、代码块闭合）
+- [ ] `report` markdown 无明显坏掉的地方（表格闭合、代码块闭合）
 - [ ] 版本号正确递增，没有覆盖历史
+- [ ] **JSON 自检**：写文件后立即用 `python3 -c "import json; json.load(open('path'))"` 验证格式合法（历史踩坑：comment/verdict/report 里混了直引号 `"` 会导致 JSON 解析失败。正文里请用中文引号「」《》或单引号 `'`）
 
 ---
 
@@ -234,10 +368,17 @@
 - **LLM 必须原样沿用 inbox 给出的 reportId，不允许自造**（比如不要用 `productName` 当 id、也不要拼新的字符串）。否则网站按 reportId join 不上，对应产品的分数就会从 UI 上消失。
 - 约定格式：当前为 `sub_xxx`（nanoid），LLM 不需要解析内部结构，当作不透明字符串使用即可。
 
+### 6.2 向后兼容（v1.0 产物）
+
+- 契约版本升级到 2.0 后，历史 v1.0 outbox 文件**保留不动**。
+- 网站按 `contractVersion` 字段分别渲染 v1.0 和 v2.0 产物，不做迁移。
+- v1.0 产物的维度名称（"信源与数据真实性"等）、权重（25/20/25/20/10）、0.5 精度分数继续按原样展示。
+
 ---
 
 ## 7. 版本
 
-- 契约版本：**1.0**
-- 生效日期：2026-04-19
+- 契约版本：**2.0**
+- 生效日期：2026-04-21
+- 上一版：1.0（2026-04-19 生效）
 - 后续任何字段语义变更 → contractVersion 升级，旧 outbox 文件保留原 contractVersion 以便兼容渲染。
