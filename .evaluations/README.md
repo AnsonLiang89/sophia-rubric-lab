@@ -12,6 +12,7 @@
 ├── README.md                  # ← 本文件（索引）
 ├── RUBRIC_STANDARD.md         # 面向用户的评测标准（「标准」tab 渲染）
 ├── EVALUATION_CONTRACT.md     # 面向 LLM 的工作协议（inbox/outbox 结构、schema、工作流）
+├── NAMING_CONTRACT.md         # 命名契约（各类 id / code / taskId 的分配权与稳定性）
 ├── PRODUCTS.json              # 评测主体清单（AI 产品列表，「产品」tab 只读）
 ├── inbox/                     # 网站写入的待评测任务
 │   └── {taskId}.json
@@ -38,9 +39,10 @@
 
 - **RUBRIC_STANDARD.md** — *Why & What*：为什么这样评、评什么维度、权重多少、评级档位、issueTags 词表。内容面向人，写得通俗。
 - **EVALUATION_CONTRACT.md** — *How*：LLM 怎么写 outbox、JSON schema 长什么样、多版本怎么管理、reportId 的隐式契约。内容面向机器，严格且有示例。
+- **NAMING_CONTRACT.md** — *Naming Rules*：各类 id / code / taskId 的分配权、稳定性、映射关系。新增字段或修改编号规则前请先读并更新此文件。
 - **PRODUCTS.json** — *Who*：列出所有"评测主体"（AI 产品）的 id、名称、版本、色值。网站前端只读；新增/删除产品直接编辑 JSON。
 
-三份文档**各司其职，不互相重复**：RUBRIC_STANDARD 是"评测什么"的事实源；EVALUATION_CONTRACT 是"产物长什么样"的事实源；PRODUCTS.json 是"谁在被评"的事实源。
+四份文档**各司其职，不互相重复**：RUBRIC_STANDARD 是"评测什么"的事实源；EVALUATION_CONTRACT 是"产物长什么样"的事实源；NAMING_CONTRACT 是"编号和标识怎么分配"的事实源；PRODUCTS.json 是"谁在被评"的事实源。
 
 ---
 
