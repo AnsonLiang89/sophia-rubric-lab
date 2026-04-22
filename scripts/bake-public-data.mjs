@@ -46,6 +46,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import crypto from "node:crypto";
+import { checkBakeFreshness } from "./check-bake-freshness.mjs";
 
 // ------------------------------------------------------------
 // CLI args
@@ -390,9 +391,53 @@ function bakeHealth(bakedAt) {
   return out;
 }
 
-function bakeOutbox(tasks) {
+/**
+ * 把 .evaluations/_publish-log.json 的只读副本烘焙到 public/data/publish-log.json。
+ *
+ * - 管理员版直读 /_bus/publish-log（文件本身）
+ * - 对外版通过 ${BASE}/data/publish-log.json 拿到同一份副本
+ *
+ * 同时返回最近一次"成功发布"的时间戳，用来写进 public-bundle.meta.lastPublishedAt
+ * （供页脚展示"上次更新时间"）。找不到日志或日志为空时返回 null。
+ */
+function bakePublishLog() {
+  const src = path.join(EV_DIR, "_publish-log.json");
+  const out = path.join(OUT_DIR, "publish-log.json");
+  if (!fs.existsSync(src)) {
+    // 第一次部署或从未发布过：写一份空的，保持契约不变
+    writeJson(out, { version: 1, entries: [] });
+    return { lastPublishedAt: null, lastOk: null };
+  }
+  const raw = readJson(src, false);
+  if (!raw || !Array.isArray(raw.entries)) {
+    writeJson(out, { version: 1, entries: [] });
+    return { lastPublishedAt: null, lastOk: null };
+  }
+  writeJson(out, { version: 1, entries: raw.entries });
+  // 找最近一次 ok=true 的发布
+  const okEntries = raw.entries.filter((e) => e && e.ok);
+  const last = okEntries.length ? okEntries[okEntries.length - 1] : null;
+  return {
+    lastPublishedAt: last?.publishedAt ?? null,
+    lastOk: last ?? null,
+  };
+}
+
+function bakeOutbox(tasks, codeToQueryId) {
   const outboxOut = path.join(OUT_DIR, "outbox");
   ensureDir(outboxOut);
+
+  /**
+   * 从 queryCode 反查 queryId 并注入 payload（冗余字段）。
+   * - 原本前端靠 taskId 前缀解析 code，再用 code 匹配 query
+   * - 加 queryId 之后，前端可以直接 payload.queryId → query，不依赖 code
+   * - 如果哪天 code 再被改，只要 queryId 稳定（它是永久 id），查找就不会断
+   * 找不到对应 queryId 时注入 null；前端按 fallback 走。
+   */
+  const resolveQueryId = (queryCode) => {
+    if (!queryCode) return null;
+    return codeToQueryId?.get(queryCode) ?? null;
+  };
 
   // index.json
   const indexItems = tasks
@@ -401,6 +446,7 @@ function bakeOutbox(tasks) {
       return {
         taskId: t.taskId,
         queryCode: t.queryCode,
+        queryId: resolveQueryId(t.queryCode),
         latestVersion: latest.v,
         latestMtime: latest.mtime,
         versions: t.versions.map((v) => ({ v: v.v, mtime: v.mtime, size: v.size })),
@@ -414,15 +460,21 @@ function bakeOutbox(tasks) {
   for (const t of tasks) {
     const dir = path.join(outboxOut, t.taskId);
     ensureDir(dir);
+    const qId = resolveQueryId(t.queryCode);
     const versionPayloads = [];
     for (const v of t.versions) {
       const j = readJson(v.full);
+      // 注入 queryId 冗余字段（不覆盖已有的 queryId，兼容历史数据）
+      if (j && typeof j === "object" && !j.queryId && qId) {
+        j.queryId = qId;
+      }
       versionPayloads.push({ v: v.v, payload: j });
       writeJson(path.join(dir, `v${v.v}.json`), j);
     }
     const latest = versionPayloads[versionPayloads.length - 1];
     const bundle = {
       taskId: t.taskId,
+      queryId: qId,
       latestVersion: latest.v,
       versions: t.versions.map((v) => ({ v: v.v, mtime: v.mtime, size: v.size })),
       latest: latest.payload,
@@ -467,7 +519,7 @@ function validateReportIds(allPayloads, submissions) {
 // ------------------------------------------------------------
 // 烘焙 public-bundle + reports
 // ------------------------------------------------------------
-function bakePublicBundle(snapshot, bakedAt) {
+function bakePublicBundle(snapshot, bakedAt, publishMeta) {
   // 只发布 outbox 相关的 queries 与 submissions：
   //   - 凡是在 outbox 里被引用过的 query.code → 全保留
   //   - 凡是在 outbox 里被引用过的 submission.id → 全保留
@@ -499,6 +551,28 @@ function bakePublicBundle(snapshot, bakedAt) {
   }
 
   const queries = (snapshot.queries ?? []).filter((q) => usedQueryCodes.has(q.code));
+
+  // --- P0-1 双向完整性校验：每个 outbox 引用的 queryCode 必须能在裁剪后的 queries 中找到 ---
+  // 症状（若失守）：对外版 /data/outbox/index.json 有某 taskId，但 public-bundle 的 queries
+  // 里没对应 queryCode，outboxAgg 按 code 匹配不上 → 任务在对外版静默消失，管理员无感。
+  // 典型触发：管理员本地删除了 query 但 `.evaluations/outbox/{taskId}/` 没手动清；或
+  // export-snapshot 晚于删除动作。失败就 fail fast，强制管理员清理孤儿 outbox 再发布。
+  {
+    const codesInQueries = new Set(queries.map((q) => q.code));
+    const missing = [...usedQueryCodes].filter((c) => c && !codesInQueries.has(c));
+    if (missing.length > 0) {
+      const lines = missing.map((code) => `  · queryCode=${code}`);
+      die(
+        `Found ${missing.length} outbox queryCode(s) without matching query in snapshot:\n` +
+          lines.join("\n") +
+          `\n\nHint: 孤儿 outbox 任务——对应 query 已从 snapshot 中移除，但磁盘上 .evaluations/outbox/ ` +
+          `下仍有该 queryCode 前缀的 task 目录。\n` +
+          `      请手动清理 .evaluations/outbox/ 下这些 taskId 目录后重试；或补回 snapshot 里的 query。`
+      );
+    }
+    log("log", `outbox↔queries integrity: ok (${usedQueryCodes.size} referenced queryCodes all resolved)`);
+  }
+
   const subs = (snapshot.submissions ?? []).filter((s) => usedReportIds.has(s.id));
   // 裁掉 submission.content，改拆到 reports/{id}.md；只保留轻量元数据
   const lightSubs = subs.map((s) => ({
@@ -527,6 +601,16 @@ function bakePublicBundle(snapshot, bakedAt) {
       queriesCount: queries.length,
       submissionsCount: subs.length,
       reportsCount: subs.length,
+    },
+    /**
+     * 最近一次"一键发布"的时间戳（来自 .evaluations/_publish-log.json）。
+     * - bakedAt 反映"CI 打包"时间（每次 push 都会变）
+     * - lastPublishedAt 反映"用户点对外更新按钮"时间（稳定可追溯）
+     * 页脚应该优先展示 lastPublishedAt，让管理员和访客用同一个基准对比两端一致性。
+     */
+    meta: {
+      lastPublishedAt: publishMeta?.lastPublishedAt ?? null,
+      lastPublishOk: publishMeta?.lastOk ? true : null,
     },
   };
   const out = path.join(OUT_DIR, "public-bundle.json");
@@ -576,18 +660,32 @@ function main() {
   bakeContract();
   bakeProducts();
   bakeHealth(bakedAt);
+  const publishMeta = bakePublishLog();
+  if (publishMeta.lastPublishedAt) {
+    log("log", `publish-log: last OK publish at ${publishMeta.lastPublishedAt}`);
+  } else {
+    log("log", `publish-log: no prior successful publishes`);
+  }
 
   // 3) outbox 产物
+  //    构建 code → queryId 映射（snapshot.queries 此时已经被 alignWithCodeRegistry
+  //    强制对齐到注册簿，所以这里取出来的 code 是权威的）。
+  //    bakeOutbox 会把 queryId 冗余写进 index/payload/bundle，
+  //    即便将来 code 再被改，前端也能靠 queryId 稳定地回链 query。
+  const codeToQueryId = new Map();
+  for (const q of snapshot.queries ?? []) {
+    if (q?.code && q?.id) codeToQueryId.set(q.code, q.id);
+  }
   const outboxTasks = listOutboxTasks();
   log("log", `outbox tasks: ${outboxTasks.length}`);
-  const { indexCount, allPayloads } = bakeOutbox(outboxTasks);
+  const { indexCount, allPayloads } = bakeOutbox(outboxTasks, codeToQueryId);
   log("log", `outbox baked: ${indexCount} tasks, ${[...allPayloads.values()].length} latest payloads`);
 
   // 4) 校验 reportId 完整性（失败即退出）
   validateReportIds(allPayloads, snapshot.submissions ?? []);
 
   // 5) public-bundle + reports/*.md
-  const { bundle } = bakePublicBundle(snapshot, bakedAt);
+  const { bundle } = bakePublicBundle(snapshot, bakedAt, publishMeta);
 
   // 6) manifest
   bakeManifest(bakedAt, {
@@ -597,6 +695,31 @@ function main() {
     outboxTasksCount: outboxTasks.length,
     publicBundleStats: bundle.stats,
   });
+
+  // 7) 自检：烘焙完立即跑一次 freshness check，确认产物和源文件内容对齐
+  //
+  // 这是"机械警卫"——bake 逻辑写对了的话这里必过；但如果未来有人加了新产物却
+  // 忘了同步到 check-bake-freshness 的规则，或者 bake 的某个字段拼写错了，
+  // 这一层会立刻 fail fast，避免把"看起来成功、实际陈旧"的产物推到线上。
+  //
+  // 失败时 die() 让 CI/一键发布链路整体挂掉，比事后排查强一万倍。
+  try {
+    const post = checkBakeFreshness();
+    if (!post.fresh) {
+      const lines = post.stale.slice(0, 10).map((s) => `  · [${s.kind}] ${s.detail}`);
+      die(
+        `bake finished but self-check still reports ${post.stale.length} stale item(s):\n` +
+          lines.join("\n") +
+          (post.stale.length > 10 ? `\n  ……还有 ${post.stale.length - 10} 项` : "") +
+          `\n\n这意味着 bake 脚本自身有 bug（新产物规则漏同步？字段拼错？）。不应该发布。`
+      );
+    }
+    log("log", `self-check: bake artifacts fully aligned with source files (${post.items.length} items verified)`);
+  } catch (e) {
+    // die() 已经 exit(1)，这里只处理 checkBakeFreshness 本身的意外异常
+    if (e?.message?.includes("still reports")) throw e;
+    log("warn", `self-check failed to run (non-fatal): ${e?.message ?? e}`);
+  }
 
   log("log", `done. bakedAt=${bakedAt}`);
 }

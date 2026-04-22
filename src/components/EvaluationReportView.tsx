@@ -8,6 +8,7 @@ import {
   type EvaluationOutboxPayload,
   type OutboxBundle,
   type OutboxVersionMeta,
+  type PerReportFeedback,
 } from "../lib/contract";
 import { isSophia } from "../lib/sortProducts";
 
@@ -219,7 +220,7 @@ export default function EvaluationReportView({
           <Link
             to="/standard"
             className="text-[#A8522B] hover:text-[#8B4A3A] hover:underline underline-offset-2"
-            title="查看当前评测标准（Rubric v1 / SBS 规则 / 输出 schema）"
+            title="查看当前评测标准（Rubric v2.1 / 外部核验 / 档位打分 / SBS 规则 / 输出 schema）"
           >
             按评测标准打分 →
           </Link>
@@ -251,6 +252,25 @@ export default function EvaluationReportView({
           overall={summary.overallScores}
         />
       </section>
+
+      {/* Per-report Feedback 反馈卡（v2.1 契约新增） */}
+      {summary.perReportFeedback && summary.perReportFeedback.length > 0 && (
+        <section className="rounded-2xl border border-[#E6DCC8] bg-white p-5 shadow-sm">
+          <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+            <div>
+              <div className="text-xs text-[#8B8272] tracking-widest">PER-REPORT FEEDBACK</div>
+              <div className="text-base font-semibold text-[#3A3326]">每份报告的反馈</div>
+            </div>
+            <div className="text-[11px] text-[#8B8272]">
+              做得好 · 做得不好 · 可改进建议（v2.1 新增）
+            </div>
+          </div>
+          <PerReportFeedbackCards
+            feedback={summary.perReportFeedback}
+            overall={summary.overallScores}
+          />
+        </section>
+      )}
 
       {/* 自由报告 */}
       <section className="rounded-2xl border border-[#E6DCC8] bg-white p-6 shadow-sm">
@@ -560,5 +580,113 @@ function DimensionsTable({
         </tbody>
       </table>
     </div>
+  );
+}
+
+// ----------------- PerReportFeedback 反馈卡（v2.1） -----------------
+
+function PerReportFeedbackCards({
+  feedback,
+  overall,
+}: {
+  feedback: PerReportFeedback[];
+  overall: EvaluationOutboxPayload["summary"]["overallScores"];
+}) {
+  // 按 overall 的顺序（已经 Sophia 优先 + 原序）渲染，确保和评分总表列顺序一致
+  const orderedIds = orderReportIds(overall);
+  const feedbackMap = new Map(feedback.map((f) => [f.reportId, f]));
+  const orderedFeedback = orderedIds
+    .map((rid) => feedbackMap.get(rid))
+    .filter((f): f is PerReportFeedback => Boolean(f));
+
+  // 防御：如果 feedback 里有 overall 没列出的 reportId，追加到末尾
+  for (const f of feedback) {
+    if (!orderedIds.includes(f.reportId)) orderedFeedback.push(f);
+  }
+
+  return (
+    <div className="grid gap-4 md:grid-cols-2">
+      {orderedFeedback.map((f) => (
+        <article
+          key={f.reportId}
+          className="rounded-xl border border-[#E6DCC8] bg-[#FAF6EE] p-4"
+        >
+          <header className="mb-3">
+            <div className="text-[11px] text-[#8B8272] tracking-wider">
+              {isSophia({ name: f.productName }) ? "SOPHIA" : "PRODUCT"}
+            </div>
+            <div className="text-[15px] font-semibold text-[#3A3326]">
+              {f.productName}
+            </div>
+          </header>
+
+          <FeedbackSection
+            title="做得好"
+            items={f.strengths}
+            accent="#5A7A47"
+            emptyText="_（未沉淀强项）_"
+          />
+          <FeedbackSection
+            title="做得不好"
+            items={f.weaknesses}
+            accent="#A8522B"
+            emptyText="_（未沉淀短板）_"
+          />
+          <FeedbackSection
+            title="改进建议"
+            items={f.improvements}
+            accent="#6B5E9E"
+            emptyText="_（未给出建议）_"
+          />
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function FeedbackSection({
+  title,
+  items,
+  accent,
+  emptyText,
+}: {
+  title: string;
+  items: string[];
+  accent: string;
+  emptyText: string;
+}) {
+  return (
+    <section className="mb-3 last:mb-0">
+      <div
+        className="text-[11px] font-semibold mb-1.5 inline-flex items-center gap-1.5"
+        style={{ color: accent }}
+      >
+        <span
+          className="inline-block w-1.5 h-1.5 rounded-full"
+          style={{ backgroundColor: accent }}
+        />
+        {title}
+      </div>
+      {items.length === 0 ? (
+        <div className="text-[12px] text-[#8B8272] italic">{emptyText}</div>
+      ) : (
+        <ul className="space-y-1 pl-1">
+          {items.map((it, i) => (
+            <li
+              key={i}
+              className="text-[13px] leading-relaxed text-[#3A3326] flex gap-2"
+            >
+              <span
+                className="text-[10px] mt-[5px] flex-shrink-0"
+                style={{ color: accent }}
+              >
+                ▸
+              </span>
+              <span>{it}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }

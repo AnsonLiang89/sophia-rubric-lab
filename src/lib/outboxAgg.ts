@@ -24,6 +24,7 @@ import {
   type OutboxListItem,
 } from "./contract";
 import { pickLatestTaskByQueryCode } from "./outboxUtils";
+import { useLab } from "../store";
 
 export interface PerReportAgg {
   reportId: string;
@@ -75,6 +76,20 @@ export function useOutboxAggregate(): OutboxAggregate {
   );
   const [loading, setLoading] = useState(true);
   const [tick, setTick] = useState(0);
+
+  // 2026-04-21 方案 D：从 store 订阅 queries，构造 queryId → code 映射。
+  // 作用：outbox 返回的 task 里带 queryId（冗余字段），即便 task.queryCode
+  // 与当前 store 里某个 query.code 暂时对不上（例如 code 刚被 reconcile 改过
+  // 而 localStorage 还没来得及 migrate），只要 queryId 命中，就把 task 归到
+  // 正确的 queryCode 下。这是"以永久 id 为准、code 为次"的防御性修正。
+  const queries = useLab((s) => s.queries);
+  const queryIdToCode = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const q of queries) {
+      if (q?.id && q?.code) m.set(q.id, q.code);
+    }
+    return m;
+  }, [queries]);
 
   useEffect(() => {
     let cancelled = false;
@@ -153,17 +168,32 @@ export function useOutboxAggregate(): OutboxAggregate {
     const byQueryCode = new Map<string, QueryAgg>();
     const tasksByQueryCode = new Map<string, OutboxListItem[]>();
 
+    // 校正 task 的 queryCode：优先用 queryId 反查 store.queries 的 code，
+    // 找不到时回退到 task.queryCode（从 taskId 前缀解析）。
+    // 这样做的好处：即便 localStorage 里某条 query.code 还没 migrate 到注册簿的新值，
+    // 只要 queryId 能回查到，这条 task 就能被归到正确的 query 下。
+    const resolveEffectiveCode = (t: OutboxListItem): string | undefined => {
+      if (t.queryId) {
+        const fromId = queryIdToCode.get(t.queryId);
+        if (fromId) return fromId;
+      }
+      return t.queryCode;
+    };
+
     for (const t of tasks) {
-      if (!t.queryCode) continue;
-      const arr = tasksByQueryCode.get(t.queryCode) ?? [];
+      const code = resolveEffectiveCode(t);
+      if (!code) continue;
+      const arr = tasksByQueryCode.get(code) ?? [];
       arr.push(t);
-      tasksByQueryCode.set(t.queryCode, arr);
+      tasksByQueryCode.set(code, arr);
     }
 
     // 从 payloads 构造 QueryAgg
     for (const [taskId, payload] of payloads.entries()) {
       const task = tasks.find((t) => t.taskId === taskId);
-      if (!task || !task.queryCode) continue;
+      if (!task) continue;
+      const code = resolveEffectiveCode(task);
+      if (!code) continue;
       // 防御：payload 可能为 null / summary 缺失（例如 outbox 里 JSON 解析失败
       // 被 bus 返回 null）——不能让一份坏数据把整个 Dashboard 炸成白屏
       if (!payload || !payload.summary) {
@@ -201,8 +231,8 @@ export function useOutboxAggregate(): OutboxAggregate {
         }
       }
 
-      byQueryCode.set(task.queryCode, {
-        queryCode: task.queryCode,
+      byQueryCode.set(code, {
+        queryCode: code,
         taskId,
         version: payload.version,
         mtime: task.latestMtime,
@@ -217,7 +247,7 @@ export function useOutboxAggregate(): OutboxAggregate {
       tasksByQueryCode,
       refresh: () => setTick((v) => v + 1),
     };
-  }, [tasks, payloads, loading]);
+  }, [tasks, payloads, loading, queryIdToCode]);
 
   return agg;
 }

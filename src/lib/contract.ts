@@ -53,11 +53,33 @@ export interface InboxTask {
 
 export type VerdictLevel = "卓越" | "优秀" | "合格" | "待改进" | "不合格";
 
+/**
+ * 档位（v2.0 契约新增）。S=10 / A=8 / B=6 / C=4 / D=2。
+ * v1.0 产物不含此字段。
+ */
+export type RubricTier = "S" | "A" | "B" | "C" | "D";
+
+/**
+ * 打分确信度（v2.0 契约新增）。
+ * - high：客观可数/可核查（如信源数量、数字准确性）
+ * - medium：主观判断但有一定依据（如论证深度）
+ * - low：几乎全凭感觉（如风格契合度）
+ */
+export type Confidence = "high" | "medium" | "low";
+
 export interface OverallScoreItem {
   reportId: string;
   productName: string;
   score: number;
   verdict: VerdictLevel | string;
+  /**
+   * 一票否决是否触发（v2.0 契约新增）。
+   * R1 存在重大事实错误时为 true，总分封顶 6.9、verdict ≤ "合格"。
+   * v1.0 产物没有此字段，前端读取时按 false 处理。
+   */
+  vetoTriggered?: boolean;
+  /** vetoTriggered=true 时的触发原因说明 */
+  vetoReason?: string;
 }
 
 export interface RubricDimensionScore {
@@ -65,6 +87,10 @@ export interface RubricDimensionScore {
   score: number;
   comment: string;
   issueTags?: string[];
+  /** v2.0 档位标签，与 score 严格对应（S=10/A=8/B=6/C=4/D=2） */
+  tier?: RubricTier;
+  /** v2.0 打分确信度 */
+  confidence?: Confidence;
 }
 
 export interface RubricDimensionBlock {
@@ -75,16 +101,29 @@ export interface RubricDimensionBlock {
   scores: RubricDimensionScore[];
 }
 
+export interface ExtraDimensionScore {
+  reportId: string;
+  score: number;
+  comment: string;
+  tier?: RubricTier;
+  confidence?: Confidence;
+  issueTags?: string[];
+}
+
 export interface ExtraDimensionBlock {
   /** X1, X2, X3 */
   dimensionId: string;
   name: string;
   rationale: string;
-  scores: Array<{
-    reportId: string;
-    score: number;
-    comment: string;
-  }>;
+  /**
+   * 是否激活纳入总分（v2.0 契约新增）。
+   * 激活时 weight 必填（0.05 / 0.10 / 0.15），R1~R5 权重等比缩减。
+   * v1.0 产物没有此字段，前端按 false 处理。
+   */
+  activated?: boolean;
+  /** activated=true 时必填的权重（0.05 / 0.10 / 0.15） */
+  weight?: number;
+  scores: ExtraDimensionScore[];
 }
 
 export type SbsWinner = "A" | "B" | "tie";
@@ -97,11 +136,33 @@ export interface SbsPair {
   keyReason: string;
 }
 
+/**
+ * 每份报告的结构化反馈（v2.1 契约新增，必填）。
+ *
+ * 给网站做结构化展示用（每份报告一张"反馈卡"），避免让"做得好/不好/建议"只藏在 report markdown 里。
+ * 每个数组至少 1 条；每条都应指向具体维度 + 具体事例（禁止"整体不错"这种空泛写法）。
+ */
+export interface PerReportFeedback {
+  reportId: string;
+  productName: string;
+  /** 该报告的显著强项（指向维度 + 具体事例） */
+  strengths: string[];
+  /** 该报告的显著短板（与 issueTags / vetoReason 呼应） */
+  weaknesses: string[];
+  /** 可操作的改进建议（告诉作者"下次怎么写能更好"） */
+  improvements: string[];
+}
+
 export interface EvaluationSummary {
   overallScores: OverallScoreItem[];
   rubric: RubricDimensionBlock[];
   extraDimensions?: ExtraDimensionBlock[];
   sbs?: { pairs: SbsPair[] } | null;
+  /**
+   * v2.1 必填字段：每份报告的结构化反馈。
+   * v1.0 / v2.0 产物没有该字段，前端渲染时按"未提供反馈"容错展示。
+   */
+  perReportFeedback?: PerReportFeedback[];
 }
 
 export interface EvaluationOutboxPayload {
@@ -110,11 +171,22 @@ export interface EvaluationOutboxPayload {
   evaluator: string;
   evaluatedAt: string;
   /**
-   * 契约版本号。当前唯一合法值为 "1.0"。
-   * 未来升级到 "2.0" 时，此处扩为联合类型（如 "1.0" | "2.0"），
-   * 并在渲染路径上按版本分支兼容旧产物。
+   * 契约版本号。
+   * - `"1.0"`：2026-04-19 ~ 2026-04-21 使用的旧契约（0.5 精度打分、无 tier/confidence/veto）
+   * - `"2.0"`：2026-04-21 使用的契约（档位制 10/8/6/4/2、一票否决、扩展维度可激活）
+   * - `"2.1"`：2026-04-22 起使用的新契约（在 2.0 基础上新增外部核验硬约束、perReportFeedback、report 正文六大章节硬约束）
+   *
+   * 前端渲染时按此字段分支兼容——历史版本保留原样展示，新版本启用新 UI 能力
+   * （档位标签、veto 徽章、激活的扩展维度纳入总分展示、perReportFeedback 反馈卡）。
    */
-  contractVersion: "1.0";
+  contractVersion: "1.0" | "2.0" | "2.1";
+  /**
+   * 冗余写入的 query 永久 id（2026-04-21 方案 D 新增）。
+   * - 由 bus / bake 统一注入，payload 原作者（LLM）不需要填
+   * - 前端 outboxAgg 优先用 queryId 做反查，在 code 变更后依然能稳定回链
+   * - 历史产物没有该字段时回退到 `parseQueryCode(taskId)` → code → query
+   */
+  queryId?: string;
   summary: EvaluationSummary;
   /** 自由 markdown 正文 */
   report: string;
@@ -140,6 +212,8 @@ export interface OutboxVersionMeta {
 export interface OutboxListItem {
   taskId: string;
   queryCode?: string;
+  /** 冗余 query 永久 id，由 bus / bake 注入；缺失时前端回退到 queryCode 匹配 */
+  queryId?: string | null;
   latestVersion: number;
   latestMtime: number;
   versions: OutboxVersionMeta[];
@@ -147,6 +221,8 @@ export interface OutboxListItem {
 
 export interface OutboxBundle {
   taskId: string;
+  /** 冗余 query 永久 id，由 bus / bake 注入 */
+  queryId?: string | null;
   latestVersion: number;
   versions: OutboxVersionMeta[];
   latest: EvaluationOutboxPayload;
@@ -364,9 +440,48 @@ export interface ProductsResponse {
   products: BusProduct[];
 }
 
+/**
+ * /_bus/bake-freshness 返回结构。dev-only。
+ *
+ * 每一个 items[] 元素都是一个检查项（比如"RUBRIC_STANDARD.md vs standard.json"）；
+ * stale[] 是 items 里 fresh=false 的子集，供 UI 快速渲染红点和 tooltip。
+ */
+export interface BakeFreshnessItem {
+  /** 唯一标识，例如 "standard" / "contract" / "outbox:EV-0005-CAP0sN/v2.json" */
+  id: string;
+  /** 分类，便于前端分组展示 */
+  kind: "contract-doc" | "outbox-task" | "outbox-version" | "bake" | string;
+  fresh: boolean;
+  /** 人类可读描述（可直接展示在 tooltip） */
+  detail: string;
+}
+
+export interface BakeFreshnessResult {
+  /** 是否所有检查项都新鲜 */
+  fresh: boolean;
+  /** public/data 目录是否存在（首次 clone 时可能缺失） */
+  bakePresent: boolean;
+  items: BakeFreshnessItem[];
+  stale: BakeFreshnessItem[];
+  /** ISO 时间戳 */
+  checkedAt: string;
+}
+
 export const contractBus = {
   health(): Promise<{ ok: true; dir: string } | null> {
     return busFetch<{ ok: true; dir: string }>("GET", "/_bus/health");
+  },
+
+  /**
+   * 检查对外版产物（public/data）是否跟得上 .evaluations 源文件。
+   *
+   * - dev（管理员版）：调真实端点，返回结构化的陈旧项列表
+   * - prod（对外版）：端点不存在，永远返回 null（调用方应按"无警告"处理）
+   *
+   * 设计目的：让管理员 UI 能在页脚显示红点，避免"改了标准但忘了 bake"。
+   */
+  getBakeFreshness(): Promise<BakeFreshnessResult | null> {
+    return busFetch<BakeFreshnessResult>("GET", "/_bus/bake-freshness");
   },
 
   /** 读取面向用户的评测标准 RUBRIC_STANDARD.md 原文 */
@@ -494,7 +609,43 @@ export const contractBus = {
   ): Promise<PublishResult | null> {
     return busFetch("POST", "/_bus/publish", snapshot);
   },
+
+  /**
+   * 读发布历史（append-only）。
+   *
+   * 两端都可调用：
+   *  - dev：直接读 `.evaluations/_publish-log.json`
+   *  - prod：读 bake 出的 `${BASE}/data/publish-log.json` 静态副本
+   *
+   * 失败（文件不存在 / 网络错）统一归一化为 `{ version: 1, entries: [] }`。
+   */
+  getPublishLog(): Promise<PublishLogDoc | null> {
+    return busFetch("GET", "/_bus/publish-log");
+  },
 };
+
+// ------------------------------------------------------------
+// Publish Log 类型
+// ------------------------------------------------------------
+export interface PublishLogEntry {
+  /** ISO 时间戳：对用户而言的"上次更新时间" */
+  publishedAt: string;
+  /** 本次发布是否成功 */
+  ok: boolean;
+  /** 成功时的 commit message（通常是 `publish: <iso>`） */
+  commit?: string;
+  /** 失败时指明是哪一步 */
+  failedStep?: string;
+  /** 失败时的错误摘要（最多前 500 字） */
+  error?: string;
+  /** 快照时的数量统计（成功时才记） */
+  stats?: Record<string, number>;
+}
+
+export interface PublishLogDoc {
+  version: 1;
+  entries: PublishLogEntry[];
+}
 
 // 发布流程每一步的日志条目
 export interface PublishStep {
@@ -517,6 +668,16 @@ export interface PublishResult {
   /** 成功时给出对外版 URL（前端可做"打开新标签"入口） */
   publicUrl?: string;
   steps: PublishStep[];
+  /**
+   * Preflight 硬错误（仅失败时返回）。每条一段中文描述，前端直接展示。
+   * 出现 errors 时 failedStep === "preflight"。
+   */
+  preflightErrors?: string[];
+  /**
+   * Preflight 软警告（成功/失败都可能返回）。自动纠正的情况（例如 code 被对齐），
+   * 都记在这里；前端应该在成功 modal 里显眼展示，提示用户刷新 localStorage。
+   */
+  preflightWarnings?: string[];
 }
 
 // ------------------------------------------------------------

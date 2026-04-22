@@ -10,6 +10,7 @@
     "preview": "vite preview",
     "seed:dump": "node --experimental-strip-types scripts/dump-seed.mjs",
     "bake:public": "node scripts/bake-public-data.mjs",
+    "bake:check": "node scripts/check-bake-freshness.mjs",
     "build:public": "npm run seed:dump && npm run bake:public && tsc -b && vite build",
     "cleanup-inbox": "node scripts/cleanup-orphan-inbox.mjs",
     "cleanup-inbox:apply": "node scripts/cleanup-orphan-inbox.mjs --apply"

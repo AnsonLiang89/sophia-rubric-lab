@@ -11,6 +11,7 @@ import { useLab } from "./store";
 import { storage } from "./storage";
 import { SEED_SNAPSHOT } from "./seed";
 import { IS_READONLY } from "./lib/dataSource";
+import { contractBus } from "./lib/contract";
 
 /**
  * 一次性 productId 迁移：旧 seed 把 submissions 挂到 `prod-sophia` / `prod-miro`，
@@ -28,8 +29,11 @@ const LEGACY_PRODUCT_ID_MAP: Record<string, string> = {
  *
  * 版本号规则：改一次迁移规则（增/删映射），就 +1，并在注释里说明。
  *  - 1: `prod-sophia → sophia-v4`、`prod-miro → mirothink` 的 id 迁移（2026-04-20）
+ *  - 2: 按后端 `_code-registry.json` 对齐 localStorage 里 query.code（2026-04-20）
+ *       编号注册簿架构上线后，后端会统一重新分配 code；浏览器 localStorage 里
+ *       的老 code 必须同步修正，否则详情页会用错 code 去 outbox 查报告。
  */
-const CURRENT_MIGRATION_VERSION = 1;
+const CURRENT_MIGRATION_VERSION = 2;
 const MIGRATION_STORAGE_KEY = "sophia-rubric-lab:migration-version";
 
 function readMigrationVersion(): number {
@@ -83,6 +87,46 @@ async function migrateLegacyProductIds(): Promise<boolean> {
   return dirty;
 }
 
+/**
+ * Migration v2：按后端 `_code-registry.json` 对齐 localStorage 里 query.code。
+ *
+ * 背景：编号注册簿架构上线后，后端 reconcile 会把所有 query 的 code 统一重新分配
+ * （例如首付款的 code 从 EV-0001 → EV-0002）。但浏览器 localStorage 里缓存的 code
+ * 还是旧值，导致 QueriesPage / DashboardPage / ReportPage 在用 `q.code` 去
+ * `outbox.byQueryCode.get(...)` 查报告时查到错位数据。
+ *
+ * 本 migration 做的事：调用 GET /_bus/registry 拿 queryId→code 映射，把 localStorage
+ * 里每条 query 的 code 对齐到权威值。在 reconcile 范围外的老 query（registry 里没有）
+ * 保持原样不动。
+ */
+async function migrateQueryCodesFromRegistry(): Promise<boolean> {
+  const reg = await contractBus.getRegistry().catch(() => null);
+  // 拿不到注册簿（离线 / bus 挂了）就不做任何事，保持原 code 不动
+  if (!reg || !reg.map) return false;
+
+  const snap = await storage.exportAll();
+  let dirty = false;
+  const newQueries = (snap.queries ?? []).map((q) => {
+    const authoritative = reg.map[q.id];
+    if (authoritative && authoritative !== q.code) {
+      dirty = true;
+      return { ...q, code: authoritative };
+    }
+    return q;
+  });
+
+  if (dirty) {
+    await storage.importAll(
+      {
+        ...snap,
+        queries: newQueries,
+      },
+      "replace"
+    );
+  }
+  return dirty;
+}
+
 export default function App() {
   const { refresh, loaded } = useLab();
   const [seedChecked, setSeedChecked] = useState(false);
@@ -111,11 +155,19 @@ export default function App() {
       } else {
         // 非首启：仅当本地迁移版本落后时才跑一次幂等迁移
         const storedVer = readMigrationVersion();
-        if (storedVer < CURRENT_MIGRATION_VERSION) {
+        if (storedVer < 1) {
           await migrateLegacyProductIds();
+        }
+        if (storedVer < 2) {
+          await migrateQueryCodesFromRegistry();
+        }
+        if (storedVer < CURRENT_MIGRATION_VERSION) {
           writeMigrationVersion(CURRENT_MIGRATION_VERSION);
         }
       }
+      // 每次启动都再对齐一次 registry（幂等）：即便用户在另一个 tab 创建了新
+      // query、或 reconcile 又跑过，本 tab 也能拿到最新 code；无变更则 no-op。
+      await migrateQueryCodesFromRegistry().catch(() => undefined);
       await refresh();
       setSeedChecked(true);
     };

@@ -11,6 +11,8 @@ import EvaluationRunModal, { type EvaluationTaskSpec } from "../components/Evalu
 import EvaluationReportView from "../components/EvaluationReportView";
 import { contractBus, IS_READONLY, type OutboxListItem } from "../lib/contract";
 import { flattenTaskVersions, type FlatTaskVersion } from "../lib/outboxUtils";
+import { computeSubmissionDisplayCodes } from "../lib/submissionDisplayCode";
+import { getReadonlyReportLoader } from "../storage";
 
 /**
  * 评测报告页（契约 v1）
@@ -357,6 +359,14 @@ function ReportHero({
     ? cohort.find((c) => c.sub.id === openSubId) ?? null
     : null;
 
+  // Submission 展示编号（EV-0005-R1 / R2 ...）
+  // 纯计算，跟随当前权威 queryCode 变化。仅在原始报告弹窗标题处露出。
+  const displayCodeMap = useMemo(
+    () => computeSubmissionDisplayCodes(code, cohort.map((c) => c.sub)),
+    [code, cohort]
+  );
+  const currentDisplayCode = current ? displayCodeMap.get(current.sub.id) : undefined;
+
   return (
     <header className="bg-white rounded-2xl shadow-soft border border-paper-200 overflow-hidden">
       {/* 第一行：面包屑 + 操作区 */}
@@ -494,6 +504,7 @@ function ReportHero({
         open={!!current}
         sub={current?.sub ?? null}
         product={current?.product ?? null}
+        displayCode={currentDisplayCode}
         onClose={() => setOpenSubId(null)}
       />
     </header>
@@ -509,14 +520,57 @@ function RawReportModal({
   open,
   sub,
   product,
+  displayCode,
   onClose,
 }: {
   open: boolean;
   sub: Submission | null;
   product: AIProduct | null;
+  displayCode?: string;
   onClose: () => void;
 }) {
   const [fullscreen, setFullscreen] = useState(false);
+
+  /**
+   * 对外版正文懒加载：
+   *
+   * prod 下 bake 把 submission.content 剥离成独立的 /data/reports/{id}.md
+   * （见 scripts/bake-public-data.mjs 的 bakePublicBundle），listSubmissions
+   * 返回的 `content` 是空字符串。必须显式调 getReadonlyReportLoader 去拉。
+   *
+   * dev 下 storage 是 LocalStorageAdapter，loader 为 null，直接用 sub.content。
+   */
+  const reportLoader = useMemo(() => getReadonlyReportLoader(), []);
+  const [lazyContent, setLazyContent] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!open || !sub) return;
+    // dev 模式：直接用 localStorage 里的完整 content
+    if (!reportLoader) {
+      setLazyContent(sub.content);
+      return;
+    }
+    // prod 模式：sub.content 为空字符串（bake 剥离），走懒加载
+    // 但也兼容种子数据里意外带了 content 的情况
+    if (sub.content && sub.content.length > 0) {
+      setLazyContent(sub.content);
+      return;
+    }
+    let cancelled = false;
+    setLoading(true);
+    setLazyContent(null);
+    reportLoader(sub.id)
+      .then((text) => {
+        if (!cancelled) setLazyContent(text);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [open, sub, reportLoader]);
 
   // ESC 关闭 / 锁滚动
   useEffect(() => {
@@ -542,7 +596,11 @@ function RawReportModal({
   // 经典 "props 变化时同步重置内部 UI state" 场景，运行时正确。
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (!open) setFullscreen(false);
+    if (!open) {
+      setFullscreen(false);
+      setLazyContent(null);
+      setLoading(false);
+    }
   }, [open]);
 
   return (
@@ -581,6 +639,14 @@ function RawReportModal({
                 />
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 min-w-0">
+                    {displayCode && (
+                      <span
+                        className="font-mono text-[11px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-dark border border-amber-100 shrink-0"
+                        title="报告展示编号"
+                      >
+                        {displayCode}
+                      </span>
+                    )}
                     <span className="font-semibold text-ink-900 text-[15px] truncate">
                       {product.name}
                     </span>
@@ -593,7 +659,13 @@ function RawReportModal({
                   <div className="flex items-center gap-2 text-[11px] text-ink-500 mt-0.5 flex-wrap">
                     <span>{formatDate(sub.submittedAt, true)}</span>
                     <span className="text-ink-300">·</span>
-                    <span>{sub.content.length.toLocaleString()} 字符</span>
+                    <span>
+                      {loading
+                        ? "加载中…"
+                        : lazyContent != null
+                        ? `${lazyContent.length.toLocaleString()} 字符`
+                        : "—"}
+                    </span>
                     {sub.sourceUrl && (
                       <>
                         <span className="text-ink-300">·</span>
@@ -647,7 +719,17 @@ function RawReportModal({
                   fullscreen ? "max-w-4xl" : "max-w-none"
                 )}
               >
-                <MarkdownView content={sub.content} />
+                {loading ? (
+                  <div className="text-sm text-ink-500 py-12 text-center">
+                    正在加载报告正文…
+                  </div>
+                ) : lazyContent == null || lazyContent.length === 0 ? (
+                  <div className="text-sm text-ink-500 py-12 text-center">
+                    （报告正文为空或加载失败）
+                  </div>
+                ) : (
+                  <MarkdownView content={lazyContent} />
+                )}
               </div>
             </article>
           </motion.div>

@@ -74,7 +74,10 @@ function toStaticUrl(busPath: string): string | null {
   // 5) health：prod 下返回一个固定 ok 快照
   if (busPath === "/_bus/health") return `${STATIC_PREFIX}/health.json`;
 
-  // 6) inbox 类路径在 prod 下不应被调用——返回 null，上层会走 null-as-empty 处理
+  // 6) publish-log：对外版也能拿到发布历史（只读副本）
+  if (busPath === "/_bus/publish-log") return `${STATIC_PREFIX}/publish-log.json`;
+
+  // 7) inbox 类路径在 prod 下不应被调用——返回 null，上层会走 null-as-empty 处理
   if (busPath.startsWith("/_bus/inbox")) return null;
 
   return null;
