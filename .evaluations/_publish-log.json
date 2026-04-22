@@ -27,6 +27,21 @@
         "queries": 5,
         "submissions": 19
       }
+    },
+    {
+      "publishedAt": "2026-04-22T07:31:55.056Z",
+      "ok": false,
+      "failedStep": "tsc -b",
+      "error": "src/components/EvaluationReportView.tsx(616,25): error TS2345: Argument of type 'string' is not assignable to parameter of type 'Pick<AIProduct, \"name\">'.\n"
+    },
+    {
+      "publishedAt": "2026-04-22T07:34:31.976Z",
+      "ok": true,
+      "commit": "publish: 2026-04-22T07:34:31.976Z",
+      "stats": {
+        "queries": 5,
+        "submissions": 19
+      }
     }
   ]
 }
