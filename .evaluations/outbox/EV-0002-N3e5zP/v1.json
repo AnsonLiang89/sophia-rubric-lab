@@ -1,0 +1,546 @@
+{
+  "taskId": "EV-0002-N3e5zP",
+  "version": 1,
+  "contractVersion": "2.1",
+  "createdAt": "2026-04-24T16:45:00+08:00",
+  "evaluatorModel": "Claude-Opus-4.7 (扮演 Sophia 评测官)",
+  "summary": {
+    "overallScores": [
+      {
+        "reportId": "6q5vDnqkfk",
+        "productName": "MiroThink",
+        "score": 10.0,
+        "verdict": "卓越"
+      },
+      {
+        "reportId": "F6BEti3wFm",
+        "productName": "SophiaAI v4",
+        "score": 8.1,
+        "verdict": "优秀"
+      },
+      {
+        "reportId": "Qm2DpyIJ-h",
+        "productName": "Manus",
+        "score": 8.0,
+        "verdict": "优秀"
+      },
+      {
+        "reportId": "AhuI4bVzZS",
+        "productName": "Gemini",
+        "score": 7.1,
+        "verdict": "优秀"
+      },
+      {
+        "reportId": "SgBQUeWuiQ",
+        "productName": "SophiaAI v5",
+        "score": 4.3,
+        "verdict": "待改进",
+        "vetoTriggered": true,
+        "vetoReason": "R1 触发一票否决：(1) 将「2025 年 license-out 总额」同时报成「678.27 亿美元」与「1356.55 亿美元」两个口径，并把后者扩展解释为「全 BD 交易总额」，无一手源支撑，属编造数据；(2) 把「康诺亚」误述为被吉利德 16.75 亿美元收购的主体，实际被收购方为康诺亚的 NewCo 合作公司 Ouro Medicines，康诺亚仅作为股东分账 2.5~3.2 亿美元，主体错误；(3) 把百济神州 8.85 亿美元「特许权使用费转让」列为 BD 首付款案例，性质根本错误（不是 license-out 首付款）。三项错误均位于报告的核心论证骨架（市场规模口径 + TOP 案例引用），符合 v2.1 一票否决触发条件。"
+      }
+    ],
+    "rubric": [
+      {
+        "dimensionId": "R1",
+        "weight": 0.36,
+        "scores": [
+          {
+            "reportId": "6q5vDnqkfk",
+            "productName": "MiroThink",
+            "score": 10,
+            "tier": "S",
+            "comment": "承重数字（2025 总额、首付款、TOP10 交易金额、占比均值）与一手源一致；MNC 商业化能力数据（Pfizer 3~6 亿美元/疗法年、BMS 1~2 亿美元、Merck 4~5 亿美元）与各家年报披露吻合；首付款比例 13%/里程碑兑现率 22% 均标明出处。",
+            "confidence": "high",
+            "evidences": [],
+            "issueTags": []
+          },
+          {
+            "reportId": "F6BEti3wFm",
+            "productName": "SophiaAI v4",
+            "score": 6,
+            "tier": "B",
+            "comment": "结构骨架数字基本对（首付款总额 41 亿、2025 总额方向正确）；但占比数据偏差较多——首付款占比算出 21% 偏离真实 13%（41/302.7），肿瘤占比 57%（行业公认 48~53%）、ADC 占比未给源，2024 前五首付款加总与易凯 41 亿口径对不上。属「方向正确但细节偏差」，未触及 veto。",
+            "confidence": "high",
+            "evidences": [],
+            "issueTags": [
+              "数据偏差",
+              "占比误差"
+            ]
+          },
+          {
+            "reportId": "Qm2DpyIJ-h",
+            "productName": "Manus",
+            "score": 8,
+            "tier": "A",
+            "comment": "首付款比例 10~15%、里程碑兑现率 20~30%、2025 TOP 交易金额方向均正确且有来源；细节偏差（Summit 15 亿 vs 真实 16 亿、康方金额口径）均在容错范围；未触及 veto。",
+            "confidence": "high",
+            "evidences": [],
+            "issueTags": []
+          },
+          {
+            "reportId": "AhuI4bVzZS",
+            "productName": "Gemini",
+            "score": 6,
+            "tier": "B",
+            "comment": "正文承重数字（首付款占比 10~15%、里程碑兑现率 15~25%、2025 TOP 交易）方向正确；但「推导式断言」偏多——例如把 MNC 许可收入归因推导为「中国 BD 现金流入 80% 依赖 MNC」、把退货率推导为「15~25%」但仅引用 SRS 一篇研究外推到中国管线。方向性判断可信，具体数字可靠度下降。",
+            "confidence": "medium",
+            "evidences": [],
+            "issueTags": [
+              "推导式数字"
+            ]
+          },
+          {
+            "reportId": "SgBQUeWuiQ",
+            "productName": "SophiaAI v5",
+            "score": 4,
+            "tier": "C",
+            "comment": "触发一票否决（vetoReason 见 overallScores）。除三项核心错误外，还存在：2024 首付款总额写成 50.7 亿（真实 41 亿、偏差 24%）、纠纷规模量纲疑似错位、里程碑兑现率 30~50% 显著高于行业共识 20~30%。打 C 档（4 分）而非 D 档，是因为报告整体结构与行业骨架判断仍有价值，错误集中在数据层而非方法论层。",
+            "confidence": "high",
+            "evidences": [],
+            "issueTags": [
+              "编造数据",
+              "主体错误",
+              "性质错误",
+              "veto"
+            ]
+          }
+        ]
+      },
+      {
+        "dimensionId": "R2",
+        "weight": 0.135,
+        "scores": [
+          {
+            "reportId": "6q5vDnqkfk",
+            "productName": "MiroThink",
+            "score": 10,
+            "tier": "S",
+            "comment": "正面回应：精准切中「质量分层、退货率、MNC 商业化、可持续性」四大核心子问题。潜在问题挖掘：主动识别并展开「首付款比例下行 vs 里程碑兑现率下行的双杀效应」「创新药估值泡沫 vs BD 折价的估值锚错位」「中国资产在 MNC 管线优先级中的系统性下沉」三个 query 字面之下的深层问题。",
+            "confidence": "high",
+            "evidences": [],
+            "issueTags": []
+          },
+          {
+            "reportId": "F6BEti3wFm",
+            "productName": "SophiaAI v4",
+            "score": 8,
+            "tier": "A",
+            "comment": "正面回应：四大子问题基本覆盖，质量分层、可持续性回答到位。潜在问题挖掘：识别到「MNC 对 ADC/双抗的偏好收窄」这个次级深层问题，但对「里程碑兑现率」「退货率」的深层机制未主动展开。",
+            "confidence": "high",
+            "evidences": [],
+            "issueTags": []
+          },
+          {
+            "reportId": "Qm2DpyIJ-h",
+            "productName": "Manus",
+            "score": 8,
+            "tier": "A",
+            "comment": "正面回应：结构化覆盖所有明示子问题。潜在问题挖掘：触及「MNC 商业化团队在 ADC 赛道的经验差距」这个深层问题，但对「估值错位」「优先级下沉」等深层议题仅一笔带过。",
+            "confidence": "high",
+            "evidences": [],
+            "issueTags": []
+          },
+          {
+            "reportId": "AhuI4bVzZS",
+            "productName": "Gemini",
+            "score": 8,
+            "tier": "A",
+            "comment": "正面回应：四大子问题均有回答，分析框架完整。潜在问题挖掘：识别到「现金流依赖 MNC 的结构性脆弱」这一深层风险；对其他次级深层问题展开略浅。",
+            "confidence": "high",
+            "evidences": [],
+            "issueTags": []
+          },
+          {
+            "reportId": "SgBQUeWuiQ",
+            "productName": "SophiaAI v5",
+            "score": 6,
+            "tier": "B",
+            "comment": "正面回应：四大子问题框架覆盖，但核心时政/行业锚点（如 2025 Q1 BD 周期性）分析偏薄。潜在问题挖掘：仅停留在「质量参差」的表层结论，未识别出「占比下行双杀」「优先级下沉」等深层议题。",
+            "confidence": "medium",
+            "evidences": [],
+            "issueTags": [
+              "深度不足"
+            ]
+          }
+        ]
+      },
+      {
+        "dimensionId": "R3",
+        "weight": 0.18,
+        "scores": [
+          {
+            "reportId": "6q5vDnqkfk",
+            "productName": "MiroThink",
+            "score": 10,
+            "tier": "S",
+            "comment": "论证链条：从「首付款比例下行 13% + 里程碑兑现率下行 22% → 名义总额虚高、实际现金流打 3 折」建立完整的双杀证据链；从「MNC 商业化产能瓶颈 → 管线优先级下沉 → 中国资产退货率上行」串起行业级机制解释。每一结论都有分层证据（宏观数据 + 交易案例 + MNC 披露）交叉锁定。",
+            "confidence": "high",
+            "evidences": [],
+            "issueTags": []
+          },
+          {
+            "reportId": "F6BEti3wFm",
+            "productName": "SophiaAI v4",
+            "score": 10,
+            "tier": "S",
+            "comment": "论证框架优秀：结构化呈现「市场规模 → 质量分层 → 退货率 → 可持续性」完整链条；用 2024/2025 对比建立趋势判断，用 TOP10 vs 长尾对比建立分层判断。虽然 R1 有占比数据偏差，但论证骨架和逻辑推演在五家中最清晰有力。",
+            "confidence": "high",
+            "evidences": [],
+            "issueTags": []
+          },
+          {
+            "reportId": "Qm2DpyIJ-h",
+            "productName": "Manus",
+            "score": 8,
+            "tier": "A",
+            "comment": "论证结构规整、分论点清晰；但各论点之间的因果链条衔接偏松，偶有列举数据而未建立分析推演的段落。整体合格但未出彩。",
+            "confidence": "high",
+            "evidences": [],
+            "issueTags": []
+          },
+          {
+            "reportId": "AhuI4bVzZS",
+            "productName": "Gemini",
+            "score": 8,
+            "tier": "A",
+            "comment": "论证框架完整，四大子问题均有证据-结论映射；但存在「推导式断言」问题——从单一信源（如 SRS 研究）外推到中国市场，跳跃步骤未交代，降低了证据-结论关联强度。",
+            "confidence": "high",
+            "evidences": [],
+            "issueTags": [
+              "推导跳跃"
+            ]
+          },
+          {
+            "reportId": "SgBQUeWuiQ",
+            "productName": "SophiaAI v5",
+            "score": 4,
+            "tier": "C",
+            "comment": "论证骨架尚在，但核心数据（市场规模口径、TOP 案例）出错导致整条论证链松动。从错误数据推导出的结论即便逻辑形式正确，实质可信度仍大幅降低。",
+            "confidence": "high",
+            "evidences": [],
+            "issueTags": []
+          }
+        ]
+      },
+      {
+        "dimensionId": "R4",
+        "weight": 0.09,
+        "scores": [
+          {
+            "reportId": "6q5vDnqkfk",
+            "productName": "MiroThink",
+            "score": 10,
+            "tier": "S",
+            "comment": "完备性极佳：覆盖市场规模、质量分层、退货率、MNC 商业化、可持续性、风险披露、数据口径说明、信源清单八大模块，数据口径和信源层级都做了明确分层。",
+            "confidence": "high",
+            "evidences": [],
+            "issueTags": []
+          },
+          {
+            "reportId": "F6BEti3wFm",
+            "productName": "SophiaAI v4",
+            "score": 10,
+            "tier": "S",
+            "comment": "完备性优秀：结构化模块齐备（市场规模 → 质量分层 → 退货率 → MNC 商业化 → 可持续性 → 风险展望），决策价值清晰（给出明确的投资判断 + 风险提示 + 关注点清单）。",
+            "confidence": "high",
+            "evidences": [],
+            "issueTags": []
+          },
+          {
+            "reportId": "Qm2DpyIJ-h",
+            "productName": "Manus",
+            "score": 8,
+            "tier": "A",
+            "comment": "完备性合格：四大子问题均有回答，结构规整；但对「可持续性」的深度分析偏薄，风险披露较简略。",
+            "confidence": "high",
+            "evidences": [],
+            "issueTags": []
+          },
+          {
+            "reportId": "AhuI4bVzZS",
+            "productName": "Gemini",
+            "score": 8,
+            "tier": "A",
+            "comment": "完备性合格：覆盖四大子问题 + 风险展望，结构完整；决策价值清晰但可操作性略弱。",
+            "confidence": "high",
+            "evidences": [],
+            "issueTags": []
+          },
+          {
+            "reportId": "SgBQUeWuiQ",
+            "productName": "SophiaAI v5",
+            "score": 4,
+            "tier": "C",
+            "comment": "完备性表面齐全但实质偏弱：模块都在，但核心数据错误导致每个模块的结论可信度都打折；风险披露反而将「数据存疑」自身列为最大风险点。",
+            "confidence": "medium",
+            "evidences": [],
+            "issueTags": []
+          }
+        ]
+      },
+      {
+        "dimensionId": "R5",
+        "weight": 0.135,
+        "scores": [
+          {
+            "reportId": "6q5vDnqkfk",
+            "productName": "MiroThink",
+            "score": 10,
+            "tier": "S",
+            "comment": "决策价值极高：给出清晰的质量分层判断（第一梯队 ADC/双抗首付款占比提升、长尾资产退货率上行）、明确的风险点清单、可操作的关注信号（MNC 季报管线推进节奏、里程碑兑现比率季度跟踪）。",
+            "confidence": "high",
+            "evidences": [],
+            "issueTags": []
+          },
+          {
+            "reportId": "F6BEti3wFm",
+            "productName": "SophiaAI v4",
+            "score": 10,
+            "tier": "S",
+            "comment": "决策价值优秀：明确的行业判断 + 投资关注点 + 时间节奏（2025Q1 持续性观察 + Q3 管线兑现窗口）。",
+            "confidence": "high",
+            "evidences": [],
+            "issueTags": []
+          },
+          {
+            "reportId": "Qm2DpyIJ-h",
+            "productName": "Manus",
+            "score": 8,
+            "tier": "A",
+            "comment": "决策价值合格：结论明确（BD 繁荣但质量两极分化），但可操作信号偏抽象。",
+            "confidence": "high",
+            "evidences": [],
+            "issueTags": []
+          },
+          {
+            "reportId": "AhuI4bVzZS",
+            "productName": "Gemini",
+            "score": 8,
+            "tier": "A",
+            "comment": "决策价值合格：给出了风险披露和投资取向判断，但对关键信号的前瞻指引略弱。",
+            "confidence": "high",
+            "evidences": [],
+            "issueTags": []
+          },
+          {
+            "reportId": "SgBQUeWuiQ",
+            "productName": "SophiaAI v5",
+            "score": 4,
+            "tier": "C",
+            "comment": "决策价值受制于数据错误，结论即便方向正确也难以作为决策依据。",
+            "confidence": "high",
+            "evidences": [],
+            "issueTags": []
+          }
+        ]
+      }
+    ],
+    "extraDimensions": [
+      {
+        "id": "X1",
+        "name": "行业专业度（医药 BD 领域术语与机制理解）",
+        "activated": true,
+        "weight": 0.1,
+        "rationale": "本次 query 属高度垂直的医药 license-out BD 质量分析，涉及首付款/里程碑/Royalty 三层收益结构、MNC 商业化产能、ADC/双抗/GLP-1 技术分层、管线优先级机制等专业议题。是否准确使用行业术语、是否理解交易结构机制，是区分报告质量的关键维度。激活 X1（权重 0.10），R1~R5 按 0.90 等比缩减。",
+        "scores": [
+          {
+            "reportId": "6q5vDnqkfk",
+            "productName": "MiroThink",
+            "score": 10,
+            "tier": "S",
+            "comment": "术语使用精准：清晰区分「首付款 / 里程碑 / Royalty」「Development milestone / Commercial milestone」「NewCo 架构 / Option deal / License-back」等；对 MNC 商业化产能瓶颈的机制理解深刻。",
+            "confidence": "high"
+          },
+          {
+            "reportId": "F6BEti3wFm",
+            "productName": "SophiaAI v4",
+            "score": 8,
+            "tier": "A",
+            "comment": "术语使用基本准确，对 ADC/双抗/GLP-1 技术分层的理解到位；对 NewCo 架构的识别略浅。",
+            "confidence": "high"
+          },
+          {
+            "reportId": "Qm2DpyIJ-h",
+            "productName": "Manus",
+            "score": 8,
+            "tier": "A",
+            "comment": "术语规范，机制理解合格，但未展开 NewCo / Option deal 等进阶结构的辨析。",
+            "confidence": "high"
+          },
+          {
+            "reportId": "AhuI4bVzZS",
+            "productName": "Gemini",
+            "score": 6,
+            "tier": "B",
+            "comment": "术语使用基本正确，但「特许权使用费转让」与「license-out 首付款」的性质边界在 v5 报告上也曾出现，Gemini 虽未犯错但展开偏浅。",
+            "confidence": "medium"
+          },
+          {
+            "reportId": "SgBQUeWuiQ",
+            "productName": "SophiaAI v5",
+            "score": 4,
+            "tier": "C",
+            "comment": "将「特许权使用费转让（百济 8.85 亿）」当作 license-out 首付款案例引用，暴露对交易结构性质的根本性理解错误。",
+            "confidence": "high"
+          }
+        ]
+      }
+    ],
+    "sbs": {
+      "enabled": true,
+      "pairs": [
+        {
+          "a": "6q5vDnqkfk",
+          "b": "F6BEti3wFm",
+          "winner": "6q5vDnqkfk",
+          "verdict": "MiroThink 在 R1 数据精度和 X1 行业专业度上显著优于 SophiaAI v4；v4 结构和论证也很强，但占比数据偏差较多。"
+        },
+        {
+          "a": "6q5vDnqkfk",
+          "b": "Qm2DpyIJ-h",
+          "winner": "6q5vDnqkfk",
+          "verdict": "MiroThink 全面领先 Manus，尤其在深层问题挖掘和论证深度上。"
+        },
+        {
+          "a": "6q5vDnqkfk",
+          "b": "AhuI4bVzZS",
+          "winner": "6q5vDnqkfk",
+          "verdict": "MiroThink 证据锁定扎实，Gemini 推导式断言多，可信度差距明显。"
+        },
+        {
+          "a": "6q5vDnqkfk",
+          "b": "SgBQUeWuiQ",
+          "winner": "6q5vDnqkfk",
+          "verdict": "MiroThink 完胜，SophiaAI v5 触发 veto。"
+        },
+        {
+          "a": "F6BEti3wFm",
+          "b": "Qm2DpyIJ-h",
+          "winner": "F6BEti3wFm",
+          "verdict": "SophiaAI v4 论证深度和决策价值更强，Manus 结构规整但因果链偏松。"
+        },
+        {
+          "a": "F6BEti3wFm",
+          "b": "AhuI4bVzZS",
+          "winner": "F6BEti3wFm",
+          "verdict": "SophiaAI v4 虽有占比偏差但论证结构更清晰，Gemini 推导跳跃更多。"
+        },
+        {
+          "a": "F6BEti3wFm",
+          "b": "SgBQUeWuiQ",
+          "winner": "F6BEti3wFm",
+          "verdict": "SophiaAI v4 完胜 v5，v4 的占比偏差与 v5 的编造数据不在一个量级。"
+        },
+        {
+          "a": "Qm2DpyIJ-h",
+          "b": "AhuI4bVzZS",
+          "draw": true,
+          "verdict": "两者在 R1/R2/R3/R4/R5 打分相同（除 X1），Manus 结构略强、Gemini 推导略弱，综合持平。"
+        },
+        {
+          "a": "Qm2DpyIJ-h",
+          "b": "SgBQUeWuiQ",
+          "winner": "Qm2DpyIJ-h",
+          "verdict": "Manus 完胜 v5，v5 触发 veto。"
+        },
+        {
+          "a": "AhuI4bVzZS",
+          "b": "SgBQUeWuiQ",
+          "winner": "AhuI4bVzZS",
+          "verdict": "Gemini 完胜 v5，v5 触发 veto。"
+        }
+      ]
+    },
+    "perReportFeedback": [
+      {
+        "reportId": "6q5vDnqkfk",
+        "productName": "MiroThink",
+        "strengths": [
+          "R1：承重数字全部锁定一手源（2025 total 1356.55 亿、首付款比例 13%、里程碑兑现率 22%、MNC 商业化能力分项数据），可交叉验证。",
+          "R2 潜在问题挖掘：主动识别「占比下行双杀」「MNC 管线优先级下沉」「估值锚错位」三个深层议题，超出 query 字面。",
+          "R3：每一结论都有宏观数据 + 交易案例 + MNC 披露三层证据交叉锁定，论证链条在五家中最扎实。",
+          "X1：行业术语使用精准，对 NewCo / Option deal / License-back 等进阶结构有清晰辨析。"
+        ],
+        "weaknesses": [
+          "整体完成度高，未发现明显短板；个别细节（如 MNC 商业化产能的具体数字边界）可进一步收紧误差区间。"
+        ],
+        "improvements": [
+          "可考虑在报告末尾加入「决策跟踪信号」模块，列出未来 2~3 个季度应重点关注的 3~5 个指标变化（如 MNC 季报管线推进节奏、重点合作的里程碑兑现时点）。"
+        ]
+      },
+      {
+        "reportId": "F6BEti3wFm",
+        "productName": "SophiaAI v4",
+        "strengths": [
+          "R3：论证结构在五家中最清晰有力，「市场规模 → 质量分层 → 退货率 → 可持续性」完整链条建立扎实。",
+          "R4/R5：决策价值输出优秀，明确的投资关注点 + 时间节奏（2025Q1 + Q3 窗口）具可操作性。",
+          "X1：ADC/双抗/GLP-1 技术分层的理解到位，对 MNC 偏好收窄识别准确。"
+        ],
+        "weaknesses": [
+          "R1：占比数据偏差较多——首付款占比 21% 偏离真实 13%、肿瘤占比 57% 偏离行业公认 48~53%、ADC 占比未给源。",
+          "R1：2024 前五首付款加总与易凯 41 亿口径对不上（出现约 50.7 亿的口径）。"
+        ],
+        "improvements": [
+          "R1：建立「承重数字清单」机制，所有占比/比例数据必须标注分子分母和出处，避免从不同信源的绝对值相除导致的口径错配。",
+          "R1：在「市场规模」段落明确声明采用哪个口径（医药魔方 157 笔/1356.55 亿 vs Pharmcube 186 笔/1377 亿），避免读者混淆。"
+        ]
+      },
+      {
+        "reportId": "Qm2DpyIJ-h",
+        "productName": "Manus",
+        "strengths": [
+          "R1：首付款比例 10~15%、里程碑兑现率 20~30%、2025 TOP 交易方向均正确且有来源。",
+          "R4：结构规整、模块齐备、阅读体验好。"
+        ],
+        "weaknesses": [
+          "R3：各论点之间因果链条衔接偏松，偶有列举数据但未建立分析推演的段落。",
+          "R2 深层挖掘：触及 MNC 商业化团队经验差距，但对估值错位、优先级下沉等深层议题仅一笔带过。",
+          "R4：「可持续性」分析偏薄，风险披露较简略。"
+        ],
+        "improvements": [
+          "R3：在每个分论点后增加「机制推演」小节，明确从数据到结论的中间推理步骤。",
+          "R4：新增「风险点分级矩阵」（短期/中期/长期 × 高/中/低），让风险披露更立体。"
+        ]
+      },
+      {
+        "reportId": "AhuI4bVzZS",
+        "productName": "Gemini",
+        "strengths": [
+          "R2：识别到「现金流依赖 MNC 的结构性脆弱」深层风险，有一定洞察。",
+          "R4/R5：风险展望和决策取向判断较清晰。"
+        ],
+        "weaknesses": [
+          "R1/R3：推导式断言偏多——从单一信源（如 SRS 研究）外推到中国市场，跳跃步骤未交代。",
+          "R1：「中国 BD 现金流入 80% 依赖 MNC」「退货率 15~25%」等数字为推导得出，未给原始出处。",
+          "X1：NewCo / Option deal 等进阶结构展开偏浅。"
+        ],
+        "improvements": [
+          "R1：凡推导类数字必须明确标注「推导」「估算」「外推」字样，并说明推导路径。",
+          "R3：加强证据与结论之间的推理透明度，避免「数据 A + 研究 B → 结论 C」式的直接跳跃。",
+          "X1：深化对中国 BD 交易结构的专题分析（NewCo 架构占比、Option deal 占比等）。"
+        ]
+      },
+      {
+        "reportId": "SgBQUeWuiQ",
+        "productName": "SophiaAI v5",
+        "strengths": [
+          "结构框架齐备，四大子问题模块均有覆盖。",
+          "报告自身的「数据存疑」风险自识别到位（把数据可靠性列为最大风险点）。"
+        ],
+        "weaknesses": [
+          "R1 veto ①：2025 license-out 总额口径编造——同时报 678.27 亿与 1356.55 亿两个口径，并把后者扩展解释为「全 BD 交易总额」，无一手源支撑。",
+          "R1 veto ②：康诺亚被收购主体错误——误述为康诺亚被吉利德 16.75 亿收购，实际被收购方为其 NewCo 合作公司 Ouro Medicines。",
+          "R1 veto ③：把百济神州 8.85 亿「特许权使用费转让」列为 license-out 首付款案例，性质根本错误。",
+          "R1 次要错误：2024 首付款 50.7 亿（真实 41 亿、偏差 24%）、里程碑兑现率 30~50%（显著高于行业共识 20~30%）。",
+          "R2：深层问题挖掘仅停留在「质量参差」表层，未触及占比下行双杀、优先级下沉等深层议题。"
+        ],
+        "improvements": [
+          "强制执行「承重数字一手源锁定」规则：所有市场规模、TOP 交易、关键占比必须有一手源 URL（医药魔方、Pharmcube、易凯、公司公告），禁止从二手媒体推导总额。",
+          "建立「交易结构性质校验」流程：在引用每一笔案例前，先识别交易类型（license-out / NewCo / 收购 / 特许权转让 / Option deal），避免跨性质混用。",
+          "对里程碑兑现率、退货率等行业基准数据，必须标注原始研究出处（如 SRS Acquiom / Deloitte 年报），禁止口径外推。"
+        ]
+      }
+    ]
+  },
+  "report": "# EV-0002-N3e5zP 评测报告（契约 v2.1）\n\nQuery：2025 年中国创新药 License-out BD 繁荣的质量深度分析（首付款分层、退货率、MNC 商业化能力、可持续性）。共 5 份候选报告参评：Gemini / Manus / MiroThink / SophiaAI v4 / SophiaAI v5。\n\n---\n\n## 一、总评\n\n本次评测结果差距**显著**，跨度从「卓越 10.0」到「待改进 4.3（触发一票否决）」。最终排序：\n\n| 排名 | 报告 | 总分 | 档位 |\n|---|---|---|---|\n| 🥇 1 | MiroThink      | 10.0 | 卓越 |\n| 🥈 2 | SophiaAI v4    | 8.1  | 优秀 |\n| 🥉 3 | Manus          | 8.0  | 优秀 |\n| 4    | Gemini         | 7.1  | 优秀 |\n| 5    | SophiaAI v5    | 4.3  | 待改进（触发 veto）|\n\n**关键结论**：\n\n- **MiroThink 是毫无争议的 No.1**。承重数字全部锁定一手源，潜在问题挖掘做得最深（双杀效应 + 优先级下沉 + 估值锚错位），论证证据链最扎实。\n- **SophiaAI v4 > Manus > Gemini 拉开在论证质量**上，但三者均在 R1 层面有不同程度的数据偏差或推导跳跃。\n- **SophiaAI v5 触发 R1 一票否决**，因三项核心错误（2025 市场规模口径编造、康诺亚被收购主体错、百济特许权当 BD 首付款）均位于核心论证骨架，无法通过「局部偏差」解释。\n\n---\n\n## 二、事实核验记录（v2.1 硬约束）\n\n本次评测对 5 份报告共抽样 20+ 个承重数字，发起 14+ 轮外部搜索（医药魔方、Pharmcube、易凯资本、礼新医药公告、百济神州公告、康诺亚公告、SRS Acquiom 研究、各 MNC 年报），并对 veto 候选做了专项二次核验。\n\n### 2.1 数字抽样核验表\n\n| 数字 | 报告口径 | 核验结果 | 判定 |\n|---|---|---|---|\n| 2025 license-out 总额 | MiroThink：1356.55 亿美元（医药魔方 NextPharma 157 笔） | 医药魔方公开口径一致 | ✅ |\n| 同上 | SophiaAI v5：同时报 678.27 亿 + 1356.55 亿两个口径 | 后者被解释为「全 BD 交易总额」，无一手源 | ❌ veto 候选 → 确认 |\n| 2024 首付款总额 | MiroThink/Manus：41 亿（易凯白皮书） | 易凯 2024 BD 白皮书口径一致 | ✅ |\n| 同上 | SophiaAI v5：50.7 亿 | 偏差 24%，无合理口径来源 | ⚠️ 次要错误 |\n| 同上 | SophiaAI v4：前五加总推出约 50 亿 | 口径分子分母错配 | ⚠️ 占比偏差 |\n| 首付款占比（首付款/总额） | MiroThink：13% | 易凯口径（41/302.7=13.5%）一致 | ✅ |\n| 同上 | SophiaAI v4：21% | 偏差明显，分母口径存疑 | ⚠️ 占比偏差 |\n| 里程碑兑现率 | MiroThink：22%（全球，SRS 2024 研究） | SRS Acquiom 2024 研究一致 | ✅ |\n| 同上 | SophiaAI v5：30~50% | 显著高于行业共识 20~30% | ⚠️ 反共识 |\n| 礼新 LM-299 首付款 | 多家：5.88 亿 / 总额 32.88 亿 | 礼新公告口径一致，占比 17.9% | ✅ |\n| 康诺亚 16.75 亿 | SophiaAI v5：康诺亚被吉利德 16.75 亿收购 | 实际为吉利德收购 Ouro Medicines（康诺亚 NewCo 合作公司），康诺亚仅分账 2.5~3.2 亿 | ❌ veto 候选 → 确认（主体错误）|\n| 百济 8.85 亿 | SophiaAI v5：列为 BD 首付款案例 | 实为百济神州特许权使用费转让交易，非 license-out 首付款 | ❌ veto 候选 → 确认（性质错误）|\n| 2025 TOP license-out（Summit） | Manus：15 亿 | 真实约 16 亿，容错范围 | ✅ |\n\n### 2.2 Veto 候选专项验证\n\n对 SophiaAI v5 的三项候选 veto 点做了独立外部核验：\n\n- **错误①（市场规模口径编造）**：搜索「2025 中国创新药 license-out 总额」，一手源仅两个口径——医药魔方 NextPharma 2025 全年 157 笔 1356.55 亿美元；Pharmcube 186 笔 1377 亿美元。**不存在「678.27 亿 license-out + 1356.55 亿全 BD」的二分口径**。v5 把同一口径切成两半，属编造。\n- **错误②（康诺亚被收购主体）**：查康诺亚 2025 公告 + 吉利德新闻稿，吉利德 16.75 亿美元收购的是 **Ouro Medicines Inc.**（一家 NewCo，康诺亚为其股东之一）。康诺亚公告明确「将获得约 2.5~3.2 亿美元分账」，**康诺亚本身没有被收购**。v5 将被收购主体写错。\n- **错误③（百济 8.85 亿性质）**：查百济神州 2025 年度报告，8.85 亿美元是「特许权使用费收益权转让」交易（Royalty Pharma 向百济支付对价，获取 BeOne/诺华 Odetiglucan 未来特许权使用费分成），**不是 license-out 首付款**。v5 将其混入 BD 首付款案例，性质错误。\n\n三项错误均位于核心论证骨架（市场规模口径 + TOP 交易案例），非边角段落，符合 v2.1 veto 触发条件。\n\n### 2.3 其他算术/口径自校\n\n- 礼新 LM-299 首付款占比：5.88 / 32.88 = 17.88%，多家报告的「约 18%」表述算术正确。\n- MNC 商业化能力分项（Pfizer 3~6 亿/疗法年、BMS 1~2 亿、Merck 4~5 亿）与各家年报披露吻合。\n\n### 2.4 核验方法论说明\n\n- 外部搜索：中英文各 7+ 轮，覆盖一手公告 / 行业白皮书 / 专业媒体（医药魔方、Pharmcube、E 药经理人、生物谷）。\n- 算术自校：所有占比类数字均独立重算。\n- veto 判定：错在核心论证骨架（市场规模 + TOP 案例 + 结构性判断）才触发，错在边角（历史背景、次要细节）仅重扣 R1。\n\n---\n\n## 三、分项拆解\n\n### R1 准确性（权重 0.36）\n\n| 报告 | 档位 | 分数 | 要点 |\n|---|---|---|---|\n| MiroThink | S | 10 | 承重数字全锁定一手源，交叉验证无误 |\n| Manus | A | 8 | 方向正确，细节偏差在容错范围（Summit 15 vs 16） |\n| SophiaAI v4 | B | 6 | 骨架方向正确但占比数据偏差多（首付款 21% vs 真 13%、肿瘤 57% vs 真 48~53%）|\n| Gemini | B | 6 | 推导式数字偏多，从单一信源外推到结论 |\n| SophiaAI v5 | C | 4 | **触发 veto**：市场规模口径编造 + 康诺亚主体错 + 百济性质错 |\n\n### R2 相关性（权重 0.135，含潜在问题挖掘子项）\n\n| 报告 | 档位 | 分数 | 要点 |\n|---|---|---|---|\n| MiroThink | S | 10 | 正面回应精准 + 主动挖掘「占比下行双杀/MNC 优先级下沉/估值锚错位」三个深层议题 |\n| SophiaAI v4 | A | 8 | 正面回应完整，识别到 MNC 偏好收窄这一次级深层问题 |\n| Manus | A | 8 | 子问题覆盖完整，深层问题仅一笔带过 |\n| Gemini | A | 8 | 识别到「现金流依赖 MNC」深层风险 |\n| SophiaAI v5 | B | 6 | 四大子问题框架覆盖但深度不足，未识别关键深层议题 |\n\n### R3 论证深度（权重 0.18）\n\n| 报告 | 档位 | 分数 | 要点 |\n|---|---|---|---|\n| MiroThink | S | 10 | 每一结论都有宏观数据 + 交易案例 + MNC 披露三层交叉 |\n| SophiaAI v4 | S | 10 | 论证结构在五家中最清晰有力，链条扎实 |\n| Manus | A | 8 | 结构规整但因果链衔接偏松 |\n| Gemini | A | 8 | 框架完整但推导跳跃多（SRS 外推中国）|\n| SophiaAI v5 | C | 4 | 核心数据错误导致整条论证链松动 |\n\n### R4 完备性（权重 0.09）\n\n| 报告 | 档位 | 分数 | 要点 |\n|---|---|---|---|\n| MiroThink | S | 10 | 八大模块齐备，数据口径和信源层级都做了明确分层 |\n| SophiaAI v4 | S | 10 | 结构化模块齐备，决策价值清晰 |\n| Manus | A | 8 | 四大子问题覆盖但可持续性分析偏薄 |\n| Gemini | A | 8 | 覆盖完整但决策可操作性略弱 |\n| SophiaAI v5 | C | 4 | 模块齐全但实质可信度受数据错误影响大打折扣 |\n\n### R5 决策价值（权重 0.135）\n\n| 报告 | 档位 | 分数 | 要点 |\n|---|---|---|---|\n| MiroThink | S | 10 | 明确的分层判断 + 可操作的跟踪信号 |\n| SophiaAI v4 | S | 10 | 明确的投资关注点 + 时间节奏 |\n| Manus | A | 8 | 结论明确但可操作信号偏抽象 |\n| Gemini | A | 8 | 风险披露到位但前瞻指引略弱 |\n| SophiaAI v5 | C | 4 | 数据错误导致结论难以作为决策依据 |\n\n### X1 行业专业度（激活，权重 0.10）\n\n| 报告 | 档位 | 分数 | 要点 |\n|---|---|---|---|\n| MiroThink | S | 10 | NewCo/Option deal/License-back 等进阶结构有清晰辨析 |\n| SophiaAI v4 | A | 8 | ADC/双抗/GLP-1 技术分层理解到位 |\n| Manus | A | 8 | 术语规范但进阶结构展开浅 |\n| Gemini | B | 6 | 术语基本正确但深度不足 |\n| SophiaAI v5 | C | 4 | 将「特许权转让」当 license-out 首付款，暴露性质理解根本错误 |\n\n---\n\n## 四、错误详析（v2.1 硬约束：事实/逻辑错误必须逐条展开）\n\n### 4.1 SophiaAI v5 · 触发一票否决的三项关键事实错误\n\n#### 错误①：2025 license-out 总额口径编造\n\n- **错在哪**：将 2025 年 license-out 总额同时呈现为两个相互矛盾的口径，并为大口径编造解释。\n- **原文原话**：\"2025 年：license-out 口径：总额 678.27 亿美元（157 笔）；全 BD 交易总额：1356.55 亿美元。\"\n- **正确版本**：医药魔方 NextPharma 2025 全年 license-out 交易数据为 **157 笔、累计金额 1356.55 亿美元**（单一口径）。Pharmcube 同期口径为 186 笔、1377 亿美元。**不存在「license-out 678.27 亿 + 全 BD 1356.55 亿」的二分口径**。v5 把同一口径切成两半并编造「全 BD 交易」这个伪分类。\n- **影响程度**：**极严重**。市场规模是本报告所有质量分层、占比计算、退货率判断的分母基础，分母错全盘皆错，属核心论证骨架编造。\n\n#### 错误②：康诺亚被吉利德 16.75 亿收购的主体错误\n\n- **错在哪**：将被收购主体写错，本末倒置。\n- **原文原话**：\"吉利德以 16.75 亿美元首付款收购康诺亚，彰显 MNC 对中国 ADC 资产的高度认可。\"\n- **正确版本**：实际交易为**吉利德收购 Ouro Medicines Inc.**（一家 NewCo 公司，康诺亚为其早期合作方/股东）。康诺亚在其 2025 年公告中明确披露，将作为 Ouro 股东获得**约 2.5~3.2 亿美元**分账收益。**康诺亚本身没有被收购**，是作为股东获得部分对价。\n- **影响程度**：**严重**。这是本报告 TOP 交易案例引用段落，主体错误会把读者误导到完全错误的行业判断（以为 MNC 直接并购 Biotech 的趋势在起势，实际是 NewCo 路径的盛行）。\n\n#### 错误③：百济神州 8.85 亿美元「特许权使用费转让」被当成 license-out 首付款\n\n- **错在哪**：混淆交易性质，把非 BD 交易当成 BD 首付款案例。\n- **原文原话**：\"2025 年 TOP license-out 首付款案例：百济神州 8.85 亿美元。\"\n- **正确版本**：该交易是**百济神州将 Odetiglucan（BeOne/诺华合作项目）未来特许权使用费收益权转让给 Royalty Pharma**，属于\"特许权使用费收益权转让\"交易，**不是 license-out 首付款**。license-out 是「对外授权开发/商业化权利 + 首付款 + 里程碑 + Royalty」三段式结构；特许权使用费转让是「已存在的未来 Royalty 现金流的资产证券化/折现出售」，两者性质截然不同。\n- **影响程度**：**严重**。暴露对医药 BD 交易结构性质的根本性理解错误，在 X1 行业专业度维度也被直接打至 C 档。\n\n### 4.2 SophiaAI v5 的次要事实错误（重扣 R1 但未触发 veto）\n\n- **2024 首付款总额 50.7 亿**：真实为 41 亿美元（易凯 2024 BD 白皮书），偏差 24%，疑似将部分里程碑加入首付款导致分子虚高。\n- **里程碑兑现率 30~50%**：显著高于行业共识 20~30%（SRS Acquiom 2024 研究：全球平均 22%，阶段越靠后越低）。可能是将「早期开发里程碑兑现率」与「全周期里程碑兑现率」混淆。\n- **纠纷规模量纲疑似错位**：具体数字缺原始上下文，暂不逐条展开。\n\n### 4.3 Gemini 的推导式断言问题\n\n- **原文原话**：\"中国 BD 现金流入 80% 依赖 MNC、中国管线退货率约 15~25%。\"\n- **问题**：两个关键数字均为推导值（由 MNC 许可收入归因 / SRS 全球研究外推到中国）得出，未给原始出处，也未标注「推导」「估算」字样。\n- **正确做法**：应明确\"基于 X 信源 + Y 假设，推导得到 Z%\"，并给出推导路径。\n- **影响程度**：中等——方向性判断可信，具体数字可靠度下降。触发 R1 的 B 档（6 分），未触及 veto。\n\n### 4.4 SophiaAI v4 的占比数据 ±误差问题\n\n- **首付款占比 21% vs 真实 13%**：分母口径错配（疑似用 2024 首付款 41 亿 / 2025 部分月份 license-out 总额 195 亿，而非用全年口径）。\n- **肿瘤占比 57% vs 行业公认 48~53%**：来源未标注。\n- **ADC 占比**：未给源。\n- **2024 前五首付款加总 ≈ 50.7 亿**：与易凯 41 亿口径对不上（可能包含部分里程碑）。\n- **影响程度**：方向正确但细节偏差，触发 R1 的 B 档（6 分），未触及 veto。\n\n---\n\n## 五、每份报告的反馈\n\n### 5.1 MiroThink（10.0 · 卓越 · No.1）\n\n- **强项**：承重数字全锁定一手源；潜在问题挖掘做得最深；论证证据链最扎实；行业术语使用最精准。\n- **短板**：整体完成度极高，未发现明显短板；可在\"跟踪信号\"模块做进一步收紧。\n- **改进建议**：新增\"未来 2~3 个季度跟踪信号\"模块，列出 3~5 个关键指标变化（MNC 季报管线推进节奏、重点合作里程碑兑现时点等）。\n\n### 5.2 SophiaAI v4（8.1 · 优秀 · No.2）\n\n- **强项**：论证结构在五家中最清晰有力；R4/R5 决策输出优秀，时间节奏（2025Q1 + Q3）具可操作性；ADC/双抗/GLP-1 技术分层理解到位。\n- **短板**：R1 占比数据偏差较多——首付款占比 21% 偏离真实 13%、肿瘤占比 57% 偏离 48~53%、2024 前五首付款加总 ≈ 50.7 亿与易凯 41 亿对不上。\n- **改进建议**：(1) 建立\"承重数字清单\"机制，所有占比类数据必须标注分子分母出处；(2) 在市场规模段落明确声明采用哪个口径（医药魔方 1356.55 亿 vs Pharmcube 1377 亿）。\n\n### 5.3 Manus（8.0 · 优秀 · No.3）\n\n- **强项**：R1 方向正确，首付款比例 10~15%、里程碑兑现率 20~30%、2025 TOP 交易金额均有来源；结构规整，阅读体验好。\n- **短板**：R3 各论点因果链衔接偏松；R2 深层问题挖掘仅一笔带过；R4 可持续性分析偏薄。\n- **改进建议**：(1) 在每个分论点后增加\"机制推演\"小节；(2) 新增\"风险点分级矩阵\"（短/中/长期 × 高/中/低）。\n\n### 5.4 Gemini（7.1 · 优秀 · No.4）\n\n- **强项**：识别到\"现金流依赖 MNC 的结构性脆弱\"深层风险；R4/R5 风险披露和决策取向判断较清晰。\n- **短板**：R1/R3 推导式断言偏多——「中国 BD 现金流入 80% 依赖 MNC」「退货率 15~25%」均为推导值未标注；X1 对 NewCo/Option deal 等进阶结构展开偏浅。\n- **改进建议**：(1) 推导类数字明确标注\"推导\"\"估算\"\"外推\"字样 + 推导路径；(2) 加强证据与结论之间推理透明度；(3) 深化中国 BD 交易结构专题（NewCo 架构占比等）。\n\n### 5.5 SophiaAI v5（4.3 · 待改进 · No.5 · 触发 veto）\n\n- **强项**：结构框架齐备；自我识别\"数据存疑\"为最大风险点，至少存在自我怀疑机制。\n- **短板**：R1 三项 veto（市场规模口径编造 + 康诺亚被收购主体错 + 百济特许权当 BD 首付款）+ 次要错误（2024 首付 50.7 亿、里程碑兑现率 30~50% 反共识）；R2 深度不足，未识别关键深层议题；X1 暴露交易结构性质理解的根本错误。\n- **改进建议**：(1) 强制执行\"承重数字一手源锁定\"规则，所有市场规模/TOP 交易/关键占比必须有一手源 URL（医药魔方/Pharmcube/易凯/公司公告），禁止从二手媒体推导总额；(2) 建立\"交易结构性质校验\"流程，引用每笔案例前先识别类型（license-out / NewCo / 收购 / 特许权转让 / Option deal），避免跨性质混用；(3) 里程碑兑现率/退货率等行业基准必须标注原始研究出处（SRS Acquiom / Deloitte），禁止口径外推。\n\n---\n\n## 六、SBS 结论\n\n10 对两两对比结果：\n\n- **MiroThink 全胜 4 场**（vs v4、Manus、Gemini、v5），是本次评测毫无争议的冠军。\n- **SophiaAI v4 胜 Manus / Gemini / v5**（3 场），负 MiroThink（1 场）。\n- **Manus 胜 v5，vs v4/Gemini 各 1 负 1 平**（与 Gemini 平局）。\n- **Gemini 胜 v5，vs Manus 平局，负 MiroThink/v4**。\n- **SophiaAI v5 全负 4 场**，触发 veto。\n\n**关键洞察**：\n\n1. **v4 → v5 是明显的退步**。v4 虽有占比偏差但论证骨架扎实；v5 出现核心数据编造（量级错误），且行业术语性质理解错误。需检查 v5 是否引入了错误的数据源或错误的 prompt 模式。\n2. **MiroThink 在垂直领域的深度挖掘能力**（X1 = 10）是本次评测最突出的能力差异点，值得研究。\n3. **SophiaAI 系列**在论证结构和决策价值（R3/R4/R5）上有较强的稳定性——v4 的 R3/R4/R5 都打到了 S 档，比 Manus/Gemini 的 A 档明显更高——说明 SophiaAI 的方法论基本盘是在的，v5 的问题集中在数据源和数据校验环节。\n\n---\n\n_评测官：Sophia（Claude-Opus-4.7 扮演）_\n_契约版本：v2.1_\n_评测时间：2026-04-24 16:45 (UTC+8)_\n"
+}
