@@ -1,17 +1,22 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
 import Layout from "./components/Layout";
-import DashboardPage from "./pages/DashboardPage";
-import QueriesPage from "./pages/QueriesPage";
-import ProductsPage from "./pages/ProductsPage";
-import ReportPage from "./pages/ReportPage";
-import StandardPage from "./pages/StandardPage";
-import ContractPage from "./pages/ContractPage";
 import { useLab } from "./store";
 import { storage } from "./storage";
 import { SEED_SNAPSHOT } from "./seed";
 import { IS_READONLY } from "./lib/dataSource";
 import { contractBus } from "./lib/contract";
+
+const DashboardPage = lazy(() => import("./pages/DashboardPage"));
+const QueriesPage = lazy(() => import("./pages/QueriesPage"));
+const ProductsPage = lazy(() => import("./pages/ProductsPage"));
+const ReportPage = lazy(() => import("./pages/ReportPage"));
+const StandardPage = lazy(() => import("./pages/StandardPage"));
+const ContractPage = lazy(() => import("./pages/ContractPage"));
+
+function RouteFallback() {
+  return <div className="text-ink-500 animate-pulse">页面加载中...</div>;
+}
 
 /**
  * 一次性 productId 迁移：旧 seed 把 submissions 挂到 `prod-sophia` / `prod-miro`，
@@ -184,22 +189,24 @@ export default function App() {
 
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<DashboardPage />} />
-          <Route path="queries" element={<QueriesPage />} />
-          {/* 评测详情 = 评测报告，统一入口 */}
-          <Route path="queries/:id" element={<ReportPage />} />
-          {/* 旧链接兼容 */}
-          <Route path="report/:queryId" element={<LegacyReportRedirect />} />
-          <Route path="products" element={<ProductsPage />} />
-          <Route path="standard" element={<StandardPage />} />
-          <Route path="contract" element={<ContractPage />} />
-          {/* 旧 /rubric 链接兼容 */}
-          <Route path="rubric" element={<Navigate to="/standard" replace />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Route>
-      </Routes>
+      <Suspense fallback={<RouteFallback />}>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<DashboardPage />} />
+            <Route path="queries" element={<QueriesPage />} />
+            {/* 评测详情 = 评测报告，统一入口 */}
+            <Route path="queries/:id" element={<ReportPage />} />
+            {/* 旧链接兼容 */}
+            <Route path="report/:queryId" element={<LegacyReportRedirect />} />
+            <Route path="products" element={<ProductsPage />} />
+            <Route path="standard" element={<StandardPage />} />
+            <Route path="contract" element={<ContractPage />} />
+            {/* 旧 /rubric 链接兼容 */}
+            <Route path="rubric" element={<Navigate to="/standard" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

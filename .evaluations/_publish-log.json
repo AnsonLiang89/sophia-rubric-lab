@@ -87,6 +87,21 @@
         "queries": 5,
         "submissions": 22
       }
+    },
+    {
+      "publishedAt": "2026-04-25T04:18:55.797Z",
+      "ok": false,
+      "failedStep": "git push",
+      "error": "To https://github.com/AnsonLiang89/sophia-rubric-lab.git\n ! [remote rejected] HEAD -> main (refusing to allow a Personal Access Token to create or update workflow `.github/workflows/deploy.yml` without `workflow` scope)\nerror: failed to push some refs to 'https://github.com/AnsonLiang89/sophia-rubric-lab.git'\n"
+    },
+    {
+      "publishedAt": "2026-04-25T04:36:54.618Z",
+      "ok": true,
+      "commit": "publish: 2026-04-25T04:36:54.618Z",
+      "stats": {
+        "queries": 5,
+        "submissions": 22
+      }
     }
   ]
 }
