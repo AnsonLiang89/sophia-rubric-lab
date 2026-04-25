@@ -37,7 +37,7 @@
       {
         "reportId": "3guof2Rksz",
         "productName": "SophiaAI",
-        "score": 6.7,
+        "score": 6.65,
         "verdict": "合格",
         "vetoTriggered": false
       },
@@ -68,10 +68,10 @@
             "score": 8,
             "tier": "A",
             "comment": "主要数字正确（670 亿、5.4 万公里、32 份文件、1435mm 标轨）；英文一手源引用充分；但「中国承诺至少 80% 融资」「2025 中越贸易 2000 亿」未标精确出处",
-            "confidence": [
+            "confidence": "high",
+            "issueTags": [
               "一手源不足"
-            ],
-            "issueTags": []
+            ]
           },
           {
             "reportId": "yKzzT3mX-g",
@@ -86,21 +86,21 @@
             "score": 6,
             "tier": "B",
             "comment": "670 亿/THACO 122.7 亿/亚投行 50 亿等承重数据准确且算术自洽（598.5/670=89.3%）；但大量「30 年全生命周期 449-619/830-1157/1027-1427 亿美元」「决策权重 17%」「项目特征重合度 83%」等精确数字无一手源支撑，属推导/编造型伪精度",
-            "confidence": [
+            "confidence": "high",
+            "issueTags": [
               "一手源不足",
               "论据缺失"
-            ],
-            "issueTags": []
+            ]
           },
           {
             "reportId": "TQx7ZXaoGM",
             "score": 6,
             "tier": "B",
             "comment": "数字本身无错；但报告基准日停留在「截至 2024 年底」，完全未更新到 2026-04 时点；「中越陆地边界 1347 公里」精度偏差（实约 1450km）；短/中/长期概率区间框架无数据硬伤但时点过时",
-            "confidence": [
+            "confidence": "high",
+            "issueTags": [
               "数据过期"
-            ],
-            "issueTags": []
+            ]
           },
           {
             "reportId": "3guof2Rksz",
@@ -146,21 +146,21 @@
             "score": 6,
             "tier": "B",
             "comment": "苏林访华有提及但淹没在大篇幅结构化报告中，时政锚点权重不足；query 要求「结合最新的时政新闻」，但 v4 写作更像独立研判报告",
-            "confidence": [
+            "confidence": "high",
+            "issueTags": [
               "锚点缺失"
-            ],
-            "issueTags": []
+            ]
           },
           {
             "reportId": "TQx7ZXaoGM",
             "score": 4,
             "tier": "C",
             "comment": "query 明说「结合最新的时政新闻」——Kimi 完全未触碰 2026-04 苏林访华这个最大时政锚点，基础数据停留在 2024 年底；时政相关性失败",
-            "confidence": [
+            "confidence": "high",
+            "issueTags": [
               "锚点缺失",
               "未答核心诉求"
-            ],
-            "issueTags": []
+            ]
           },
           {
             "reportId": "3guof2Rksz",
@@ -206,10 +206,10 @@
             "score": 6,
             "tier": "B",
             "comment": "框架非常完整（多维度/多情景/敏感性分析）；但大量数字是推导而非证据（30 年总成本/决策权重/项目特征重合度），论证深度看似高实则建立在不可核验的假数上",
-            "confidence": [
+            "confidence": "high",
+            "issueTags": [
               "论据缺失"
-            ],
-            "issueTags": []
+            ]
           },
           {
             "reportId": "TQx7ZXaoGM",
@@ -224,10 +224,10 @@
             "score": 4,
             "tier": "C",
             "comment": "营销号式罗列信号（「硬核背书」「性价比无敌」）；预测分层存在数学不一致（70+10+15=95% 与整体 85% 对不上）；论证深度浅",
-            "confidence": [
+            "confidence": "high",
+            "issueTags": [
               "逻辑跳跃"
-            ],
-            "issueTags": []
+            ]
           }
         ]
       },
@@ -281,10 +281,10 @@
             "score": 4,
             "tier": "C",
             "comment": "信号/推理/预测/风险四块齐备但每块都浅，缺结构化分析与深度展开",
-            "confidence": [
+            "confidence": "high",
+            "issueTags": [
               "维度缺漏"
-            ],
-            "issueTags": []
+            ]
           }
         ]
       },
@@ -330,10 +330,10 @@
             "score": 6,
             "tier": "B",
             "comment": "三路径情景（乐观/基准/悲观）决策框架完整；但因时点过时（2024 年底视角），对 2026 时点用户的决策价值大打折扣",
-            "confidence": [
+            "confidence": "high",
+            "issueTags": [
               "数据过期"
-            ],
-            "issueTags": []
+            ]
           },
           {
             "reportId": "3guof2Rksz",
@@ -391,10 +391,10 @@
             "score": 2,
             "tier": "D",
             "comment": "完全未触及 2026-04 苏林访华——时政锚点核心缺失；报告基准日停在 2024 年底",
-            "confidence": [
+            "confidence": "high",
+            "issueTags": [
               "锚点缺失"
-            ],
-            "issueTags": []
+            ]
           },
           {
             "reportId": "3guof2Rksz",

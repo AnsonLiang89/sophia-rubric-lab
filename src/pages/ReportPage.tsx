@@ -5,7 +5,7 @@ import clsx from "clsx";
 import { useLab } from "../store";
 import { QUERY_TYPES, type AIProduct, type Submission } from "../types";
 import { formatDate } from "../lib/score";
-import { pickPrimaryProduct } from "../lib/sortProducts";
+import { pickPrimaryProduct, displayProductName } from "../lib/sortProducts";
 import MarkdownView from "../components/MarkdownView";
 import EvaluationRunModal, { type EvaluationTaskSpec } from "../components/EvaluationRunModal";
 import EvaluationReportView from "../components/EvaluationReportView";
@@ -464,13 +464,13 @@ function ReportHero({
                       ? "bg-amber/10 border-amber/40 text-ink-900 hover:bg-amber/20"
                       : "bg-white border-paper-300 text-ink-700 hover:border-ink-400"
                   )}
-                  title={`查看 ${product.name} 的原始报告`}
+                  title={`查看 ${displayProductName(product)} 的原始报告`}
                 >
                   <span
                     className="w-2 h-2 rounded-full"
                     style={{ background: product.color ?? "#8B8272" }}
                   />
-                  <span className="font-medium">{product.name}</span>
+                  <span className="font-medium">{displayProductName(product)}</span>
                   <svg
                     className="w-3 h-3 text-ink-400"
                     viewBox="0 0 12 12"
@@ -648,13 +648,8 @@ function RawReportModal({
                       </span>
                     )}
                     <span className="font-semibold text-ink-900 text-[15px] truncate">
-                      {product.name}
+                      {displayProductName(product)}
                     </span>
-                    {sub.productVersion && (
-                      <span className="text-[11px] text-ink-400 shrink-0">
-                        {sub.productVersion}
-                      </span>
-                    )}
                   </div>
                   <div className="flex items-center gap-2 text-[11px] text-ink-500 mt-0.5 flex-wrap">
                     <span>{formatDate(sub.submittedAt, true)}</span>
@@ -1014,8 +1009,7 @@ function AddSubmissionModal({
                   <option value="">-- 选择尚未参评的 AI --</option>
                   {available.map((p) => (
                     <option key={p.id} value={p.id}>
-                      {p.name}
-                      {p.version ? ` ${p.version}` : ""}
+                      {displayProductName(p)}
                     </option>
                   ))}
                 </select>

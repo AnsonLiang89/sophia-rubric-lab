@@ -10,25 +10,29 @@
         "reportId": "6q5vDnqkfk",
         "productName": "MiroThink",
         "score": 10.0,
-        "verdict": "卓越"
+        "verdict": "卓越",
+        "vetoTriggered": false
       },
       {
         "reportId": "F6BEti3wFm",
         "productName": "SophiaAI v4",
         "score": 8.1,
-        "verdict": "优秀"
+        "verdict": "优秀",
+        "vetoTriggered": false
       },
       {
         "reportId": "Qm2DpyIJ-h",
         "productName": "Manus",
         "score": 8.0,
-        "verdict": "优秀"
+        "verdict": "优秀",
+        "vetoTriggered": false
       },
       {
         "reportId": "AhuI4bVzZS",
         "productName": "Gemini",
         "score": 7.1,
-        "verdict": "优秀"
+        "verdict": "优秀",
+        "vetoTriggered": false
       },
       {
         "reportId": "SgBQUeWuiQ",
@@ -42,6 +46,7 @@
     "rubric": [
       {
         "dimensionId": "R1",
+        "name": "准确性",
         "weight": 0.36,
         "scores": [
           {
@@ -108,6 +113,7 @@
       },
       {
         "dimensionId": "R2",
+        "name": "相关性",
         "weight": 0.135,
         "scores": [
           {
@@ -166,6 +172,7 @@
       },
       {
         "dimensionId": "R3",
+        "name": "论证深度",
         "weight": 0.18,
         "scores": [
           {
@@ -224,6 +231,7 @@
       },
       {
         "dimensionId": "R4",
+        "name": "完备性",
         "weight": 0.09,
         "scores": [
           {
@@ -280,6 +288,7 @@
       },
       {
         "dimensionId": "R5",
+        "name": "决策价值",
         "weight": 0.135,
         "scores": [
           {

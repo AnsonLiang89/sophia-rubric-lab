@@ -34,6 +34,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Lint outbox schema (fail-fast)
+        run: npm run lint:outbox
+
+      - name: Run unit tests
+        run: npm test
+
       - name: Build public snapshot
         # VITE_PUBLIC_BASE 匹配 GitHub Pages Project 站点 URL 前缀
         env:

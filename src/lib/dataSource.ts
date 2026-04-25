@@ -44,38 +44,45 @@ export class ReadOnlyError extends Error {
 }
 
 /**
- * bus 路径 → 静态文件路径的映射表。
+ * bus 路径 → 静态文件路径的映射表（纯函数版）。
  *
  * 设计约定：静态侧只覆盖"对外版需要展示"的 GET 端点；
  * inbox、写类端点在 prod 下不会被调用（UI 已隐藏；即使被调也会被
  * busFetch 在 writeGuard 阶段拦截）。
+ *
+ * 导出以便单测可以在不依赖 `import.meta.env.PROD` 的情况下覆盖全部分支。
+ * 运行时由下方的 `toStaticUrlForCurrentMode` 注入模块级 `STATIC_PREFIX`。
+ *
+ * @param busPath   形如 `/_bus/xxx` 的 bus 路径
+ * @param prefix    静态前缀（不带尾部斜杠），例如 `""` / `/sophia-rubric-lab/data`
+ * @returns 命中返回静态 URL；未命中（含 inbox）返回 null
  */
-function toStaticUrl(busPath: string): string | null {
+export function toStaticUrl(busPath: string, prefix: string): string | null {
   // 1) 元数据 / 标准文档
-  if (busPath === "/_bus/standard") return `${STATIC_PREFIX}/standard.json`;
-  if (busPath === "/_bus/contract") return `${STATIC_PREFIX}/contract.json`;
-  if (busPath === "/_bus/products") return `${STATIC_PREFIX}/products.json`;
+  if (busPath === "/_bus/standard") return `${prefix}/standard.json`;
+  if (busPath === "/_bus/contract") return `${prefix}/contract.json`;
+  if (busPath === "/_bus/products") return `${prefix}/products.json`;
 
   // 2) outbox 列表
-  if (busPath === "/_bus/outbox") return `${STATIC_PREFIX}/outbox/index.json`;
+  if (busPath === "/_bus/outbox") return `${prefix}/outbox/index.json`;
 
   // 3) outbox bundle：/_bus/outbox/:taskId  →  /data/outbox/:taskId/bundle.json
   {
     const m = busPath.match(/^\/_bus\/outbox\/([^/]+)$/);
-    if (m) return `${STATIC_PREFIX}/outbox/${m[1]}/bundle.json`;
+    if (m) return `${prefix}/outbox/${m[1]}/bundle.json`;
   }
 
   // 4) outbox 具体版本：/_bus/outbox/:taskId/v/:n  →  /data/outbox/:taskId/v{n}.json
   {
     const m = busPath.match(/^\/_bus\/outbox\/([^/]+)\/v\/(\d+)$/);
-    if (m) return `${STATIC_PREFIX}/outbox/${m[1]}/v${m[2]}.json`;
+    if (m) return `${prefix}/outbox/${m[1]}/v${m[2]}.json`;
   }
 
   // 5) health：prod 下返回一个固定 ok 快照
-  if (busPath === "/_bus/health") return `${STATIC_PREFIX}/health.json`;
+  if (busPath === "/_bus/health") return `${prefix}/health.json`;
 
   // 6) publish-log：对外版也能拿到发布历史（只读副本）
-  if (busPath === "/_bus/publish-log") return `${STATIC_PREFIX}/publish-log.json`;
+  if (busPath === "/_bus/publish-log") return `${prefix}/publish-log.json`;
 
   // 7) inbox 类路径在 prod 下不应被调用——返回 null，上层会走 null-as-empty 处理
   if (busPath.startsWith("/_bus/inbox")) return null;
@@ -83,8 +90,17 @@ function toStaticUrl(busPath: string): string | null {
   return null;
 }
 
-/** 写/删端点白名单：命中则在 prod 下直接拒绝。 */
-function isWriteEndpoint(method: string, busPath: string): boolean {
+/** 运行时包装：使用模块级 STATIC_PREFIX。 */
+function toStaticUrlForCurrentMode(busPath: string): string | null {
+  return toStaticUrl(busPath, STATIC_PREFIX);
+}
+
+/**
+ * 写/删端点白名单：命中则在 prod 下直接拒绝。
+ *
+ * 导出以便单测覆盖 GET/POST/DELETE/PUT/PATCH 以及 inbox-GET 等边界。
+ */
+export function isWriteEndpoint(method: string, busPath: string): boolean {
   if (method === "POST" || method === "DELETE") return true;
   // 极端情况兜底（GET 不应该出现在这里）
   if (method === "PUT" || method === "PATCH") return true;
@@ -141,7 +157,7 @@ export function makeDataSource(
   return {
     read: async <T>(busPath: string) => {
       if (IS_READONLY) {
-        const staticUrl = toStaticUrl(busPath);
+        const staticUrl = toStaticUrlForCurrentMode(busPath);
         if (!staticUrl) {
           // inbox 等 prod 下不可用的端点：返回 null，等同于"无数据"
           return null;

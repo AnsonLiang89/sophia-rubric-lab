@@ -93,12 +93,32 @@ export interface RubricDimensionScore {
   confidence?: Confidence;
 }
 
+/**
+ * R1 子档（v2.2 契约新增）。
+ * 显式把 R1（0.40）拆成 R1a 事实准确（0.28） + R1b 逻辑准确（0.12），
+ * 让前端可以展开展示"事实层 vs 推理链层"两档，并帮助 linter 校验 R1 合成分。
+ *
+ * 仅 R1 维度（dimensionId === "R1"）填写；v2.2 必填、历史版本没有此字段。
+ */
+export interface R1Subscore {
+  score: number;
+  tier?: RubricTier;
+  /** 固定 0.28（R1a） / 0.12（R1b），由 linter 机械校验 */
+  weight: number;
+  comment: string;
+}
+
 export interface RubricDimensionBlock {
   /** R1 ~ R5 */
   dimensionId: "R1" | "R2" | "R3" | "R4" | "R5";
   name: string;
   weight: number;
   scores: RubricDimensionScore[];
+  /** v2.2 R1 专属：事实(R1a 0.28) + 逻辑(R1b 0.12) 子档 */
+  subscores?: {
+    R1a: R1Subscore;
+    R1b: R1Subscore;
+  };
 }
 
 export interface ExtraDimensionScore {
@@ -126,13 +146,36 @@ export interface ExtraDimensionBlock {
   scores: ExtraDimensionScore[];
 }
 
-export type SbsWinner = "A" | "B" | "tie";
+export type SbsWinner = "A" | "B" | "tie" | "draw";
 
+/**
+ * SBS 对比结构。
+ *
+ * v2.2 起升级字段：
+ * - `reportIdA` / `reportIdB`：替代旧的 `productA` / `productB`（按 reportId 匹配，消除 UI 歧义）
+ * - `margin`：改为英文枚举（`overwhelming` / `clear` / `slight` / `tie`），但仍兼容旧的中文 margin
+ * - `dimensionDriver`：主要由哪个/哪些维度拉开差距（例如 `"R1"` 或 `["R1", "R3"]`）
+ *
+ * v2.1 及以前产物使用 productA/productB + 中文 margin，前端要兼容渲染两种结构。
+ */
 export interface SbsPair {
-  productA: string;
-  productB: string;
+  /** v2.2 新字段：参与对比的报告 A id */
+  reportIdA?: string;
+  /** v2.2 新字段：参与对比的报告 B id */
+  reportIdB?: string;
+  /** v2.1 及以前字段：保留兼容 */
+  productA?: string;
+  /** v2.1 及以前字段：保留兼容 */
+  productB?: string;
   winner: SbsWinner;
-  margin: string; // "压倒性" | "明显优势" | "略微领先" | "势均力敌"
+  /**
+   * margin 枚举：
+   * - v2.2：`overwhelming` / `clear` / `slight` / `tie`
+   * - v2.1 及以前：`压倒性` / `明显优势` / `略微领先` / `势均力敌`
+   */
+  margin: string;
+  /** v2.2 新字段：主要由哪个/哪些维度拉开差距（单个或多个 Rx/Xy） */
+  dimensionDriver?: string | string[];
   keyReason: string;
 }
 
@@ -153,6 +196,143 @@ export interface PerReportFeedback {
   improvements: string[];
 }
 
+// ------------------------------------------------------------
+// v2.2 新增：Claim 核验 / Checklist 完成度 / 时间预算
+// ------------------------------------------------------------
+
+/** 承重 claim 类型 */
+export type ClaimType = "fact" | "number" | "logic" | "source";
+
+/** claim 承重等级 */
+export type ClaimSupportWeight = "high" | "medium";
+
+/**
+ * 承重 claim 清单项（v2.2 新增）。
+ *
+ * 每份报告 3~5 条（Top 5 封顶），其中至少 1 条 `type === "logic"`。
+ */
+export interface ClaimInventoryItem {
+  /** 全 payload 内唯一，建议 c1/c2/... */
+  claimId: string;
+  reportId: string;
+  type: ClaimType;
+  claim: string;
+  supportWeight: ClaimSupportWeight;
+  /** 可选：回溯原文位置 */
+  locationHint?: string;
+}
+
+/** claim 核验状态 */
+export type ClaimCheckStatus =
+  | "verified-correct"
+  | "refuted"
+  | "inconclusive"
+  | "skipped-time-budget"
+  | "skipped-out-of-scope";
+
+/** 由哪个 Pass 完成 */
+export type ClaimCheckedBy =
+  | "pass1-skim"
+  | "pass2-external-search"
+  | "pass2-arithmetic"
+  | "pass3-logic"
+  | "pass3-cross-section";
+
+/** Veto 错误模式代号（v2.2 与 RUBRIC_STANDARD.md R1 一票否决清单对齐） */
+export type VetoMode = "V1" | "V2" | "V3" | "V4" | "V5";
+
+/**
+ * 单条 claim 的核验结果（v2.2 新增）。
+ *
+ * 每个 `claimInventory` 项都必须在 `claimChecks` 里有对应记录。
+ * 覆盖率硬约束：`(verified-correct + refuted + inconclusive) / 非 skipped ≥ 85%`。
+ */
+export interface ClaimCheckItem {
+  claimId: string;
+  status: ClaimCheckStatus;
+  /** 对照源 + 结论（verified/refuted 必填；skipped 可省略） */
+  evidence?: string;
+  checkedBy?: ClaimCheckedBy;
+  /** 仅 status=refuted 且触发 veto 时写 */
+  vetoMode?: VetoMode;
+}
+
+/**
+ * 单个维度的 checklist 完成度项（v2.2 新增）。
+ *
+ * `label` 是 checklist 项的简写标题（见 RUBRIC_STANDARD.md 每维度的"必查 checklist"）；
+ * `passedFor` 是通过该项的 reportId 列表，没通过的不出现在数组里（可为空）。
+ */
+export interface DimensionChecklistItem {
+  label: string;
+  /** 通过该 check 的 reportId 列表 */
+  passedFor: string[];
+  /** 可选：对本 check 的简短说明 */
+  note?: string;
+}
+
+/**
+ * 单个维度的 checklist 完成度（v2.2 新增）。
+ *
+ * R1 应有 7 项 items；R2~R5 各 5 项。
+ */
+export interface DimensionChecklist {
+  items: DimensionChecklistItem[];
+  /** 可选：列出本评测覆盖的 reportId（跟 items[].passedFor 的候选集合） */
+  reportIds?: string[];
+}
+
+/**
+ * 5 维度 checklist 完成度（v2.2 新增）。
+ *
+ * R1~R5 五个键都必填；扩展维度可选。
+ */
+export interface DimensionChecklistsMap {
+  R1: DimensionChecklist;
+  R2: DimensionChecklist;
+  R3: DimensionChecklist;
+  R4: DimensionChecklist;
+  R5: DimensionChecklist;
+  [extraDimension: string]: DimensionChecklist;
+}
+
+/**
+ * 评测阶段标识（v2.2）。
+ * - read：读报告
+ * - claim-inventory：抽取承重 claim
+ * - pass1：快筛
+ * - pass2：深核嫌疑
+ * - pass3：逻辑一致性
+ * - score：打分 + overallScore + SBS
+ * - feedback：perReportFeedback + report 正文
+ */
+export type EvaluationPass =
+  | "read"
+  | "claim-inventory"
+  | "pass1"
+  | "pass2"
+  | "pass3"
+  | "score"
+  | "feedback";
+
+/**
+ * 45 分钟时间盒的实际执行报表（v2.2 新增，必填）。
+ */
+export interface VerificationBudget {
+  /** 固定 45 */
+  targetMinutes: number;
+  /** 实际耗时（分钟），硬约束 ≤ 50 */
+  actualMinutes: number;
+  /** 完成的阶段列表，前 6 个不可省略 */
+  passesCompleted: EvaluationPass[];
+  /** status=skipped-time-budget 的 claim 数 */
+  claimsSkippedDueToBudget: number;
+  /** status=skipped-out-of-scope 的 claim 数 */
+  claimsOutOfScope: number;
+  /** 自由备注：流程偏差、超时原因等 */
+  notes?: string;
+}
+
 export interface EvaluationSummary {
   overallScores: OverallScoreItem[];
   rubric: RubricDimensionBlock[];
@@ -163,6 +343,30 @@ export interface EvaluationSummary {
    * v1.0 / v2.0 产物没有该字段，前端渲染时按"未提供反馈"容错展示。
    */
   perReportFeedback?: PerReportFeedback[];
+
+  /**
+   * v2.2 必填：承重 claim 清单（每份报告 3~5 条，Top 5 封顶，含 ≥1 条 logic 类）。
+   * 历史版本没有此字段，前端按"未提供 claim 核验地图"容错展示。
+   */
+  claimInventory?: ClaimInventoryItem[];
+
+  /**
+   * v2.2 必填：逐条 claim 的核验结果。
+   * 历史版本没有此字段。
+   */
+  claimChecks?: ClaimCheckItem[];
+
+  /**
+   * v2.2 必填：5 维度 checklist 完成度。
+   * 历史版本没有此字段。
+   */
+  dimensionChecklists?: DimensionChecklistsMap;
+
+  /**
+   * v2.2 必填：45 分钟时间盒的实际执行报表。
+   * 历史版本没有此字段。
+   */
+  verificationBudget?: VerificationBudget;
 }
 
 export interface EvaluationOutboxPayload {
@@ -174,12 +378,14 @@ export interface EvaluationOutboxPayload {
    * 契约版本号。
    * - `"1.0"`：2026-04-19 ~ 2026-04-21 使用的旧契约（0.5 精度打分、无 tier/confidence/veto）
    * - `"2.0"`：2026-04-21 使用的契约（档位制 10/8/6/4/2、一票否决、扩展维度可激活）
-   * - `"2.1"`：2026-04-22 起使用的新契约（在 2.0 基础上新增外部核验硬约束、perReportFeedback、report 正文六大章节硬约束）
+   * - `"2.1"`：2026-04-22 起使用的契约（外部核验硬约束、perReportFeedback、report 正文六大章节）
+   * - `"2.2"`：2026-04-25 起使用的契约（claim 驱动的 R1 核验、R1 子档 R1a/R1b、双轴 tier 表、dimensionChecklists、verificationBudget、SBS 新结构）
    *
    * 前端渲染时按此字段分支兼容——历史版本保留原样展示，新版本启用新 UI 能力
-   * （档位标签、veto 徽章、激活的扩展维度纳入总分展示、perReportFeedback 反馈卡）。
+   * （档位标签、veto 徽章、激活的扩展维度纳入总分展示、perReportFeedback 反馈卡、
+   * claim 核验地图、checklist 完成度表、时间预算报表）。
    */
-  contractVersion: "1.0" | "2.0" | "2.1";
+  contractVersion: "1.0" | "2.0" | "2.1" | "2.2";
   /**
    * 冗余写入的 query 永久 id（2026-04-21 方案 D 新增）。
    * - 由 bus / bake 统一注入，payload 原作者（LLM）不需要填

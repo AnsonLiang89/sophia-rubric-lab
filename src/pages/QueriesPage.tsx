@@ -562,7 +562,7 @@ export default function QueriesPage() {
                                     color: prod.color ?? "#8B8272",
                                   }}
                                 >
-                                  {prod.name}
+                                  {displayProductName(prod)}
                                 </span>
                               )}
                             </div>
@@ -585,8 +585,7 @@ export default function QueriesPage() {
                               <option value="">-- 选择 AI 产品 --</option>
                               {products.map((p) => (
                                 <option key={p.id} value={p.id}>
-                                  {p.name}
-                                  {p.version ? ` ${p.version}` : ""}
+                                  {displayProductName(p)}
                                 </option>
                               ))}
                             </select>

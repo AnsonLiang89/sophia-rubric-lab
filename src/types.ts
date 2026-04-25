@@ -3,43 +3,52 @@
 // ============================================================
 
 /**
- * Rubric 5 维（与本次评测对齐）
+ * Rubric 5 维（与当前 v2.0+ 契约对齐）
+ *
+ * 维度历史：
+ *   - v1.0（2026-04 之前）：R1 信源 / R2 结构 / R3 洞察 / R4 风险 / R5 专业度时效
+ *   - v2.0（2026-04-21 起）：按下方定义重构；R1 吸收 v1 的信源职能（"数字对不对"和"信源硬不硬"本就指向同一件事），权重从 0.25 → 0.40
+ *   - v2.1（2026-04-22）：维度不变，新增外部核验硬约束 + perReportFeedback
+ *   - v2.2（2026-04-25）：维度不变，R1 拆 R1a/R1b 子项 + claim-inventory/checklist/budget 流水线
  *
  * ⚠️ 注意：下方 `description` 是**精简占位文案**，仅供前端列表/图例等快速展示使用。
  * 维度的**完整定义、打分锚点、负面特征**等正式说明以
  * `.evaluations/RUBRIC_STANDARD.md` §二 为准（由 Standard 页面直接渲染 markdown）。
  * 若要修订维度语义，请同步更新 RUBRIC_STANDARD.md，避免两处漂移。
+ *
+ * Dashboard 的总览/SBS 聚合默认只计入 `contractVersion >= "2.0"` 的产物，
+ * v1.0 历史产物因维度语义不同会被过滤（顶部提示已过滤几份）。
  */
 export const RUBRIC_DIMENSIONS = [
   {
     id: "R1",
-    name: "信源与数据真实性",
-    weight: 0.25,
-    description: "引用完整、数据可溯源、无造数嫌疑、口径一致",
+    name: "准确性",
+    weight: 0.4,
+    description: "事实/数字/因果/信源准确；无编造、无量级级误差、无张冠李戴；可外部核验",
   },
   {
     id: "R2",
-    name: "结构与定量深度",
-    weight: 0.2,
-    description: "章节完整、逻辑层次清晰、量化指标充分",
+    name: "相关性",
+    weight: 0.15,
+    description: "紧扣 query 核心诉求；识别字面之下的真问题；不跑题不绕路",
   },
   {
     id: "R3",
-    name: "洞察与论证",
-    weight: 0.25,
-    description: "有独立观点、推导严谨、非结论先行",
+    name: "论证深度",
+    weight: 0.2,
+    description: "有独立观点、推导链条清晰、证据支撑扎实；非结论先行、非流于表面",
   },
   {
     id: "R4",
-    name: "风险披露与决策价值",
-    weight: 0.2,
-    description: "风险全面、有可操作性、能支撑决策",
+    name: "完备性",
+    weight: 0.1,
+    description: "关键维度覆盖齐全、视角均衡、不漏重大风险/反方论点",
   },
   {
     id: "R5",
-    name: "专业度与时效",
-    weight: 0.1,
-    description: "行文专业克制、引用时效新、无口语化毛刺",
+    name: "决策价值",
+    weight: 0.15,
+    description: "结论可落地、能支撑实际决策；给出可操作建议与权衡",
   },
 ] as const;
 
