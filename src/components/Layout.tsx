@@ -77,13 +77,10 @@ export default function Layout() {
     count?: number;
     /** drift 详情（仅保留前 3 条，给 title 悬浮用） */
     sample?: { queryId: string; local: string; authoritative: string }[];
-  }>({ status: "checking" });
+  }>({ status: IS_READONLY ? "no-reg" : "checking" });
 
   useEffect(() => {
-    if (IS_READONLY) {
-      setHealth({ status: "no-reg" });
-      return;
-    }
+    if (IS_READONLY) return;
     let cancelled = false;
     const check = async () => {
       try {
@@ -150,13 +147,10 @@ export default function Layout() {
     sample?: { id: string; kind: string; detail: string }[];
     /** 是否 bake 目录整体缺失（要引导用户先跑 build:public） */
     bakeMissing?: boolean;
-  }>({ status: "checking" });
+  }>({ status: IS_READONLY ? "fresh" : "checking" });
 
   useEffect(() => {
-    if (IS_READONLY) {
-      setFreshness({ status: "fresh" });
-      return;
-    }
+    if (IS_READONLY) return;
     let cancelled = false;
     const check = async () => {
       try {
@@ -304,6 +298,16 @@ export default function Layout() {
             <NavLink to="/contract" className={linkClass}>
               协议
             </NavLink>
+            {/*
+              评测对象管理器：管理员版独有 tab。
+              - 仅在 !IS_READONLY 时渲染入口；对外版用户看不到这个 tab。
+              - 即使对外版用户手动拼 /targets URL 进来，页面自身也会降级为只读说明页。
+            */}
+            {!IS_READONLY && (
+              <NavLink to="/targets" className={linkClass}>
+                评测对象
+              </NavLink>
+            )}
           </nav>
 
           <div className="ml-auto flex items-center gap-2">

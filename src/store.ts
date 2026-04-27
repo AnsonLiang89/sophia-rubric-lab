@@ -16,7 +16,6 @@ import { sortProducts } from "./lib/sortProducts";
  */
 function readonlyWarn(op: string) {
   if (IS_READONLY) {
-    // eslint-disable-next-line no-console
     console.warn(`[store] write action "${op}" is not available in public read-only mode.`);
     return true;
   }
@@ -67,6 +66,7 @@ function busToAI(p: BusProduct): AIProduct {
     version: p.version ?? undefined,
     vendor: p.vendor ?? undefined,
     color: p.color ?? undefined,
+    description: p.description ?? undefined,
     // PRODUCTS.json 不再区分主评测，统一 false（保留字段以免类型崩）
     isPrimary: false,
     // 没有 createdAt 概念，这里给当下时间让类型过

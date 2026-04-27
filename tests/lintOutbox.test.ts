@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect } from "vitest";
 // @ts-expect-error — .mjs no type decl
 import { validatePayload } from "../scripts/lint-outbox.mjs";
@@ -77,7 +78,7 @@ describe("validatePayload · 顶层字段校验", () => {
 
   it("contractVersion 非法值 → 报错", () => {
     const p: any = goodPayloadV21();
-    p.contractVersion = "3.0";
+    p.contractVersion = "9.9";
     const errors = lint(p);
     expect(errors.some((e) => e.path === "contractVersion")).toBe(true);
   });
@@ -304,6 +305,111 @@ function goodPayloadV22() {
   return p;
 }
 
+/** 构造一个最小合法的 v3.0 payload（基于 v2.2 + crossProductInsights + 三稳定锚点） */
+function goodPayloadV30() {
+  const p: any = goodPayloadV22();
+  p.contractVersion = "3.0";
+
+  p.summary.overallScores[0].productName = "SophiaAI v4";
+  p.summary.overallScores[1].productName = "Gemini";
+  p.summary.perReportFeedback[0].productName = "SophiaAI v4";
+  p.summary.perReportFeedback[1].productName = "Gemini";
+
+  p.summary.crossProductInsights = {
+    focusProductName: "SophiaAI v4",
+    strongerThan: [
+      {
+        dimension: "R3",
+        vsProducts: ["Gemini"],
+        gapSummary: "Sophia 给出了完整三阶推导，对手只停在一阶结论。",
+        evidenceQuotes: [
+          {
+            product: "SophiaAI v4",
+            quote: "「税率从 25% 降到 15% 后，EPS 不只是抬升，更会重塑渠道议价链条，因此我们预估净利率将在两个季度内继续扩张。」",
+          },
+          {
+            product: "Gemini",
+            quote: "「减税有助于提升利润，但报告未展开利润结构如何变化。」",
+          },
+        ],
+        claimRefs: ["c3"],
+      },
+    ],
+    weakerThan: [
+      {
+        dimension: "R1",
+        vsProducts: ["Gemini"],
+        gapSummary: "Sophia 写入了不可核查口径，对手给出可回溯的一手来源。",
+        evidenceQuotes: [
+          {
+            product: "SophiaAI v4",
+            quote: "「根据某研究院 2026 年 4 月内部未公开报告，行业需求已同比增长 48%。」",
+          },
+          {
+            product: "Gemini",
+            quote: "「国家统计局 2026 年 4 月公开数据仅显示同比增长 18.4%，并未出现 48% 这一口径。」",
+          },
+        ],
+        claimRefs: ["c1"],
+      },
+    ],
+    sharedWeakness: [],
+  };
+
+  p.report = [
+    "# Sophia v4 聚焦诊断",
+    "",
+    "## 一、总评 · Sophia v4 的核心问题",
+    "Sophia 本轮最大的短板是 R1 与 R4，尤其是信源可核查性不足。",
+    "",
+    "## 二、评分总表",
+    "- SophiaAI v4：10.0 / 卓越",
+    "- Gemini：8.0 / 优秀",
+    "",
+    "## 三、错误详析",
+    "这里展开 Sophia 的原文问题与对照证据。",
+    "",
+    "## 四、SBS 结论",
+    "Sophia 在 R3 领先，但在 R1 被 Gemini 反超。",
+  ].join("\n");
+
+  return p;
+}
+
+/** 构造一个最小合法的 v3.2 payload（基于 v3.0 + 正文四段锚点） */
+function goodPayloadV32() {
+  const p: any = goodPayloadV30();
+  p.contractVersion = "3.2";
+  p.report = [
+    "# Sophia v4 评测报告",
+    "",
+    "## 一、评测结论",
+    "SophiaAI v4 本轮最大的短板在 R1：一处关键数字的可信度不足，虽然 R3 仍有明显分析深度，但整体结论不能靠亮点掩盖核验风险。",
+    "",
+    "## 二、按维度展开评测结论、详情与论据",
+    "### R1 准确性",
+    "报告写道：「根据某研究院 2026 年 4 月内部未公开报告，行业需求已同比增长 48%。」这一说法缺少可追溯来源；对照公开统计口径后，目前只能确认国家统计局披露的是 18.4%，因此该处不能直接支撑更激进的市场判断。",
+    "",
+    "### R3 论证深度",
+    "Sophia 的优势在于把税率变化、渠道议价和利润率扩张串成了连续推理链，不只是复述结论；这部分比 Gemini 多了一层对利润结构的解释。",
+    "",
+    "## 三、额外重点问题",
+    "最需要额外强调的是外部核验结论：上述 48% 增长说法目前没有公开一手源支撑，核验后只能得到更保守的公开口径，因此任何依赖该数字的扩张节奏建议都需要下调。",
+    "",
+    "## 四、各主体优缺点与建议",
+    "### SophiaAI v4",
+    "- 做得好：R3 的推理链完整，能把政策变量和利润结构联动起来。",
+    "- 做得不好：R1 有承重数字缺少可回溯来源，削弱了整体可信度。",
+    "- 建议：把关键数字全部替换成可追溯公开源，并在结论里区分已证实与待验证判断。",
+    "",
+    "### Gemini",
+    "- 做得好：R1 的公开来源更清楚，保守但稳。",
+    "- 做得不好：R3 只停留在一阶判断，缺少深入推导。",
+    "- 建议：补足因果链与结构化推理，而不只是给出安全结论。",
+  ].join("\n");
+  return p;
+}
+
 describe("validatePayload · v2.2 最小合法 payload", () => {
   it("最小合法 v2.2 payload 无违规", () => {
     const errors = lint(goodPayloadV22());
@@ -461,11 +567,23 @@ describe("validatePayload · v2.2 verificationBudget 硬约束", () => {
     expect(errors.some((e) => e.path.includes("targetMinutes"))).toBe(true);
   });
 
-  it("actualMinutes > 50（硬上限） → 报错", () => {
+  it("actualMinutes 不再设硬上限：超大值仅在结构合法时不应报错", () => {
     const p: any = goodPayloadV22();
-    p.summary.verificationBudget.actualMinutes = 55;
+    p.summary.verificationBudget.actualMinutes = 120;
     const errors = lint(p);
-    expect(errors.some((e) => e.msg.includes("50"))).toBe(true);
+    // 不再产生与硬上限相关的报错（不允许出现“硬上限/不得超过”等关键词的 actualMinutes 错误）
+    expect(
+      errors.some(
+        (e) => e.path.includes("actualMinutes") && /硬上限|不得超过/.test(e.msg)
+      )
+    ).toBe(false);
+  });
+
+  it("actualMinutes 必须为 >0 的数字（结构性校验仍保留）", () => {
+    const p: any = goodPayloadV22();
+    p.summary.verificationBudget.actualMinutes = 0;
+    const errors = lint(p);
+    expect(errors.some((e) => e.path.includes("actualMinutes"))).toBe(true);
   });
 
   it("passesCompleted 缺少前 6 阶段 → 报错", () => {
@@ -476,4 +594,135 @@ describe("validatePayload · v2.2 verificationBudget 硬约束", () => {
     expect(errors.some((e) => e.msg.includes("pass1"))).toBe(true);
   });
 });
+
+describe("validatePayload · v3.0 最小合法 payload", () => {
+  it("最小合法 v3.0 payload 无违规", () => {
+    const errors = lint(goodPayloadV30());
+    expect(errors).toEqual([]);
+  });
+});
+
+describe("validatePayload · v3.0 新增硬约束", () => {
+  it("缺 crossProductInsights → 报错", () => {
+    const p: any = goodPayloadV30();
+    delete p.summary.crossProductInsights;
+    const errors = lint(p);
+    expect(errors.some((e) => e.path.includes("crossProductInsights"))).toBe(true);
+  });
+
+  it("tier C/D comment 不含原文引用 → 报错", () => {
+    const p: any = goodPayloadV30();
+    p.summary.rubric[0].scores[0].score = 4;
+    p.summary.rubric[0].scores[0].tier = "C";
+    p.summary.rubric[0].scores[0].comment = "准确性较差，但没有展开原文证据";
+    p.summary.overallScores[0].score = 7.6;
+    const errors = lint(p);
+    expect(errors.some((e) => e.path.includes("scores[0].comment") && e.msg.includes("原文引用"))).toBe(true);
+  });
+
+  it("refuted / inconclusive evidence 过短且无引用 → 报错", () => {
+    const p: any = goodPayloadV30();
+    p.summary.claimChecks[0].status = "refuted";
+    p.summary.claimChecks[0].evidence = "证据不足";
+    const errors = lint(p);
+    expect(errors.some((e) => e.path.includes("claimChecks[0].evidence") && e.msg.includes("30 字"))).toBe(true);
+    expect(errors.some((e) => e.path.includes("claimChecks[0].evidence") && e.msg.includes("原文引用"))).toBe(true);
+  });
+
+  it("report 缺少稳定锚点 → 报错", () => {
+    const p: any = goodPayloadV30();
+    p.report = [
+      "# Sophia v4 聚焦诊断",
+      "",
+      "## 一、总评 · Sophia v4 的核心问题",
+      "这里只写总评。",
+      "",
+      "## 四、SBS 结论",
+      "少了评分总表锚点。",
+    ].join("\n");
+    const errors = lint(p);
+    expect(errors.some((e) => e.path === "report" && e.msg.includes("评分总表"))).toBe(true);
+  });
+
+  it("focusProductName 非 none 时 strongerThan + weakerThan 少于 2 条 → 报错", () => {
+    const p: any = goodPayloadV30();
+    p.summary.crossProductInsights.weakerThan = [];
+    const errors = lint(p);
+    expect(errors.some((e) => e.path.includes("crossProductInsights") && e.msg.includes("至少要有 2 条 insight"))).toBe(true);
+  });
+});
+
+describe("validatePayload · v3.2 最小合法 payload", () => {
+  it("最小合法 v3.2 payload 无违规", () => {
+    const errors = lint(goodPayloadV32());
+    expect(errors).toEqual([]);
+  });
+});
+
+describe("validatePayload · v3.2 新增硬约束", () => {
+  it("v3.2 report 不再强制要求评分总表 heading，可仅保留四段正文锚点", () => {
+    const p: any = goodPayloadV32();
+    const errors = lint(p);
+    expect(errors.some((e) => e.path === "report" && e.msg.includes("评分总表"))).toBe(false);
+  });
+
+  it("缺少“额外重点问题”锚点 → 报错", () => {
+    const p: any = goodPayloadV32();
+    p.report = p.report.replace("## 三、额外重点问题", "## 三、其他补充说明");
+    const errors = lint(p);
+    expect(errors.some((e) => e.path === "report" && e.msg.includes("额外重点问题"))).toBe(true);
+  });
+
+  it("若显式写出评分总表 heading，但位置跑到评测结论前 → 报错", () => {
+    const p: any = goodPayloadV32();
+    p.report = [
+      "# Sophia v4 评测报告",
+      "",
+      "## 评分总表",
+      "- SophiaAI v4：10.0 / 卓越",
+      "",
+      ...p.report.split("\n").slice(2),
+    ].join("\n");
+    const errors = lint(p);
+    expect(errors.some((e) => e.path === "report" && e.msg.includes("评测结论之后"))).toBe(true);
+  });
+});
+
+describe("validatePayload · productName 展示一致性", () => {
+  it("同一 payload 中 overallScores productName 重复 → 报错", () => {
+    const p: any = goodPayloadV21();
+    p.summary.overallScores[0].productName = "SophiaAI";
+    p.summary.overallScores[1].productName = "SophiaAI"; // 两条都叫 SophiaAI（真实踩坑）
+    const errors = lint(p);
+    expect(
+      errors.some(
+        (e) => e.path === "summary.overallScores" && e.msg.includes("productName 重复")
+      )
+    ).toBe(true);
+  });
+
+  it("productName 使用括号包版本号 'SophiaAI (v4)' → 报错", () => {
+    const p: any = goodPayloadV21();
+    p.summary.overallScores[0].productName = "SophiaAI (v4)";
+    const errors = lint(p);
+    expect(errors.some((e) => e.msg.includes("括号"))).toBe(true);
+  });
+
+  it("productName 为空字符串 → 报错", () => {
+    const p: any = goodPayloadV21();
+    p.summary.overallScores[0].productName = "";
+    const errors = lint(p);
+    expect(errors.some((e) => e.path.includes(".productName") && e.msg.includes("必填"))).toBe(true);
+  });
+
+  it("不同产品名（如 'SophiaAI v4' / 'SophiaAI v5'）→ 放行", () => {
+    const p: any = goodPayloadV21();
+    p.summary.overallScores[0].productName = "SophiaAI v4";
+    p.summary.overallScores[1].productName = "SophiaAI v5";
+    const errors = lint(p);
+    const bad = errors.filter((e) => e.path.includes("productName") || e.msg.includes("productName"));
+    expect(bad).toHaveLength(0);
+  });
+});
+
 

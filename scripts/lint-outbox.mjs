@@ -23,6 +23,7 @@
  *   - JSON 合法
  *   - taskId / version / contractVersion 必填，类型正确
  *   - summary / summary.overallScores 存在非空
+ *   - summary.overallScores[].productName 非空、无括号版本号（"Name (vN)" ✗）、同一 payload 内唯一
  *   - rubric 覆盖 R1~R5；每个维度 id/name/weight/scores 必填
  *   - rubric[].scores 字段名必须是 `scores`（不是 `reports`，历史踩坑点）
  *   - extraDimensions 同上（如存在）
@@ -51,13 +52,20 @@
  *     * R1 items ≥ 7 条；R2~R5 items ≥ 5 条
  *     * 每项 label 非空、passedFor 为 reportId 数组（可空）
  *   - summary.verificationBudget 必填
- *     * targetMinutes = 45；actualMinutes ≤ 50（硬约束）
+ *     * targetMinutes = 45；actualMinutes > 0（自 v3.0 起不再设硬上限，仅观测）
  *     * passesCompleted 包含前 6 个阶段（read / claim-inventory / pass1 / pass2 / pass3 / score）
  *   - R1 的 rubric block 必填 subscores.R1a + subscores.R1b
  *     * 权重必须 R1a=0.28、R1b=0.12（当 R1 权重是 0.40 的默认情况下）
  *   - SBS pair 结构必须含 reportIdA + reportIdB + winner + margin + dimensionDriver
  *     * winner ∈ {A, B, tie, draw}
  *     * margin ∈ {overwhelming, clear, slight, tie}（v2.2 英文枚举）
+ *
+ * v3.0 额外（2026-04-25 晚起）：
+ *   - 继承 v2.2 所有规则（claim/checklist/budget/SBS/R1 子档）
+ *   - tier C/D 的 comment 必须含原文引用片段（≥15 字，用「」或 "" 包裹）
+ *   - claimChecks 中 refuted / inconclusive 的 evidence 必须含原文引用，且长度 ≥ 30 字
+ *   - summary.crossProductInsights 在 candidates ≥ 2 时必填；focusProductName / 三组 insight 结构合法
+ *   - report 必须含 3 个稳定锚点 heading，且顺序固定：总评 → 评分总表 → SBS 结论
  *
  * 退出码：
  *   0 = 所有 outbox 产物合法
@@ -106,8 +114,45 @@ const REQUIRED_PASSES_V22 = ["read", "claim-inventory", "pass1", "pass2", "pass3
 const CHECKLIST_MIN_ITEMS = { R1: 7, R2: 5, R3: 5, R4: 5, R5: 5 };
 // 承重 claim 核验覆盖率硬约束
 const CLAIM_COVERAGE_MIN = 0.85;
-// 时间盒上限
-const BUDGET_HARD_LIMIT_MIN = 50;
+// 时间盒：不再设硬上限（v3.0 起评测耗时仅作为观测指标，不再做封顶约束）
+const QUOTED_SNIPPET_RE = /「([^」]+)」|"([^"]+)"/g;
+const REPORT_HEADING_RE = /^(#{2,6})\s+(.+?)\s*$/gm;
+
+function isNonEmptyString(v) {
+  return typeof v === "string" && v.trim().length > 0;
+}
+
+function hasQuotedSnippet(text, minLen = 15) {
+  if (!isNonEmptyString(text)) return false;
+  for (const match of text.matchAll(QUOTED_SNIPPET_RE)) {
+    const snippet = (match[1] ?? match[2] ?? "").trim();
+    if (snippet.length >= minLen) return true;
+  }
+  return false;
+}
+
+function findHeadingIndex(report, kind) {
+  if (!isNonEmptyString(report)) return -1;
+  const headings = [...report.matchAll(REPORT_HEADING_RE)].map((m) => m[2].trim());
+  const matcher =
+    kind === "summary"
+      ? (title) => /总评|评测结论/.test(title)
+      : kind === "score"
+        ? (title) => /(评分总表|横评分数矩阵|打分对照|评分)/.test(title)
+        : kind === "dimension"
+          ? (title) => /按维度|维度展开|维度分析/.test(title)
+          : kind === "keyIssue"
+            ? (title) => /额外重点问题|重点问题|关键问题/.test(title)
+            : kind === "prosCons"
+              ? (title) => /优缺点|改进建议|主体表现/.test(title)
+              : (title) => /(SBS|Side-?by-?Side|对比|胜负总结)/i.test(title);
+  return headings.findIndex(matcher);
+}
+
+function hasExternalValidationCue(text) {
+  if (!isNonEmptyString(text)) return false;
+  return /(外部|公开来源|一手源|官网|官方|检索|查询|核验|不可核|无法核验|未检索到)/.test(text);
+}
 
 function readJsonSafe(p) {
   try {
@@ -140,12 +185,15 @@ export function validatePayload(file, payload, errors) {
     pushErr(errors, file, "version", "缺失或非 number");
   }
   const cv = payload.contractVersion;
-  if (!["1.0", "2.0", "2.1", "2.2"].includes(cv)) {
-    pushErr(errors, file, "contractVersion", `必须是 "1.0" / "2.0" / "2.1" / "2.2"，实际：${JSON.stringify(cv)}`);
+  if (!["1.0", "2.0", "2.1", "2.2", "3.0", "3.1", "3.2"].includes(cv)) {
+    pushErr(errors, file, "contractVersion", `必须是 "1.0" / "2.0" / "2.1" / "2.2" / "3.0" / "3.1" / "3.2"，实际：${JSON.stringify(cv)}`);
   }
-  // v2.0+ 共享档位制/veto 校验；v2.2 额外有一堆字段校验
-  const isV2Plus = cv === "2.0" || cv === "2.1" || cv === "2.2";
-  const isV22 = cv === "2.2";
+  // v2.0+ 共享档位制/veto 校验；v2.2+ 共享 claim/checklist/budget/SBS/R1 子档；v3.x 额外有焦点诊断与证据密度校验
+  const isV2Plus = cv === "2.0" || cv === "2.1" || cv === "2.2" || cv === "3.0" || cv === "3.1" || cv === "3.2";
+  const isV22Plus = cv === "2.2" || cv === "3.0" || cv === "3.1" || cv === "3.2";
+  const isV3 = cv === "3.0" || cv === "3.1" || cv === "3.2";
+  const isV31 = cv === "3.1";
+  const isV32 = cv === "3.2";
   if (!payload.summary || typeof payload.summary !== "object") {
     pushErr(errors, file, "summary", "缺失或非对象");
     return;
@@ -173,6 +221,45 @@ export function validatePayload(file, payload, errors) {
           pushErr(errors, file, `${pref}.vetoReason`, "vetoTriggered=true 时必填");
         if (typeof o.score === "number" && o.score > 6.9 + 1e-9)
           pushErr(errors, file, `${pref}.score`, `一票否决触发时必须 ≤ 6.9，实际 ${o.score}`);
+      }
+    }
+  }
+
+  // productName 唯一性与格式规范（通用）
+  // 背景：同一份 payload 内出现重名（尤其是两条都叫 "SophiaAI"）会让评分总表表头无法区分；
+  //       括号风格 "SophiaAI (v4)" 与常规 "SophiaAI v4" 混用也会导致展示不一致。
+  {
+    const nameCount = new Map();
+    for (const o of s.overallScores) {
+      const n = typeof o.productName === "string" ? o.productName.trim() : "";
+      if (!n) {
+        pushErr(
+          errors,
+          file,
+          `summary.overallScores[reportId=${o.reportId}].productName`,
+          "必填非空字符串"
+        );
+        continue;
+      }
+      // 禁止括号风格的版本号
+      if (/[（(]\s*v\d/i.test(n)) {
+        pushErr(
+          errors,
+          file,
+          `summary.overallScores[reportId=${o.reportId}].productName`,
+          `版本号不允许用括号包裹，应写作 "Name vN"（当前：${JSON.stringify(n)}）`
+        );
+      }
+      nameCount.set(n, (nameCount.get(n) ?? 0) + 1);
+    }
+    for (const [n, c] of nameCount) {
+      if (c > 1) {
+        pushErr(
+          errors,
+          file,
+          "summary.overallScores",
+          `productName 重复：${JSON.stringify(n)} 出现 ${c} 次。不同版本必须写成 "Name v4"、"Name v5" 等以示区分`
+        );
       }
     }
   }
@@ -217,16 +304,19 @@ export function validatePayload(file, payload, errors) {
           if (!sc.confidence || !VALID_CONFIDENCE.has(sc.confidence))
             pushErr(errors, file, `${spref}.confidence`, `必须是 high/medium/low，实际 ${JSON.stringify(sc.confidence)}`);
         }
-        if (!sc.comment || typeof sc.comment !== "string")
+        if (!sc.comment || typeof sc.comment !== "string") {
           pushErr(errors, file, `${spref}.comment`, "必填非空字符串");
+        } else if (isV3 && (sc.tier === "C" || sc.tier === "D") && !hasQuotedSnippet(sc.comment, 15)) {
+          pushErr(errors, file, `${spref}.comment`, "v3.0 下 tier C/D 的低分 comment 必须含 ≥15 字原文引用片段（用「」或 \"\" 包裹）");
+        }
       }
     }
 
-    // v2.2 专属：R1 必须含 subscores.R1a + subscores.R1b
-    if (isV22 && r.dimensionId === "R1") {
+    // v2.2+：R1 必须含 subscores.R1a + subscores.R1b
+    if (isV22Plus && r.dimensionId === "R1") {
       const sub = r.subscores;
       if (!sub || typeof sub !== "object") {
-        pushErr(errors, file, `${pref}.subscores`, "v2.2 R1 必填（R1a 事实 + R1b 逻辑）");
+        pushErr(errors, file, `${pref}.subscores`, `${cv} 下 R1 必填（R1a 事实 + R1b 逻辑）`);
       } else {
         for (const key of ["R1a", "R1b"]) {
           const entry = sub[key];
@@ -336,14 +426,14 @@ export function validatePayload(file, payload, errors) {
   if (s.overallScores.length >= 2) {
     if (!s.sbs || !Array.isArray(s.sbs.pairs) || s.sbs.pairs.length === 0) {
       pushErr(errors, file, "summary.sbs", "candidates ≥ 2 时 sbs.pairs 必填且非空");
-    } else if (isV22) {
-      // v2.2 SBS 结构升级：reportIdA + reportIdB + winner + margin + dimensionDriver + keyReason
+    } else if (isV22Plus) {
+      // v2.2+ SBS 结构：reportIdA + reportIdB + winner + margin + dimensionDriver + keyReason
       for (const [i, p] of s.sbs.pairs.entries()) {
         const pref = `summary.sbs.pairs[${i}]`;
         if (!p.reportIdA || typeof p.reportIdA !== "string")
-          pushErr(errors, file, `${pref}.reportIdA`, "v2.2 必填非空字符串（禁用旧字段 productA）");
+          pushErr(errors, file, `${pref}.reportIdA`, `${cv} 必填非空字符串（禁用旧字段 productA）`);
         if (!p.reportIdB || typeof p.reportIdB !== "string")
-          pushErr(errors, file, `${pref}.reportIdB`, "v2.2 必填非空字符串（禁用旧字段 productB）");
+          pushErr(errors, file, `${pref}.reportIdB`, `${cv} 必填非空字符串（禁用旧字段 productB）`);
         if (p.reportIdA && !reportIds.includes(p.reportIdA))
           pushErr(errors, file, `${pref}.reportIdA`, `reportId 不存在于 candidates：${p.reportIdA}`);
         if (p.reportIdB && !reportIds.includes(p.reportIdB))
@@ -351,17 +441,17 @@ export function validatePayload(file, payload, errors) {
         if (!VALID_SBS_WINNERS.has(p.winner))
           pushErr(errors, file, `${pref}.winner`, `必须 ∈ {A, B, tie, draw}，实际 ${JSON.stringify(p.winner)}`);
         if (!VALID_SBS_MARGINS_V22.has(p.margin))
-          pushErr(errors, file, `${pref}.margin`, `v2.2 必须 ∈ {overwhelming, clear, slight, tie}，实际 ${JSON.stringify(p.margin)}`);
+          pushErr(errors, file, `${pref}.margin`, `${cv} 必须 ∈ {overwhelming, clear, slight, tie}，实际 ${JSON.stringify(p.margin)}`);
         if (!p.dimensionDriver || typeof p.dimensionDriver !== "string")
-          pushErr(errors, file, `${pref}.dimensionDriver`, "v2.2 必填非空字符串（拉开差距的主导维度）");
+          pushErr(errors, file, `${pref}.dimensionDriver`, `${cv} 必填非空字符串（拉开差距的主导维度）`);
         if (!p.keyReason || typeof p.keyReason !== "string")
           pushErr(errors, file, `${pref}.keyReason`, "必填非空字符串");
       }
     }
   }
 
-  // perReportFeedback（v2.1 起必填，v2.2 继续）
-  if (cv === "2.1" || cv === "2.2") {
+  // perReportFeedback（v2.1 起必填，v3.0 继续）
+  if (cv === "2.1" || cv === "2.2" || cv === "3.0" || cv === "3.1" || cv === "3.2") {
     if (!Array.isArray(s.perReportFeedback)) {
       pushErr(errors, file, "summary.perReportFeedback", `${cv} 必填数组`);
     } else {
@@ -380,9 +470,9 @@ export function validatePayload(file, payload, errors) {
   }
 
   // ============================================================
-  // v2.2 专属：claimInventory / claimChecks / dimensionChecklists / verificationBudget
+  // v2.2+：claimInventory / claimChecks / dimensionChecklists / verificationBudget
   // ============================================================
-  if (isV22) {
+  if (isV22Plus) {
     // --- claimInventory ---
     const claimIds = new Set();
     if (!Array.isArray(s.claimInventory) || s.claimInventory.length === 0) {
@@ -478,6 +568,20 @@ export function validatePayload(file, payload, errors) {
           (!ck.evidence || typeof ck.evidence !== "string")
         ) {
           pushErr(errors, file, `${pref}.evidence`, "非 skipped 状态必填 evidence 说明");
+        } else if (
+          isV3 &&
+          (ck.status === "refuted" || ck.status === "inconclusive") &&
+          typeof ck.evidence === "string"
+        ) {
+          if (ck.evidence.trim().length < 30) {
+            pushErr(errors, file, `${pref}.evidence`, "v3.0+ 下 refuted / inconclusive 的 evidence 长度必须 ≥ 30 字");
+          }
+          if (!hasQuotedSnippet(ck.evidence, 15)) {
+            pushErr(errors, file, `${pref}.evidence`, "v3.0+ 下 refuted / inconclusive 的 evidence 必须含报告原文引用片段（用「」或 \"\" 包裹）");
+          }
+          if (isV31 && !hasExternalValidationCue(ck.evidence)) {
+            pushErr(errors, file, `${pref}.evidence`, "v3.1 下 refuted / inconclusive 的 evidence 还必须包含外部核验结论（或不可核说明）");
+          }
         }
       }
       // 每个 claimId 必须有 check
@@ -549,13 +653,6 @@ export function validatePayload(file, payload, errors) {
         pushErr(errors, file, "summary.verificationBudget.targetMinutes", `v2.2 固定为 45，实际 ${b.targetMinutes}`);
       if (typeof b.actualMinutes !== "number" || b.actualMinutes <= 0)
         pushErr(errors, file, "summary.verificationBudget.actualMinutes", `必须是 >0 的数字，实际 ${b.actualMinutes}`);
-      else if (b.actualMinutes > BUDGET_HARD_LIMIT_MIN)
-        pushErr(
-          errors,
-          file,
-          "summary.verificationBudget.actualMinutes",
-          `不得超过 ${BUDGET_HARD_LIMIT_MIN}min 硬上限，实际 ${b.actualMinutes}`
-        );
       if (!Array.isArray(b.passesCompleted)) {
         pushErr(errors, file, "summary.verificationBudget.passesCompleted", "必填数组");
       } else {
@@ -593,9 +690,183 @@ export function validatePayload(file, payload, errors) {
     }
   }
 
+  // v3.0：聚焦 Sophia 的跨产品诊断
+  if (isV3 && s.overallScores.length >= 2) {
+    const cpi = s.crossProductInsights;
+    const productNames = s.overallScores
+      .map((o) => (typeof o.productName === "string" ? o.productName.trim() : ""))
+      .filter(Boolean);
+    const hasSophia = productNames.some((name) => /^SophiaAI\b/i.test(name));
+    const claimIdSet = new Set(
+      Array.isArray(s.claimInventory)
+        ? s.claimInventory
+            .map((c) => (typeof c?.claimId === "string" ? c.claimId : ""))
+            .filter(Boolean)
+        : []
+    );
+
+    if (!cpi || typeof cpi !== "object") {
+      pushErr(errors, file, "summary.crossProductInsights", "v3.0 在 candidates ≥ 2 时必填对象");
+    } else {
+      if (!isNonEmptyString(cpi.focusProductName)) {
+        pushErr(errors, file, "summary.crossProductInsights.focusProductName", "必填非空字符串");
+      } else if (cpi.focusProductName === "none") {
+        if (hasSophia) {
+          pushErr(errors, file, "summary.crossProductInsights.focusProductName", "本轮含 Sophia 参评时不能填 \"none\"");
+        }
+      } else {
+        if (!/^SophiaAI\b/i.test(cpi.focusProductName)) {
+          pushErr(errors, file, "summary.crossProductInsights.focusProductName", "v3.0 聚焦对象必须是 SophiaAI 家族或 \"none\"");
+        }
+        if (!productNames.includes(cpi.focusProductName)) {
+          pushErr(errors, file, "summary.crossProductInsights.focusProductName", `focusProductName 不在 candidates 中：${cpi.focusProductName}`);
+        }
+      }
+
+      const validateQuote = (quote, pref, requireKnownProduct = true) => {
+        const productLabel =
+          typeof quote?.productName === "string"
+            ? quote.productName.trim()
+            : typeof quote?.product === "string"
+              ? quote.product.trim()
+              : "";
+        if (!productLabel) {
+          pushErr(errors, file, `${pref}.productName`, "必填产品名（兼容旧字段 product）");
+        } else if (requireKnownProduct && !productNames.includes(productLabel)) {
+          pushErr(errors, file, `${pref}.productName`, `产品名不在 candidates 中：${productLabel}`);
+        }
+        if (!isNonEmptyString(quote?.quote)) {
+          pushErr(errors, file, `${pref}.quote`, "必填非空字符串");
+        }
+        return productLabel;
+      };
+
+      const validateInsight = (insight, pref, kind) => {
+        if (!insight || typeof insight !== "object") {
+          pushErr(errors, file, pref, "必填对象");
+          return;
+        }
+        if (!isNonEmptyString(insight.dimension) || !/^(R[1-5](?:[ab])?|X[1-3])$/.test(insight.dimension.trim())) {
+          pushErr(errors, file, `${pref}.dimension`, `维度代号非法：${JSON.stringify(insight.dimension)}`);
+        }
+        if (!isNonEmptyString(insight.gapSummary)) {
+          pushErr(errors, file, `${pref}.gapSummary`, "必填非空字符串");
+        }
+
+        const peerField = kind === "sharedWeakness" ? (Array.isArray(insight.acrossProducts) ? "acrossProducts" : "vsProducts") : "vsProducts";
+        const peers = insight[peerField];
+        if (!Array.isArray(peers) || peers.length === 0) {
+          pushErr(errors, file, `${pref}.${peerField}`, "必填非空数组");
+        } else {
+          for (const [idx, name] of peers.entries()) {
+            if (!isNonEmptyString(name)) {
+              pushErr(errors, file, `${pref}.${peerField}[${idx}]`, "必填非空字符串");
+              continue;
+            }
+            if (!productNames.includes(name)) {
+              pushErr(errors, file, `${pref}.${peerField}[${idx}]`, `产品名不在 candidates 中：${name}`);
+            }
+          }
+        }
+
+        if (kind !== "sharedWeakness") {
+          if (!Array.isArray(insight.evidenceQuotes) || insight.evidenceQuotes.length === 0) {
+            pushErr(errors, file, `${pref}.evidenceQuotes`, "必填非空数组");
+          } else {
+            let hasFocusQuote = false;
+            for (const [idx, quote] of insight.evidenceQuotes.entries()) {
+              const productLabel = validateQuote(quote, `${pref}.evidenceQuotes[${idx}]`);
+              if (productLabel === cpi.focusProductName) hasFocusQuote = true;
+            }
+            if (cpi.focusProductName !== "none" && !hasFocusQuote) {
+              pushErr(errors, file, `${pref}.evidenceQuotes`, "至少要有 1 条属于 focusProductName 的原文引用");
+            }
+          }
+        } else if (Array.isArray(insight.evidenceQuotes)) {
+          for (const [idx, quote] of insight.evidenceQuotes.entries()) {
+            validateQuote(quote, `${pref}.evidenceQuotes[${idx}]`);
+          }
+        }
+
+        if (insight.claimRefs !== undefined) {
+          if (!Array.isArray(insight.claimRefs)) {
+            pushErr(errors, file, `${pref}.claimRefs`, "如填写必须是数组");
+          } else {
+            for (const [idx, claimId] of insight.claimRefs.entries()) {
+              if (!isNonEmptyString(claimId)) {
+                pushErr(errors, file, `${pref}.claimRefs[${idx}]`, "必须是非空字符串");
+              } else if (claimIdSet.size > 0 && !claimIdSet.has(claimId)) {
+                pushErr(errors, file, `${pref}.claimRefs[${idx}]`, `claimId 不存在：${claimId}`);
+              }
+            }
+          }
+        }
+      };
+
+      for (const key of ["strongerThan", "weakerThan", "sharedWeakness"]) {
+        if (!Array.isArray(cpi[key])) {
+          pushErr(errors, file, `summary.crossProductInsights.${key}`, "必填数组（可为空）");
+        }
+      }
+
+      for (const [idx, insight] of (Array.isArray(cpi.strongerThan) ? cpi.strongerThan : []).entries()) {
+        validateInsight(insight, `summary.crossProductInsights.strongerThan[${idx}]`, "strongerThan");
+      }
+      for (const [idx, insight] of (Array.isArray(cpi.weakerThan) ? cpi.weakerThan : []).entries()) {
+        validateInsight(insight, `summary.crossProductInsights.weakerThan[${idx}]`, "weakerThan");
+      }
+      for (const [idx, insight] of (Array.isArray(cpi.sharedWeakness) ? cpi.sharedWeakness : []).entries()) {
+        validateInsight(insight, `summary.crossProductInsights.sharedWeakness[${idx}]`, "sharedWeakness");
+      }
+
+      if (
+        cpi.focusProductName !== "none" &&
+        Array.isArray(cpi.strongerThan) &&
+        Array.isArray(cpi.weakerThan) &&
+        cpi.strongerThan.length + cpi.weakerThan.length < 2
+      ) {
+        pushErr(errors, file, "summary.crossProductInsights", "focusProductName ≠ \"none\" 时，strongerThan + weakerThan 至少要有 2 条 insight");
+      }
+    }
+  }
+
   // report 正文
   if (typeof payload.report !== "string" || !payload.report.trim()) {
     pushErr(errors, file, "report", "必填非空字符串");
+  } else if (isV31 || isV32) {
+    const summaryIdx = findHeadingIndex(payload.report, "summary");
+    const scoreIdx = findHeadingIndex(payload.report, "score");
+    const dimensionIdx = findHeadingIndex(payload.report, "dimension");
+    const keyIssueIdx = findHeadingIndex(payload.report, "keyIssue");
+    const prosConsIdx = findHeadingIndex(payload.report, "prosCons");
+    const versionLabel = isV32 ? "v3.2" : "v3.1";
+    if (summaryIdx < 0) pushErr(errors, file, "report", `${versionLabel} 必须包含“评测结论/总评”锚点 heading`);
+    if (!isV32 && scoreIdx < 0) pushErr(errors, file, "report", "v3.1 必须包含“评分总表”锚点 heading");
+    if (dimensionIdx < 0) pushErr(errors, file, "report", `${versionLabel} 必须包含“按维度展开”锚点 heading`);
+    if (keyIssueIdx < 0) pushErr(errors, file, "report", `${versionLabel} 必须包含“额外重点问题”锚点 heading`);
+    if (prosConsIdx < 0) pushErr(errors, file, "report", `${versionLabel} 必须包含“各主体优缺点与建议”锚点 heading`);
+    if (
+      summaryIdx >= 0 &&
+      dimensionIdx >= 0 &&
+      keyIssueIdx >= 0 &&
+      prosConsIdx >= 0 &&
+      !(summaryIdx < dimensionIdx && dimensionIdx < keyIssueIdx && keyIssueIdx < prosConsIdx)
+    ) {
+      pushErr(errors, file, "report", `${versionLabel} 的总-分-总锚点顺序必须是：评测结论 → 按维度展开 → 额外重点问题 → 各主体优缺点与建议`);
+    }
+    if (isV32 && scoreIdx >= 0 && !(summaryIdx < scoreIdx && scoreIdx < dimensionIdx)) {
+      pushErr(errors, file, "report", "v3.2 若显式写出“评分总表”heading，应放在评测结论之后、按维度展开之前");
+    }
+  } else if (cv === "3.0") {
+    const summaryIdx = findHeadingIndex(payload.report, "summary");
+    const scoreIdx = findHeadingIndex(payload.report, "score");
+    const sbsIdx = findHeadingIndex(payload.report, "sbs");
+    if (summaryIdx < 0) pushErr(errors, file, "report", "v3.0 必须包含“总评”稳定锚点 heading");
+    if (scoreIdx < 0) pushErr(errors, file, "report", "v3.0 必须包含“评分总表”稳定锚点 heading");
+    if (sbsIdx < 0) pushErr(errors, file, "report", "v3.0 必须包含“SBS 结论”稳定锚点 heading");
+    if (summaryIdx >= 0 && scoreIdx >= 0 && sbsIdx >= 0 && !(summaryIdx < scoreIdx && scoreIdx < sbsIdx)) {
+      pushErr(errors, file, "report", "v3.0 的三个稳定锚点顺序必须是：总评 → 评分总表 → SBS 结论");
+    }
   }
 }
 

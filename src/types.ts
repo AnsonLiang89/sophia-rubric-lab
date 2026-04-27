@@ -10,13 +10,16 @@
  *   - v2.0（2026-04-21 起）：按下方定义重构；R1 吸收 v1 的信源职能（"数字对不对"和"信源硬不硬"本就指向同一件事），权重从 0.25 → 0.40
  *   - v2.1（2026-04-22）：维度不变，新增外部核验硬约束 + perReportFeedback
  *   - v2.2（2026-04-25）：维度不变，R1 拆 R1a/R1b 子项 + claim-inventory/checklist/budget 流水线
+ *   - v3.0（2026-04-25 晚）：维度/权重仍不变，但评测焦点转向 Sophia 聚焦诊断；report 结构从六大章节改为三稳定锚点 + 自由生成层
+ *   - v3.1（2026-04-25 深夜）：先查错再评分；report 收敛为总-分-总四段锚点
+ *   - v3.2（2026-04-26）：评分总表之外的核验/反馈/聚焦诊断全部回归正文；页面主阅读路径收敛为“评分总表 + 正文”
  *
  * ⚠️ 注意：下方 `description` 是**精简占位文案**，仅供前端列表/图例等快速展示使用。
  * 维度的**完整定义、打分锚点、负面特征**等正式说明以
  * `.evaluations/RUBRIC_STANDARD.md` §二 为准（由 Standard 页面直接渲染 markdown）。
  * 若要修订维度语义，请同步更新 RUBRIC_STANDARD.md，避免两处漂移。
  *
- * Dashboard 的总览/SBS 聚合默认只计入 `contractVersion >= "2.0"` 的产物，
+ * Dashboard 的总览/SBS 聚合默认只计入 `contractVersion >= "2.0"` 的产物（含 v3.0），
  * v1.0 历史产物因维度语义不同会被过滤（顶部提示已过滤几份）。
  */
 export const RUBRIC_DIMENSIONS = [
@@ -128,6 +131,12 @@ export interface AIProduct {
    */
   isPrimary?: boolean;
   color?: string;          // 图表配色
+  /**
+   * 内部说明文字（Markdown 或纯文本均可），仅「评测对象管理器」页面可见。
+   * Dashboard / Report / Products 等展示面均**不渲染**此字段。
+   * 用来记录这个评测对象的背景、用途、版本差异等，方便管理员自己维护。
+   */
+  description?: string;
   createdAt: string;
 }
 

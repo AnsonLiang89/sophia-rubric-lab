@@ -269,8 +269,8 @@ export function checkBakeFreshness() {
         // 所以复制一份剔除 queryId 再比
         const stripQueryId = (j) => {
           if (!j || typeof j !== "object") return j;
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { queryId, ...rest } = j;
+          const rest = { ...j };
+          delete rest.queryId;
           return rest;
         };
         const srcCanon = JSON.stringify(stripQueryId(srcContent));
@@ -324,15 +324,13 @@ function main() {
   }
 
   if (result.fresh) {
-    // eslint-disable-next-line no-console
-    console.log(
+        console.log(
       `\x1b[32m[bake-freshness]\x1b[0m ✓ 对外版产物与源文件完全同步（${result.items.length} 项均已检查）。`
     );
     process.exit(0);
   }
 
-  // eslint-disable-next-line no-console
-  console.error(
+    console.error(
     `\x1b[33m[bake-freshness]\x1b[0m ⚠ 发现 ${result.stale.length} 项过期（${Object.entries(
       staleGrouped
     )
@@ -340,15 +338,12 @@ function main() {
       .join(", ")}），对外版可能落后于源文件。`
   );
   for (const s of result.stale.slice(0, 20)) {
-    // eslint-disable-next-line no-console
-    console.error(`  · ${s.detail}`);
+        console.error(`  · ${s.detail}`);
   }
   if (result.stale.length > 20) {
-    // eslint-disable-next-line no-console
-    console.error(`  ……还有 ${result.stale.length - 20} 项未列出`);
+        console.error(`  ……还有 ${result.stale.length - 20} 项未列出`);
   }
-  // eslint-disable-next-line no-console
-  console.error(
+    console.error(
     `\x1b[33m[bake-freshness]\x1b[0m 修复方式：跑 \`npm run bake:public\`（或一键发布），让 public/data 跟上源文件。`
   );
   process.exit(1);
@@ -358,8 +353,7 @@ if (isMain()) {
   try {
     main();
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error("[bake-freshness] unexpected failure:", err);
+        console.error("[bake-freshness] unexpected failure:", err);
     process.exit(2);
   }
 }

@@ -548,6 +548,7 @@ function RawReportModal({
     if (!open || !sub) return;
     // dev 模式：直接用 localStorage 里的完整 content
     if (!reportLoader) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLazyContent(sub.content);
       return;
     }
@@ -595,8 +596,8 @@ function RawReportModal({
   // 关闭时重置全屏态，避免下次开一进来就是全屏
   // 经典 "props 变化时同步重置内部 UI state" 场景，运行时正确。
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFullscreen(false);
       setLazyContent(null);
       setLoading(false);

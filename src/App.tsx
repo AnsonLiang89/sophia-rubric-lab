@@ -13,6 +13,8 @@ const ProductsPage = lazy(() => import("./pages/ProductsPage"));
 const ReportPage = lazy(() => import("./pages/ReportPage"));
 const StandardPage = lazy(() => import("./pages/StandardPage"));
 const ContractPage = lazy(() => import("./pages/ContractPage"));
+// 评测对象管理器（仅管理员版可见；对外版路由进入时组件内部会降级为只读说明页）
+const EvaluationTargetsPage = lazy(() => import("./pages/EvaluationTargetsPage"));
 
 function RouteFallback() {
   return <div className="text-ink-500 animate-pulse">页面加载中...</div>;
@@ -201,6 +203,8 @@ export default function App() {
             <Route path="products" element={<ProductsPage />} />
             <Route path="standard" element={<StandardPage />} />
             <Route path="contract" element={<ContractPage />} />
+            {/* 评测对象管理器（管理员版导航里有 tab；对外版进入时降级为只读说明页） */}
+            <Route path="targets" element={<EvaluationTargetsPage />} />
             {/* 旧 /rubric 链接兼容 */}
             <Route path="rubric" element={<Navigate to="/standard" replace />} />
             <Route path="*" element={<Navigate to="/" replace />} />

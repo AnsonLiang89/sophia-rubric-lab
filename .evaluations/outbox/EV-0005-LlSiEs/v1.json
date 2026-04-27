@@ -9,34 +9,34 @@
       {
         "reportId": "daNcDpqARK",
         "productName": "MiroThink",
-        "score": 10.0,
+        "score": 10,
         "verdict": "卓越",
         "vetoTriggered": false
       },
       {
         "reportId": "imXMky8VQu",
         "productName": "Gemini",
-        "score": 8.0,
+        "score": 8,
         "verdict": "优秀",
         "vetoTriggered": false
       },
       {
         "reportId": "yKzzT3mX-g",
         "productName": "Manus",
-        "score": 8.0,
+        "score": 8,
         "verdict": "优秀",
         "vetoTriggered": false
       },
       {
         "reportId": "ZnPjNHpT5X",
-        "productName": "SophiaAI",
+        "productName": "SophiaAI v4",
         "score": 6.9,
         "verdict": "合格",
         "vetoTriggered": false
       },
       {
         "reportId": "3guof2Rksz",
-        "productName": "SophiaAI",
+        "productName": "SophiaAI v5",
         "score": 6.65,
         "verdict": "合格",
         "vetoTriggered": false
@@ -574,7 +574,7 @@
       },
       {
         "reportId": "ZnPjNHpT5X",
-        "productName": "SophiaAI (v4)",
+        "productName": "SophiaAI v4",
         "strengths": [
           "R4 完备性：结构完备度在六家中最高——规划/资金/隐性风险/竞争/概率/预警阈值/动态跟踪/Q2 7 节点/信息局限性说明一应俱全",
           "R5 决策可操作性：三情景补贴对冲策略 + 7 个 Q2 核心跟踪节点 + 周度变量校准机制，决策价值在六家中最强",
@@ -614,7 +614,7 @@
       },
       {
         "reportId": "3guof2Rksz",
-        "productName": "SophiaAI (v5)",
+        "productName": "SophiaAI v5",
         "strengths": [
           "R1：承重数字完全准确（418.8km/84 亿/455 票/2% 利率/20 年期/391 亿 CNY/12h/苏林 4-17 声明）",
           "X1 时政锚点：苏林访华 + 32 份文件 + 老街动工 + 高市早苗访越——核心锚点齐备",

@@ -24,6 +24,7 @@
  *   GET    /_bus/standard                  ──► handlers/docs.ts · handleGetStandard
  *   GET    /_bus/contract                  ──► handlers/docs.ts · handleGetContract
  *   GET    /_bus/products                  ──► handlers/docs.ts · handleGetProducts
+ *   POST   /_bus/products                  ──► handlers/docs.ts · handlePutProducts（评测对象管理器写回）
  *
  *   POST   /_bus/runtime-snapshot          ──► handlers/runtime.ts · handlePostRuntimeSnapshot
  *   GET    /_bus/runtime-snapshot          ──► handlers/runtime.ts · handleGetRuntimeSnapshot
@@ -62,6 +63,7 @@ import {
   handleGetStandard,
   handleGetContract,
   handleGetProducts,
+  handlePutProducts,
 } from "./bus/handlers/docs";
 import {
   handlePostRuntimeSnapshot,
@@ -190,6 +192,7 @@ async function dispatch(
     if (url === "/_bus/runtime-snapshot") return handlePostRuntimeSnapshot(req, res, ctx);
     if (url === "/_bus/publish") return handlePublish(req, res, ctx);
     if (url === "/_bus/inbox") return handlePostInbox(req, res, ctx);
+    if (url === "/_bus/products") return handlePutProducts(req, res, ctx);
   }
 
   // ========== DELETE ==========

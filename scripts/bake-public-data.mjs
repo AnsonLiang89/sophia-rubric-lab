@@ -77,7 +77,6 @@ function rel(p) {
 
 function log(level, ...args) {
   const tag = level === "error" ? "\x1b[31m[bake:error]\x1b[0m" : level === "warn" ? "\x1b[33m[bake:warn]\x1b[0m" : "\x1b[36m[bake]\x1b[0m";
-  // eslint-disable-next-line no-console
   console[level === "error" ? "error" : "log"](tag, ...args);
 }
 
@@ -590,7 +589,8 @@ function bakePublicBundle(snapshot, bakedAt, publishMeta) {
 
   const bundle = {
     bakedAt,
-    contractVersion: "1.0",
+    contractVersion: "3.2",
+    // 当前对外版默认面向的评测契约版本（public-bundle 只是元数据，不参与单条 outbox 兼容判断）。
     // 产品清单走 products.json（有独立端点），这里不重复；但为了首屏减少一次请求，
     // 也内嵌一份（ProductsPage 仍走 products.json 以取 updatedAt/path 等元信息）
     products: readJson(path.join(OUT_DIR, "products.json")).products,

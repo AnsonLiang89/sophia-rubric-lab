@@ -321,7 +321,7 @@ export type EvaluationPass =
 export interface VerificationBudget {
   /** 固定 45 */
   targetMinutes: number;
-  /** 实际耗时（分钟），硬约束 ≤ 50 */
+  /** 实际耗时（分钟）；自 v3.0 起取消硬上限，仅要求 > 0，并作为观测指标保留 */
   actualMinutes: number;
   /** 完成的阶段列表，前 6 个不可省略 */
   passesCompleted: EvaluationPass[];
@@ -331,6 +331,66 @@ export interface VerificationBudget {
   claimsOutOfScope: number;
   /** 自由备注：流程偏差、超时原因等 */
   notes?: string;
+}
+
+// ------------------------------------------------------------
+// v3.0 新增：聚焦 Sophia 的跨产品诊断
+// ------------------------------------------------------------
+
+/**
+ * v3.0 新增：某条 insight 的分类。
+ * - `strongerThan`：Sophia 在该维度明显领先某/某些对手（值得延续的优势）
+ * - `weakerThan`：Sophia 在该维度被某/某些对手超越（优化方向）
+ * - `sharedWeakness`：Sophia 与对手在该维度共同失分（行业共性短板，非 Sophia 独有问题）
+ */
+export type CrossProductInsightCategory =
+  | "strongerThan"
+  | "weakerThan"
+  | "sharedWeakness";
+
+/**
+ * v3.0 新增：单条跨产品诊断 insight。
+ *
+ * 用于聚焦 Sophia 视角的结构化诊断，不走自由 markdown，而是给前端
+ * 渲染成三 tab 面板（领先/被超越/共性短板），每条 insight 一张卡片。
+ */
+export interface CrossProductInsight {
+  /** 维度代码：R1 / R2 / R3 / R4 / R5 / X1 / X2 ... */
+  dimension: string;
+  category: CrossProductInsightCategory;
+  /**
+   * 对照产品列表（产品名数组）。
+   * - strongerThan / weakerThan：Sophia 对比的那些产品
+   * - sharedWeakness：共同失分的产品（可含 Sophia）
+   */
+  vsProducts: string[];
+  /** 差距/共性的一句话摘要（≤ 80 字），前端卡片 title 下方 */
+  gapSummary: string;
+  /**
+   * 对照证据原文片段（左 Sophia，右对手或共性）。
+   * 每条建议 ≤ 300 字，便于前端折叠展示。
+   */
+  evidenceQuotes: Array<{
+    /** 产品名；Sophia 侧填入 focusProductName，对手填入其产品名 */
+    productName: string;
+    quote: string;
+  }>;
+  /** 关联的 claimInventory.claimId（可多条，用于悬停链接） */
+  claimRefs?: string[];
+}
+
+/**
+ * v3.0 新增：聚焦 Sophia 的跨产品诊断总结构。
+ *
+ * 当本轮评测包含 Sophia 某一版本时，`focusProductName` 填入该版本展示名；
+ * 不含 Sophia 的对照轮次则填 `"none"`，三个数组允许为空。
+ */
+export interface CrossProductInsights {
+  /** 聚焦产品展示名（如 "SophiaAI v4"）；无 Sophia 参评时填 "none" */
+  focusProductName: string;
+  strongerThan: CrossProductInsight[];
+  weakerThan: CrossProductInsight[];
+  sharedWeakness: CrossProductInsight[];
 }
 
 export interface EvaluationSummary {
@@ -367,6 +427,14 @@ export interface EvaluationSummary {
    * 历史版本没有此字段。
    */
   verificationBudget?: VerificationBudget;
+
+  /**
+   * v3.0 必填：聚焦 Sophia 的跨产品诊断。
+   * - 本轮含 Sophia 任意版本时，`focusProductName` 填入该版本展示名，三个数组按维度填充 insight
+   * - 本轮不含 Sophia 时，`focusProductName="none"`，三个数组允许为空
+   * 历史版本（≤ v2.2）没有此字段，前端按"无聚焦诊断面板"容错展示。
+   */
+  crossProductInsights?: CrossProductInsights;
 }
 
 export interface EvaluationOutboxPayload {
@@ -379,13 +447,15 @@ export interface EvaluationOutboxPayload {
    * - `"1.0"`：2026-04-19 ~ 2026-04-21 使用的旧契约（0.5 精度打分、无 tier/confidence/veto）
    * - `"2.0"`：2026-04-21 使用的契约（档位制 10/8/6/4/2、一票否决、扩展维度可激活）
    * - `"2.1"`：2026-04-22 起使用的契约（外部核验硬约束、perReportFeedback、report 正文六大章节）
-   * - `"2.2"`：2026-04-25 起使用的契约（claim 驱动的 R1 核验、R1 子档 R1a/R1b、双轴 tier 表、dimensionChecklists、verificationBudget、SBS 新结构）
+   * - `"2.2"`：2026-04-25 日间起使用的契约（claim 驱动的 R1 核验、R1 子档 R1a/R1b、双轴 tier 表、dimensionChecklists、verificationBudget、SBS 新结构）
+   * - `"3.0"`：2026-04-25 晚起使用的契约（评测焦点重定位到 Sophia，新增 summary.crossProductInsights；report 正文从六大章节硬约束改为三稳定锚点 + 自由生成层；低分证据密度硬约束）
+   * - `"3.1"`：2026-04-25 深夜起使用的契约（先查错再评分；report 收敛为总-分-总四段锚点）
+   * - `"3.2"`：2026-04-26 起使用的契约（评分总表之外的核验/反馈/聚焦诊断全部回归正文；页面主阅读路径收敛为“评分总表 + 正文”）
    *
    * 前端渲染时按此字段分支兼容——历史版本保留原样展示，新版本启用新 UI 能力
-   * （档位标签、veto 徽章、激活的扩展维度纳入总分展示、perReportFeedback 反馈卡、
-   * claim 核验地图、checklist 完成度表、时间预算报表）。
+   * （档位标签、veto 徽章、激活的扩展维度纳入总分展示、正文四段锚点校验、低分证据高亮等）。
    */
-  contractVersion: "1.0" | "2.0" | "2.1" | "2.2";
+  contractVersion: "1.0" | "2.0" | "2.1" | "2.2" | "3.0" | "3.1" | "3.2";
   /**
    * 冗余写入的 query 永久 id（2026-04-21 方案 D 新增）。
    * - 由 bus / bake 统一注入，payload 原作者（LLM）不需要填
@@ -634,6 +704,11 @@ export interface BusProduct {
   color?: string | null;
   /** 可选：手动指定展示序，sortProducts 会在 Sophia 分桶后再看它 */
   order?: number | null;
+  /**
+   * 可选：评测对象的内部说明，仅「评测对象管理器」页面可见。
+   * Dashboard / Report / 其他页面均不渲染此字段。
+   */
+  description?: string | null;
 }
 
 export interface ProductsResponse {
@@ -703,6 +778,32 @@ export const contractBus = {
   /** 读取评测主体清单 PRODUCTS.json（只读；前端不应写入） */
   getProducts(): Promise<ProductsResponse | null> {
     return busFetch<ProductsResponse>("GET", "/_bus/products");
+  },
+
+  /**
+   * 整体替换评测主体清单 PRODUCTS.json（评测对象管理器专用，仅 dev/管理员版可用）。
+   *
+   * 设计：前端把增/改/删后的完整 products 数组一次性送上去，服务端整体落盘；
+   * 不做细粒度 diff，也没有并发写入问题（单管理员本地场景）。
+   * 成功后返回最新快照（含 updatedAt 和 mtime），前端可用来同步 UI。
+   *
+   * 对外版（IS_READONLY）会在 dataSource 层被 ReadOnlyError 拦截，UI 也已隐藏入口。
+   */
+  putProducts(
+    products: BusProduct[],
+    updatedAt?: string
+  ): Promise<
+    | {
+        ok: true;
+        path: string;
+        mtime: number;
+        size: number;
+        updatedAt: string;
+        products: BusProduct[];
+      }
+    | null
+  > {
+    return busFetch("POST", "/_bus/products", { products, updatedAt });
   },
 
   /**

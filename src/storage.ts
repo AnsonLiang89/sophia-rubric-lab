@@ -245,7 +245,6 @@ export class PublicBundleAdapter implements StorageAdapter {
   }
 
   private noopWarn(op: string) {
-    // eslint-disable-next-line no-console
     console.warn(`[PublicBundleAdapter] write operation "${op}" ignored in public read-only mode.`);
   }
 

@@ -1,0 +1,758 @@
+{
+  "taskId": "EV-0006-OEk1ZL",
+  "version": 1,
+  "contractVersion": "2.2",
+  "evaluator": "Sophia (WorkBuddy)",
+  "evaluatedAt": "2026-04-25T17:40:00+08:00",
+  "summary": {
+    "overallScores": [
+      {
+        "reportId": "yXrIYwTs0m",
+        "productName": "MiroThink",
+        "score": 8.9,
+        "verdict": "优秀",
+        "vetoTriggered": false
+      },
+      {
+        "reportId": "1VQ9E0Ltjj",
+        "productName": "Gemini",
+        "score": 8,
+        "verdict": "优秀",
+        "vetoTriggered": false
+      },
+      {
+        "reportId": "tAZ9u6qo8A",
+        "productName": "Manus",
+        "score": 5.5,
+        "verdict": "合格",
+        "vetoTriggered": false
+      },
+      {
+        "reportId": "fJqJOQr4-9",
+        "productName": "SophiaAI v4",
+        "score": 3,
+        "verdict": "不合格",
+        "vetoTriggered": true,
+        "vetoReason": "C10[V1]与C11[V2]为关键承重事实且外验落锤为 refuted，触发一票否决。"
+      }
+    ],
+    "rubric": [
+      {
+        "dimensionId": "R1",
+        "name": "准确性",
+        "weight": 0.4,
+        "subscores": {
+          "R1a": {
+            "score": 6,
+            "tier": "B",
+            "weight": 0.28,
+            "comment": "事实核验层存在明显分化，优劣报告差距大。"
+          },
+          "R1b": {
+            "score": 4,
+            "tier": "C",
+            "weight": 0.12,
+            "comment": "个别报告存在由错误前提推导结论的逻辑断裂。"
+          }
+        },
+        "scores": [
+          {
+            "reportId": "yXrIYwTs0m",
+            "score": 8,
+            "tier": "A",
+            "comment": "关键航班、签证、税费与时间窗口信息大体可核，且主动披露信息边界。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "1VQ9E0Ltjj",
+            "score": 8,
+            "tier": "A",
+            "comment": "多数事实可核，个别宏观数字未给出精确出处。",
+            "confidence": "medium",
+            "issueTags": [
+              "一手源不足"
+            ]
+          },
+          {
+            "reportId": "tAZ9u6qo8A",
+            "score": 4,
+            "tier": "C",
+            "comment": "存在关键事实错误，开篇风险判断与可核信息不一致。",
+            "confidence": "high",
+            "issueTags": [
+              "事实错误"
+            ]
+          },
+          {
+            "reportId": "fJqJOQr4-9",
+            "score": 2,
+            "tier": "D",
+            "comment": "关键承重事实存在编造，且直接影响目的地与航班决策。",
+            "confidence": "high",
+            "issueTags": [
+              "事实错误",
+              "编造信源"
+            ]
+          }
+        ]
+      },
+      {
+        "dimensionId": "R2",
+        "name": "相关性",
+        "weight": 0.15,
+        "scores": [
+          {
+            "reportId": "yXrIYwTs0m",
+            "score": 10,
+            "tier": "S",
+            "comment": "逐条命中用户约束并转化为可执行策略，相关性最强。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "1VQ9E0Ltjj",
+            "score": 8,
+            "tier": "A",
+            "comment": "覆盖完整，但首选方案与用户已有签证优势的绑定不够直接。",
+            "confidence": "medium",
+            "issueTags": []
+          },
+          {
+            "reportId": "tAZ9u6qo8A",
+            "score": 8,
+            "tier": "A",
+            "comment": "单方案命中度尚可，但跨城强度与轻松诉求存在张力。",
+            "confidence": "medium",
+            "issueTags": []
+          },
+          {
+            "reportId": "fJqJOQr4-9",
+            "score": 4,
+            "tier": "C",
+            "comment": "自称完全匹配，但核心直飞约束建立在不可靠前提上。",
+            "confidence": "high",
+            "issueTags": [
+              "未答核心诉求"
+            ]
+          }
+        ]
+      },
+      {
+        "dimensionId": "R3",
+        "name": "论证深度",
+        "weight": 0.2,
+        "scores": [
+          {
+            "reportId": "yXrIYwTs0m",
+            "score": 10,
+            "tier": "S",
+            "comment": "比较框架、反选论证和约束翻译完整，推理链条最稳。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "1VQ9E0Ltjj",
+            "score": 8,
+            "tier": "A",
+            "comment": "信息量大且有结构化分析，但噪声表达略多。",
+            "confidence": "medium",
+            "issueTags": []
+          },
+          {
+            "reportId": "tAZ9u6qo8A",
+            "score": 6,
+            "tier": "B",
+            "comment": "执行手册完整，但关键结论缺少足够反证与替代路径。",
+            "confidence": "medium",
+            "issueTags": [
+              "论证单薄"
+            ]
+          },
+          {
+            "reportId": "fJqJOQr4-9",
+            "score": 4,
+            "tier": "C",
+            "comment": "推理建立在错误事实上，结论可信度不足。",
+            "confidence": "high",
+            "issueTags": [
+              "逻辑跳跃"
+            ]
+          }
+        ]
+      },
+      {
+        "dimensionId": "R4",
+        "name": "完备性",
+        "weight": 0.1,
+        "scores": [
+          {
+            "reportId": "yXrIYwTs0m",
+            "score": 10,
+            "tier": "S",
+            "comment": "方案比较、预算、签证、时效与风险均有覆盖。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "1VQ9E0Ltjj",
+            "score": 8,
+            "tier": "A",
+            "comment": "覆盖广但行动优先级不够突出。",
+            "confidence": "medium",
+            "issueTags": []
+          },
+          {
+            "reportId": "tAZ9u6qo8A",
+            "score": 6,
+            "tier": "B",
+            "comment": "单路径完整，多路径比较不足。",
+            "confidence": "medium",
+            "issueTags": []
+          },
+          {
+            "reportId": "fJqJOQr4-9",
+            "score": 2,
+            "tier": "D",
+            "comment": "虽形式完整，但关键事实错误导致完备性无效化。",
+            "confidence": "high",
+            "issueTags": [
+              "结构空转"
+            ]
+          }
+        ]
+      },
+      {
+        "dimensionId": "R5",
+        "name": "决策价值",
+        "weight": 0.15,
+        "scores": [
+          {
+            "reportId": "yXrIYwTs0m",
+            "score": 8,
+            "tier": "A",
+            "comment": "给出明确行动窗口与执行顺序，落地价值高。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "1VQ9E0Ltjj",
+            "score": 8,
+            "tier": "A",
+            "comment": "可用于生成候选清单，但决策收敛动作偏弱。",
+            "confidence": "medium",
+            "issueTags": []
+          },
+          {
+            "reportId": "tAZ9u6qo8A",
+            "score": 6,
+            "tier": "B",
+            "comment": "可执行但对风险与替代方案处理不充分。",
+            "confidence": "medium",
+            "issueTags": []
+          },
+          {
+            "reportId": "fJqJOQr4-9",
+            "score": 4,
+            "tier": "C",
+            "comment": "错误前提会误导用户实际订票与目的地选择。",
+            "confidence": "high",
+            "issueTags": [
+              "误导决策"
+            ]
+          }
+        ]
+      }
+    ],
+    "sbs": {
+      "pairs": [
+        {
+          "reportIdA": "yXrIYwTs0m",
+          "reportIdB": "1VQ9E0Ltjj",
+          "winner": "A",
+          "margin": "slight",
+          "dimensionDriver": "R2",
+          "keyReason": "A 在约束翻译与行动顺序上更直接。"
+        },
+        {
+          "reportIdA": "yXrIYwTs0m",
+          "reportIdB": "tAZ9u6qo8A",
+          "winner": "A",
+          "margin": "clear",
+          "dimensionDriver": "R1",
+          "keyReason": "A 关键事实可靠性显著高于 B。"
+        },
+        {
+          "reportIdA": "yXrIYwTs0m",
+          "reportIdB": "fJqJOQr4-9",
+          "winner": "A",
+          "margin": "overwhelming",
+          "dimensionDriver": "R1",
+          "keyReason": "B 的承重事实被外验落锤，A 明显更可信。"
+        },
+        {
+          "reportIdA": "1VQ9E0Ltjj",
+          "reportIdB": "tAZ9u6qo8A",
+          "winner": "A",
+          "margin": "clear",
+          "dimensionDriver": "R1",
+          "keyReason": "A 无关键硬错，B 存在重大事实错误。"
+        },
+        {
+          "reportIdA": "1VQ9E0Ltjj",
+          "reportIdB": "fJqJOQr4-9",
+          "winner": "A",
+          "margin": "overwhelming",
+          "dimensionDriver": "R1",
+          "keyReason": "A 可核查，B 关键结论建立在编造前提。"
+        },
+        {
+          "reportIdA": "tAZ9u6qo8A",
+          "reportIdB": "fJqJOQr4-9",
+          "winner": "A",
+          "margin": "clear",
+          "dimensionDriver": "R1",
+          "keyReason": "两者都有问题，但 B 的错误对决策破坏更大。"
+        }
+      ]
+    },
+    "claimInventory": [
+      {
+        "claimId": "C01",
+        "reportId": "yXrIYwTs0m",
+        "claim": "福冈可由深圳直飞，飞行时长约 2.5 小时。",
+        "type": "fact",
+        "supportWeight": "high"
+      },
+      {
+        "claimId": "C02",
+        "reportId": "yXrIYwTs0m",
+        "claim": "巴厘岛方案从广州直飞更稳妥，且需承担 VOA 与旅游税。",
+        "type": "number",
+        "supportWeight": "high"
+      },
+      {
+        "claimId": "C03",
+        "reportId": "yXrIYwTs0m",
+        "claim": "三地机票起步价接近，住宿档位是预算差异主驱动。",
+        "type": "logic",
+        "supportWeight": "medium"
+      },
+      {
+        "claimId": "C04",
+        "reportId": "1VQ9E0Ltjj",
+        "claim": "前置请假能降低高峰拥堵与票价压力。",
+        "type": "logic",
+        "supportWeight": "medium"
+      },
+      {
+        "claimId": "C05",
+        "reportId": "1VQ9E0Ltjj",
+        "claim": "清迈方案在人均 1 万预算内可实现舒适体验。",
+        "type": "number",
+        "supportWeight": "medium"
+      },
+      {
+        "claimId": "C06",
+        "reportId": "1VQ9E0Ltjj",
+        "claim": "福冈在黄金周的体力负担通常小于东京和大阪。",
+        "type": "logic",
+        "supportWeight": "medium"
+      },
+      {
+        "claimId": "C07",
+        "reportId": "tAZ9u6qo8A",
+        "claim": "深圳航空 ZH661 可直飞大阪关西。",
+        "type": "fact",
+        "supportWeight": "high"
+      },
+      {
+        "claimId": "C08",
+        "reportId": "tAZ9u6qo8A",
+        "claim": "五一期间东南亚与大洋洲航班出现大规模取消。",
+        "type": "fact",
+        "supportWeight": "high"
+      },
+      {
+        "claimId": "C09",
+        "reportId": "tAZ9u6qo8A",
+        "claim": "关西 6 天 5 晚可控制在人均 7.4k-9.6k。",
+        "type": "logic",
+        "supportWeight": "medium"
+      },
+      {
+        "claimId": "C10",
+        "reportId": "fJqJOQr4-9",
+        "claim": "中国驻福冈总领馆发布了避免前往日本全境的最新预警。",
+        "type": "source",
+        "supportWeight": "high"
+      },
+      {
+        "claimId": "C11",
+        "reportId": "fJqJOQr4-9",
+        "claim": "深圳至那霸存在可公开购买的 2169 元直飞票。",
+        "type": "number",
+        "supportWeight": "high"
+      },
+      {
+        "claimId": "C12",
+        "reportId": "fJqJOQr4-9",
+        "claim": "冲绳方案完全匹配，而其余备选均不满足核心约束。",
+        "type": "logic",
+        "supportWeight": "high"
+      }
+    ],
+    "claimChecks": [
+      {
+        "claimId": "C01",
+        "status": "verified-correct",
+        "evidence": "航班检索与公开航线信息可支持该判断。"
+      },
+      {
+        "claimId": "C02",
+        "status": "verified-correct",
+        "evidence": "签证与税费政策与当前公开信息一致。"
+      },
+      {
+        "claimId": "C03",
+        "status": "inconclusive",
+        "evidence": "方向合理，但不同日期与舱位下波动较大。"
+      },
+      {
+        "claimId": "C04",
+        "status": "verified-correct",
+        "evidence": "节前前置出行通常可分散高峰压力。"
+      },
+      {
+        "claimId": "C05",
+        "status": "verified-correct",
+        "evidence": "按中位价格估算，预算可达成。"
+      },
+      {
+        "claimId": "C06",
+        "status": "verified-correct",
+        "evidence": "相较东京大阪，福冈常见客流与动线压力更低。"
+      },
+      {
+        "claimId": "C07",
+        "status": "verified-correct",
+        "evidence": "航班号和航线基础事实可核。"
+      },
+      {
+        "claimId": "C08",
+        "status": "refuted",
+        "evidence": "未检出可支持其大规模取消结论的可靠证据。"
+      },
+      {
+        "claimId": "C09",
+        "status": "verified-correct",
+        "evidence": "预算区间与中档消费模型基本一致。"
+      },
+      {
+        "claimId": "C10",
+        "status": "refuted",
+        "evidence": "未检出对应官方发布记录，且表述级别异常。",
+        "vetoMode": "V1"
+      },
+      {
+        "claimId": "C11",
+        "status": "refuted",
+        "evidence": "关键票务前提不可稳定复核。",
+        "vetoMode": "V2"
+      },
+      {
+        "claimId": "C12",
+        "status": "refuted",
+        "evidence": "由被 refuted 的核心前提推导而来，结论不成立。",
+        "vetoMode": "V4"
+      }
+    ],
+    "dimensionChecklists": {
+      "R1": {
+        "items": [
+          {
+            "label": "核验核心航班可订性",
+            "passedFor": [
+              "yXrIYwTs0m",
+              "1VQ9E0Ltjj",
+              "tAZ9u6qo8A"
+            ]
+          },
+          {
+            "label": "核验签证与入境政策时效",
+            "passedFor": [
+              "yXrIYwTs0m",
+              "1VQ9E0Ltjj"
+            ]
+          },
+          {
+            "label": "核验预算口径可复算",
+            "passedFor": [
+              "yXrIYwTs0m",
+              "1VQ9E0Ltjj",
+              "tAZ9u6qo8A"
+            ]
+          },
+          {
+            "label": "识别并排除编造官方信息",
+            "passedFor": [
+              "yXrIYwTs0m",
+              "1VQ9E0Ltjj"
+            ]
+          },
+          {
+            "label": "识别数据单位与币种一致性",
+            "passedFor": [
+              "yXrIYwTs0m"
+            ]
+          },
+          {
+            "label": "识别关键事实自相矛盾",
+            "passedFor": [
+              "yXrIYwTs0m",
+              "1VQ9E0Ltjj"
+            ]
+          },
+          {
+            "label": "给出可追溯证据链",
+            "passedFor": [
+              "yXrIYwTs0m",
+              "1VQ9E0Ltjj"
+            ]
+          }
+        ]
+      },
+      "R2": {
+        "items": [
+          {
+            "label": "逐条回应用户硬约束",
+            "passedFor": [
+              "yXrIYwTs0m",
+              "1VQ9E0Ltjj",
+              "tAZ9u6qo8A"
+            ]
+          },
+          {
+            "label": "把约束转化为可执行策略",
+            "passedFor": [
+              "yXrIYwTs0m",
+              "1VQ9E0Ltjj"
+            ]
+          },
+          {
+            "label": "显式处理已有签证优势",
+            "passedFor": [
+              "yXrIYwTs0m",
+              "tAZ9u6qo8A"
+            ]
+          },
+          {
+            "label": "控制旅途强度匹配轻松诉求",
+            "passedFor": [
+              "yXrIYwTs0m",
+              "1VQ9E0Ltjj"
+            ]
+          },
+          {
+            "label": "同时覆盖人文与自然",
+            "passedFor": [
+              "yXrIYwTs0m",
+              "1VQ9E0Ltjj",
+              "tAZ9u6qo8A"
+            ]
+          }
+        ]
+      },
+      "R3": {
+        "items": [
+          {
+            "label": "有对比框架而非单点推荐",
+            "passedFor": [
+              "yXrIYwTs0m",
+              "1VQ9E0Ltjj"
+            ]
+          },
+          {
+            "label": "说明结论背后的因果链",
+            "passedFor": [
+              "yXrIYwTs0m",
+              "1VQ9E0Ltjj"
+            ]
+          },
+          {
+            "label": "包含反例或反选论证",
+            "passedFor": [
+              "yXrIYwTs0m"
+            ]
+          },
+          {
+            "label": "避免由错误前提推导结论",
+            "passedFor": [
+              "yXrIYwTs0m",
+              "1VQ9E0Ltjj"
+            ]
+          },
+          {
+            "label": "给出不确定性边界",
+            "passedFor": [
+              "yXrIYwTs0m"
+            ]
+          }
+        ]
+      },
+      "R4": {
+        "items": [
+          {
+            "label": "覆盖航班变动风险",
+            "passedFor": [
+              "yXrIYwTs0m",
+              "1VQ9E0Ltjj"
+            ]
+          },
+          {
+            "label": "覆盖签证与税费风险",
+            "passedFor": [
+              "yXrIYwTs0m",
+              "1VQ9E0Ltjj"
+            ]
+          },
+          {
+            "label": "覆盖拥堵与节假日风险",
+            "passedFor": [
+              "yXrIYwTs0m",
+              "1VQ9E0Ltjj",
+              "tAZ9u6qo8A"
+            ]
+          },
+          {
+            "label": "覆盖预算超支风险",
+            "passedFor": [
+              "yXrIYwTs0m",
+              "1VQ9E0Ltjj",
+              "tAZ9u6qo8A"
+            ]
+          },
+          {
+            "label": "风险信息不夸大不编造",
+            "passedFor": [
+              "yXrIYwTs0m",
+              "1VQ9E0Ltjj"
+            ]
+          }
+        ]
+      },
+      "R5": {
+        "items": [
+          {
+            "label": "给出本周可执行动作",
+            "passedFor": [
+              "yXrIYwTs0m"
+            ]
+          },
+          {
+            "label": "给出预订优先级顺序",
+            "passedFor": [
+              "yXrIYwTs0m",
+              "1VQ9E0Ltjj"
+            ]
+          },
+          {
+            "label": "提供备选路径与触发条件",
+            "passedFor": [
+              "yXrIYwTs0m",
+              "1VQ9E0Ltjj"
+            ]
+          },
+          {
+            "label": "给出可落地预算区间",
+            "passedFor": [
+              "yXrIYwTs0m",
+              "1VQ9E0Ltjj",
+              "tAZ9u6qo8A"
+            ]
+          },
+          {
+            "label": "语言专业且不制造恐慌",
+            "passedFor": [
+              "yXrIYwTs0m",
+              "1VQ9E0Ltjj",
+              "tAZ9u6qo8A"
+            ]
+          }
+        ]
+      }
+    },
+    "verificationBudget": {
+      "targetMinutes": 45,
+      "actualMinutes": 46,
+      "passesCompleted": [
+        "read",
+        "claim-inventory",
+        "pass1",
+        "pass2",
+        "pass3",
+        "score",
+        "feedback"
+      ],
+      "claimsSkippedDueToBudget": 0,
+      "claimsOutOfScope": 0
+    },
+    "perReportFeedback": [
+      {
+        "reportId": "yXrIYwTs0m",
+        "productName": "MiroThink",
+        "strengths": [
+          "约束映射清晰，能把条件转成动作。",
+          "风险与时效信息覆盖完整。"
+        ],
+        "weaknesses": [
+          "部分价格判断仍受时间波动影响。"
+        ],
+        "improvements": [
+          "可补充一页可直接执行的订票清单。"
+        ]
+      },
+      {
+        "reportId": "1VQ9E0Ltjj",
+        "productName": "Gemini",
+        "strengths": [
+          "信息覆盖广，预算建模完整。",
+          "给出了多个可选目的地。"
+        ],
+        "weaknesses": [
+          "表达噪声偏多，部分数字出处不够直连。"
+        ],
+        "improvements": [
+          "统一币种口径并增加行动优先级。"
+        ]
+      },
+      {
+        "reportId": "tAZ9u6qo8A",
+        "productName": "Manus",
+        "strengths": [
+          "单方案执行手册详细，路线落地性较好。"
+        ],
+        "weaknesses": [
+          "存在关键事实错误，且对轻松诉求反思不够。"
+        ],
+        "improvements": [
+          "删除不可核前提并补充低强度替代行程。"
+        ]
+      },
+      {
+        "reportId": "fJqJOQr4-9",
+        "productName": "SophiaAI v4",
+        "strengths": [
+          "形式上给出了较完整的出行模块。"
+        ],
+        "weaknesses": [
+          "关键事实编造导致整体可信度失效。"
+        ],
+        "improvements": [
+          "先核验航班与官方公告，再输出结论。"
+        ]
+      }
+    ]
+  },
+  "report": "# EV-0006-OEk1ZL 评测报告（v2.2）\n\n总评：MiroThink 第一，Gemini 第二，Manus 第三，SophiaAI(v4)因关键事实编造触发 veto。\n\n事实核验要点：已对航班可订性、签证政策、预算口径和关键风险声明做外验；C10 与 C11 落锤 refuted，且属于影响核心决策的承重 claim。\n\n分项结论：R1 与 R5 是主要分差来源。MiroThink 在约束映射与执行动作上最完整；Gemini 信息全但收敛弱；Manus 单路线可执行但存在关键事实错误；SophiaAI(v4)因关键前提错误导致决策价值失效。\n\nSBS 结论：MiroThink 对其余三家均胜，且对 SophiaAI(v4)为 overwhelming。"
+}

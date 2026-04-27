@@ -29,7 +29,7 @@
       },
       {
         "reportId": "ZnPjNHpT5X",
-        "productName": "SophiaAI",
+        "productName": "SophiaAI v4",
         "score": 4.8,
         "verdict": "待改进",
         "vetoTriggered": true,
@@ -47,7 +47,7 @@
       {
         "dimensionId": "R1",
         "name": "准确性",
-        "weight": 0.40,
+        "weight": 0.4,
         "scores": [
           {
             "reportId": "daNcDpqARK",
@@ -151,7 +151,7 @@
       {
         "dimensionId": "R3",
         "name": "论证深度",
-        "weight": 0.20,
+        "weight": 0.2,
         "scores": [
           {
             "reportId": "daNcDpqARK",
@@ -200,7 +200,7 @@
       {
         "dimensionId": "R4",
         "name": "完备性",
-        "weight": 0.10,
+        "weight": 0.1,
         "scores": [
           {
             "reportId": "daNcDpqARK",
@@ -345,7 +345,7 @@
           "leftReportId": "daNcDpqARK",
           "rightReportId": "yKzzT3mX-g",
           "winner": "daNcDpqARK",
-          "scoreDiff": 2.0,
+          "scoreDiff": 2,
           "verdict": "MiroThink 明显胜出。9.2 vs 7.2，差 2 分。MiroThink 在信源一手性（22 条带 URL）、反直觉洞察（主动放弃广宁线竞标的少数派判断）、时间并置精准度（苏林乘复兴号 vs 4.12 奠基差 5 天）三项上对 Manus 形成碾压。Manus 结构清晰、判断方向正确，但论证深度和决策价值略逊一筹。"
         },
         {

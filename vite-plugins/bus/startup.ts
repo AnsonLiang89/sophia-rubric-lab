@@ -17,13 +17,11 @@ export function runStartup(busRoot: string, codeRegistry: CodeRegistry): void {
   // ===== 1. reconcile =====
   try {
     reconcile(busRoot, codeRegistry, (msg) =>
-      // eslint-disable-next-line no-console
-      console.log(msg)
+            console.log(msg)
     );
   } catch (e) {
     // reconcile 不应阻塞 dev server 启动——即使失败也允许手动修
-    // eslint-disable-next-line no-console
-    console.error(
+        console.error(
       "[codeRegistry] reconcile failed (non-fatal):",
       (e as Error).message
     );
@@ -41,33 +39,27 @@ export function runStartup(busRoot: string, codeRegistry: CodeRegistry): void {
       stale: Array<{ detail: string }>;
     };
     if (!freshness.fresh) {
-      // eslint-disable-next-line no-console
-      console.warn(
+            console.warn(
         `\x1b[33m[bake-freshness]\x1b[0m ⚠ 对外版产物落后于源文件（${freshness.stale.length} 项过期）。`
       );
       for (const s of freshness.stale.slice(0, 5)) {
-        // eslint-disable-next-line no-console
-        console.warn(`  · ${s.detail}`);
+                console.warn(`  · ${s.detail}`);
       }
       if (freshness.stale.length > 5) {
-        // eslint-disable-next-line no-console
-        console.warn(
+                console.warn(
           `  ……还有 ${freshness.stale.length - 5} 项未列出，访问 /_bus/bake-freshness 查看完整列表`
         );
       }
-      // eslint-disable-next-line no-console
-      console.warn(
+            console.warn(
         `\x1b[33m[bake-freshness]\x1b[0m 修复：\`npm run bake:public\` 或在管理员页点「一键发布」。`
       );
     } else {
-      // eslint-disable-next-line no-console
-      console.log(
+            console.log(
         `\x1b[32m[bake-freshness]\x1b[0m ✓ 对外版产物与源文件同步。`
       );
     }
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(
+        console.error(
       "[bake-freshness] startup check failed (non-fatal):",
       (e as Error).message
     );
