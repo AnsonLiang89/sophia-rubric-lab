@@ -186,15 +186,17 @@ export function validatePayload(file, payload, errors) {
     pushErr(errors, file, "version", "缺失或非 number");
   }
   const cv = payload.contractVersion;
-  if (!["1.0", "2.0", "2.1", "2.2", "3.0", "3.1", "3.2"].includes(cv)) {
-    pushErr(errors, file, "contractVersion", `必须是 "1.0" / "2.0" / "2.1" / "2.2" / "3.0" / "3.1" / "3.2"，实际：${JSON.stringify(cv)}`);
+  if (!["1.0", "2.0", "2.1", "2.2", "3.0", "3.1", "3.2", "3.3"].includes(cv)) {
+    pushErr(errors, file, "contractVersion", `必须是 "1.0" / "2.0" / "2.1" / "2.2" / "3.0" / "3.1" / "3.2" / "3.3"，实际：${JSON.stringify(cv)}`);
   }
-  // v2.0+ 共享档位制/veto 校验；v2.2+ 共享 claim/checklist/budget/SBS/R1 子档；v3.x 额外有焦点诊断与证据密度校验
-  const isV2Plus = cv === "2.0" || cv === "2.1" || cv === "2.2" || cv === "3.0" || cv === "3.1" || cv === "3.2";
-  const isV22Plus = cv === "2.2" || cv === "3.0" || cv === "3.1" || cv === "3.2";
-  const isV3 = cv === "3.0" || cv === "3.1" || cv === "3.2";
+  // v2.0+ 共享档位制/veto 校验；v2.2+ 共享 claim/checklist/budget/SBS/R1 子档；v3.x 额外有焦点诊断与证据密度校验；
+  // v3.3 在 v3.2 基础上：claim Top 上限 5→10、verificationBudget.targetMinutes 不再硬锁 45
+  const isV2Plus = cv === "2.0" || cv === "2.1" || cv === "2.2" || cv === "3.0" || cv === "3.1" || cv === "3.2" || cv === "3.3";
+  const isV22Plus = cv === "2.2" || cv === "3.0" || cv === "3.1" || cv === "3.2" || cv === "3.3";
+  const isV3 = cv === "3.0" || cv === "3.1" || cv === "3.2" || cv === "3.3";
   const isV31 = cv === "3.1";
   const isV32 = cv === "3.2";
+  const isV33 = cv === "3.3";
   if (!payload.summary || typeof payload.summary !== "object") {
     pushErr(errors, file, "summary", "缺失或非对象");
     return;
@@ -466,8 +468,8 @@ export function validatePayload(file, payload, errors) {
     }
   }
 
-  // perReportFeedback（v2.1 起必填，v3.0 继续）
-  if (cv === "2.1" || cv === "2.2" || cv === "3.0" || cv === "3.1" || cv === "3.2") {
+  // perReportFeedback（v2.1 起必填，v3.x 继续）
+  if (cv === "2.1" || cv === "2.2" || cv === "3.0" || cv === "3.1" || cv === "3.2" || cv === "3.3") {
     if (!Array.isArray(s.perReportFeedback)) {
       pushErr(errors, file, "summary.perReportFeedback", `${cv} 必填数组`);
     } else {
@@ -516,15 +518,16 @@ export function validatePayload(file, payload, errors) {
           perReportClaims.set(c.reportId, arr);
         }
       }
-      // 每份报告 3~5 条 + ≥1 条 logic
+      // 每份报告承重 claim 数量硬约束：v2.2~v3.2 为 3~5，v3.3 起放宽到 3~10（含 ≥1 条 logic）
+      const maxClaimsPerReport = isV33 ? 10 : 5;
       for (const rid of reportIds) {
         const arr = perReportClaims.get(rid) ?? [];
-        if (arr.length < 3 || arr.length > 5) {
+        if (arr.length < 3 || arr.length > maxClaimsPerReport) {
           pushErr(
             errors,
             file,
             `summary.claimInventory[reportId=${rid}]`,
-            `每份报告应抽 3~5 条承重 claim，实际 ${arr.length}`
+            `每份报告应抽 3~${maxClaimsPerReport} 条承重 claim（contractVersion=${cv}），实际 ${arr.length}`
           );
         }
         if (arr.length > 0 && !arr.some((c) => c.type === "logic")) {
@@ -665,8 +668,14 @@ export function validatePayload(file, payload, errors) {
       pushErr(errors, file, "summary.verificationBudget", "v2.2 必填对象");
     } else {
       const b = s.verificationBudget;
-      if (b.targetMinutes !== 45)
-        pushErr(errors, file, "summary.verificationBudget.targetMinutes", `v2.2 固定为 45，实际 ${b.targetMinutes}`);
+      if (isV33) {
+        // v3.3 起 targetMinutes 仅作节奏参考，不再硬锁 45；但仍需是正数
+        if (typeof b.targetMinutes !== "number" || b.targetMinutes <= 0)
+          pushErr(errors, file, "summary.verificationBudget.targetMinutes", `v3.3 需为 >0 的数字（节奏参考），实际 ${b.targetMinutes}`);
+      } else {
+        if (b.targetMinutes !== 45)
+          pushErr(errors, file, "summary.verificationBudget.targetMinutes", `${cv} 固定为 45，实际 ${b.targetMinutes}`);
+      }
       if (typeof b.actualMinutes !== "number" || b.actualMinutes <= 0)
         pushErr(errors, file, "summary.verificationBudget.actualMinutes", `必须是 >0 的数字，实际 ${b.actualMinutes}`);
       if (!Array.isArray(b.passesCompleted)) {
@@ -849,15 +858,17 @@ export function validatePayload(file, payload, errors) {
   // report 正文
   if (typeof payload.report !== "string" || !payload.report.trim()) {
     pushErr(errors, file, "report", "必填非空字符串");
-  } else if (isV31 || isV32) {
+  } else if (isV31 || isV32 || isV33) {
     const summaryIdx = findHeadingIndex(payload.report, "summary");
     const scoreIdx = findHeadingIndex(payload.report, "score");
     const dimensionIdx = findHeadingIndex(payload.report, "dimension");
     const keyIssueIdx = findHeadingIndex(payload.report, "keyIssue");
     const prosConsIdx = findHeadingIndex(payload.report, "prosCons");
-    const versionLabel = isV32 ? "v3.2" : "v3.1";
+    const versionLabel = isV33 ? "v3.3" : isV32 ? "v3.2" : "v3.1";
+    // v3.2 起评分总表由 UI 固定展示，正文评分总表 heading 可选；v3.1 仍必填
+    const scoreHeadingRequired = isV31;
     if (summaryIdx < 0) pushErr(errors, file, "report", `${versionLabel} 必须包含“评测结论/总评”锚点 heading`);
-    if (!isV32 && scoreIdx < 0) pushErr(errors, file, "report", "v3.1 必须包含“评分总表”锚点 heading");
+    if (scoreHeadingRequired && scoreIdx < 0) pushErr(errors, file, "report", "v3.1 必须包含“评分总表”锚点 heading");
     if (dimensionIdx < 0) pushErr(errors, file, "report", `${versionLabel} 必须包含“按维度展开”锚点 heading`);
     if (keyIssueIdx < 0) pushErr(errors, file, "report", `${versionLabel} 必须包含“额外重点问题”锚点 heading`);
     if (prosConsIdx < 0) pushErr(errors, file, "report", `${versionLabel} 必须包含“各主体优缺点与建议”锚点 heading`);
@@ -870,8 +881,8 @@ export function validatePayload(file, payload, errors) {
     ) {
       pushErr(errors, file, "report", `${versionLabel} 的总-分-总锚点顺序必须是：评测结论 → 按维度展开 → 额外重点问题 → 各主体优缺点与建议`);
     }
-    if (isV32 && scoreIdx >= 0 && !(summaryIdx < scoreIdx && scoreIdx < dimensionIdx)) {
-      pushErr(errors, file, "report", "v3.2 若显式写出“评分总表”heading，应放在评测结论之后、按维度展开之前");
+    if (!scoreHeadingRequired && scoreIdx >= 0 && !(summaryIdx < scoreIdx && scoreIdx < dimensionIdx)) {
+      pushErr(errors, file, "report", `${versionLabel} 若显式写出“评分总表”heading，应放在评测结论之后、按维度展开之前`);
     }
   } else if (cv === "3.0") {
     const summaryIdx = findHeadingIndex(payload.report, "summary");
@@ -904,7 +915,8 @@ function listOutboxFiles() {
  * 校验 inbox v2 schema 的单个 task 文件。
  *
  * v2 硬约束（2026-04-27 起）：
- *   - contractVersion === "2.0"（inbox 层的 schema version，与 outbox payload 的 contractVersion 独立）
+ *   - inboxSchemaVersion === "2.0"（inbox 层的 schema version，
+ *     与 outbox payload 的 contractVersion 独立，2026-04-27 前此字段名为 contractVersion）
  *   - candidates: 非空数组，每项含：
  *     * candidateId：非空字符串（稳定 id，给 PATCH 定位用）
  *     * reportVersions：非空数组；每条含 version:number / content:string / contentHash:string
@@ -915,8 +927,8 @@ function listOutboxFiles() {
  *   - query.id / query.code 非空字符串
  *   - taskId / createdAt 非空字符串
  *
- * 历史 v1 文件不应出现在磁盘上——启动期 runStartup 会自动 migrate。
- * 这里一旦发现 v1，直接判错，提示跑 `npm run migrate-inbox -- --apply`。
+ * 历史 v1 文件以及"v2 但顶层字段还叫 contractVersion"的旧文件不应出现在磁盘上——
+ * 启动期 runStartup 会自动 migrate。这里一旦发现，直接判错，提示跑 `npm run migrate-inbox -- --apply`。
  */
 export function validateInboxTask(file, task, errors) {
   if (!task || typeof task !== "object") {
@@ -925,12 +937,39 @@ export function validateInboxTask(file, task, errors) {
   }
   if (!isNonEmptyString(task.taskId)) pushErr(errors, file, "taskId", "必填非空字符串");
   if (!isNonEmptyString(task.createdAt)) pushErr(errors, file, "createdAt", "必填非空字符串");
-  if (task.contractVersion !== "2.0") {
+
+  // schema 版本校验：严格要求新字段名 `inboxSchemaVersion`。
+  // 任何旧字段名 `contractVersion` 残留都要判错并引导跑 migrate-inbox。
+  const hasNew = typeof task.inboxSchemaVersion === "string";
+  const hasOld = typeof task.contractVersion === "string";
+  if (hasOld && !hasNew) {
+    pushErr(
+      errors,
+      file,
+      "inboxSchemaVersion",
+      `顶层字段名仍是旧的 "contractVersion"（值=${JSON.stringify(task.contractVersion)}），请改名为 "inboxSchemaVersion"。修复：npm run migrate-inbox -- --apply`
+    );
+  } else if (!hasNew) {
+    pushErr(
+      errors,
+      file,
+      "inboxSchemaVersion",
+      `必填字符串 "2.0"，实际 ${JSON.stringify(task.inboxSchemaVersion ?? null)}。修复：npm run migrate-inbox -- --apply`
+    );
+  } else if (task.inboxSchemaVersion !== "2.0") {
+    pushErr(
+      errors,
+      file,
+      "inboxSchemaVersion",
+      `inbox schema 必须是 "2.0"，实际 ${JSON.stringify(task.inboxSchemaVersion)}。修复：npm run migrate-inbox -- --apply`
+    );
+  } else if (hasOld) {
+    // 新旧字段并存（inboxSchemaVersion 已对，但 contractVersion 也还在）
     pushErr(
       errors,
       file,
       "contractVersion",
-      `inbox schema 必须是 "2.0"，实际 ${JSON.stringify(task.contractVersion ?? null)}。修复：npm run migrate-inbox -- --apply`
+      `inbox 顶层已迁移到 inboxSchemaVersion，残留的旧字段 contractVersion 必须删除。修复：npm run migrate-inbox -- --apply`
     );
   }
   if (!task.query || typeof task.query !== "object") {

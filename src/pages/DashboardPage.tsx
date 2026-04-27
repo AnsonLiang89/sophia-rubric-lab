@@ -19,7 +19,7 @@ import { pickPrimaryProduct, displayProductName } from "../lib/sortProducts";
 // v1.0 产物虽然也用 R1~R5 ID，但语义完全不同（信源/结构/洞察/风险/时效），
 // 混进来平均会得出"同一列 R1 是不同维度的分数"这种数据污染。
 // ============================================================
-const ACCEPTED_CONTRACT_VERSIONS = new Set(["2.0", "2.1", "2.2", "3.0", "3.1", "3.2"]);
+const ACCEPTED_CONTRACT_VERSIONS = new Set(["2.0", "2.1", "2.2", "3.0", "3.1", "3.2", "3.3"]);
 function isAcceptedPayloadVersion(cv: string | undefined): boolean {
   if (!cv) return false;
   return ACCEPTED_CONTRACT_VERSIONS.has(cv);

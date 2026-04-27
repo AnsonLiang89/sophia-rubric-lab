@@ -5,7 +5,7 @@
  * 把 .evaluations/inbox/*.json 里的 v1 schema 升级到 v2 schema（方案 B+，2026-04-27 新增）。
  *
  * v1 → v2 映射规则（无损）：
- *   - 顶层 contractVersion: "1.0" → "2.0"
+ *   - 顶层 inboxSchemaVersion: "1.0" → "2.0"（2026-04-27 前此字段名为 contractVersion，已迁移）
  *   - 每个 candidate 增加：
  *       candidateId = reportId（稳定复用）
  *       activeReportVersion = 1
@@ -18,12 +18,16 @@
  *       }]
  *   - 保留原有 candidate.report 字段作为冗余镜像（v1 消费路径依然生效）
  *
+ * 额外任务（2026-04-27 字段改名兼容层）：
+ *   - 已经是 v2 schema 但顶层字段还叫 `contractVersion` 的旧文件，一次性改名为 `inboxSchemaVersion`
+ *     并删除旧字段，避免长期两字段并存。
+ *
  * CLI:
  *   node scripts/migrate-inbox.mjs            # dry-run，列出将要变更的文件
  *   node scripts/migrate-inbox.mjs --apply    # 实际就地写回
  *   node scripts/migrate-inbox.mjs --apply --task EV-0005-LlSiEs  # 只处理单个
  *
- * 幂等：已经是 v2 的文件自动跳过（不会二次追加 version）。
+ * 幂等：已经是新字段名 + v2 的文件自动跳过（不会二次追加 version）。
  */
 
 import fs from "node:fs";
@@ -42,22 +46,48 @@ function computeContentHash(content) {
 }
 
 /**
+ * 兼容读取 inbox schema 版本：优先 `inboxSchemaVersion`，回退 `contractVersion`（旧字段名）。
+ * 返回 undefined 表示两者都没有。
+ */
+function readInboxSchemaVersion(task) {
+  if (!task || typeof task !== "object") return undefined;
+  if (typeof task.inboxSchemaVersion === "string") return task.inboxSchemaVersion;
+  if (typeof task.contractVersion === "string") return task.contractVersion;
+  return undefined;
+}
+
+/**
  * 把单个任务（已 JSON.parse 过的对象）迁移到 v2。
  * 返回 { changed, task }。
+ *
+ * 两种 changed 场景：
+ *   A) 结构升级：v1 → v2（补齐 candidateId / activeReportVersion / reportVersions）
+ *   B) 字段改名：已是 v2 schema，但顶层字段还叫 `contractVersion`，改为 `inboxSchemaVersion`
  */
 export function migrateTask(task) {
   if (!task || typeof task !== "object") {
     return { changed: false, task };
   }
-  if (task.contractVersion === "2.0") {
+  const version = readInboxSchemaVersion(task);
+
+  // 场景 B：已是 v2 schema，但可能字段名还是旧的 `contractVersion`
+  if (version === "2.0") {
+    if ("contractVersion" in task && !("inboxSchemaVersion" in task)) {
+      // 旧字段名 → 新字段名，保持字段顺序尽量稳定
+      const renamed = { ...task, inboxSchemaVersion: "2.0" };
+      delete renamed.contractVersion;
+      return { changed: true, task: renamed };
+    }
     return { changed: false, task };
   }
-  if (task.contractVersion !== "1.0" && task.contractVersion !== undefined) {
+
+  if (version !== "1.0" && version !== undefined) {
     throw new Error(
-      `unsupported contractVersion: ${task.contractVersion} (expected "1.0")`
+      `unsupported inbox schema version: ${version} (expected "1.0" or "2.0")`
     );
   }
 
+  // 场景 A：v1 → v2 结构升级
   const createdAt = typeof task.createdAt === "string" ? task.createdAt : new Date().toISOString();
   const candidates = Array.isArray(task.candidates) ? task.candidates : [];
 
@@ -87,9 +117,11 @@ export function migrateTask(task) {
 
   const migrated = {
     ...task,
-    contractVersion: "2.0",
+    inboxSchemaVersion: "2.0",
     candidates: newCandidates,
   };
+  // 清掉旧字段名，避免 v1 文件迁移完后仍残留 contractVersion
+  delete migrated.contractVersion;
   return { changed: true, task: migrated };
 }
 
@@ -148,7 +180,7 @@ function main() {
   }
 
   console.log(
-    `[migrate-inbox] ${apply ? "APPLY" : "DRY-RUN"}  todo=${changes.length}  skipped(already v2)=${skipped.length}`
+    `[migrate-inbox] ${apply ? "APPLY" : "DRY-RUN"}  todo=${changes.length}  skipped(already v2 + new field name)=${skipped.length}`
   );
   for (const { file } of changes) {
     console.log(`  ↳ ${file}`);

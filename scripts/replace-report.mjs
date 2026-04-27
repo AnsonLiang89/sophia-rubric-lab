@@ -111,9 +111,16 @@ function main() {
     die(`invalid json: ${e.message}`, 2);
   }
 
-  if (task.contractVersion !== "2.0") {
+  // 兼容读：优先 inboxSchemaVersion，回退 contractVersion（旧字段名，2026-04-27 前）
+  const inboxSchemaVersion =
+    typeof task.inboxSchemaVersion === "string"
+      ? task.inboxSchemaVersion
+      : typeof task.contractVersion === "string"
+        ? task.contractVersion
+        : undefined;
+  if (inboxSchemaVersion !== "2.0") {
     die(
-      `task is schema v${task.contractVersion ?? "1.0"}; run "npm run migrate-inbox -- --apply" first`,
+      `task is schema v${inboxSchemaVersion ?? "1.0"}; run "npm run migrate-inbox -- --apply" first`,
       1
     );
   }

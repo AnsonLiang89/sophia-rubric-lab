@@ -9,156 +9,13 @@ import {
   type OutboxBundle,
   type OutboxVersionMeta,
 } from "../lib/contract";
-import { isSophia } from "../lib/sortProducts";
-
-type ContractVersion = EvaluationOutboxPayload["contractVersion"];
-
-const DEFAULT_RUBRIC_NAMES: Record<ContractVersion, Record<string, string>> = {
-  "1.0": {
-    R1: "信源与数据真实性",
-    R2: "结构与定量深度",
-    R3: "洞察与论证",
-    R4: "风险披露与决策价值",
-    R5: "专业度与时效",
-  },
-  "2.0": {
-    R1: "准确性",
-    R2: "相关性",
-    R3: "论证深度",
-    R4: "完备性",
-    R5: "决策价值",
-  },
-  "2.1": {
-    R1: "准确性",
-    R2: "相关性",
-    R3: "论证深度",
-    R4: "完备性",
-    R5: "决策价值",
-  },
-  "2.2": {
-    R1: "准确性",
-    R2: "相关性",
-    R3: "论证深度",
-    R4: "完备性",
-    R5: "决策价值",
-  },
-  "3.0": {
-    R1: "准确性",
-    R2: "相关性",
-    R3: "论证深度",
-    R4: "完备性",
-    R5: "决策价值",
-  },
-  "3.1": {
-    R1: "准确性",
-    R2: "相关性",
-    R3: "论证深度",
-    R4: "完备性",
-    R5: "决策价值",
-  },
-  "3.2": {
-    R1: "准确性",
-    R2: "相关性",
-    R3: "论证深度",
-    R4: "完备性",
-    R5: "决策价值",
-  },
-};
-
-function resolveDimensionName(
-  dimensionId: string,
-  payloadName: string | undefined,
-  contractVersion: ContractVersion
-): string {
-  if (payloadName && payloadName.trim()) return payloadName;
-  return DEFAULT_RUBRIC_NAMES[contractVersion]?.[dimensionId] ?? dimensionId;
-}
-
-function parseProductVersion(name: string): number[] {
-  const m = name.match(/v(\d+(?:\.\d+)*)/i);
-  if (!m) return [];
-  return m[1].split(".").map((n) => parseInt(n, 10) || 0);
-}
-
-function compareVersionArr(a: number[], b: number[]): number {
-  const len = Math.max(a.length, b.length);
-  for (let i = 0; i < len; i++) {
-    const va = a[i] ?? 0;
-    const vb = b[i] ?? 0;
-    if (va !== vb) return va - vb;
-  }
-  return 0;
-}
-
-function canonicalizeProductName(raw: string | undefined): string {
-  const v = String(raw ?? "").trim();
-  if (!v) return "";
-  return v
-    .replace(/[\s\u3000]*[（(]\s*(v\d+(?:\.\d+)*)\s*[)）][\s\u3000]*/i, " $1")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function normalizePayloadProductNames(payload: EvaluationOutboxPayload): EvaluationOutboxPayload {
-  const overall = payload.summary?.overallScores;
-  if (!Array.isArray(overall) || overall.length === 0) return payload;
-
-  const cleaned = overall.map((o) => ({
-    ...o,
-    productName: canonicalizeProductName(o.productName),
-  }));
-
-  const sophiaItems = cleaned.filter((o) => isSophia({ name: o.productName }));
-  const seen = new Map<string, number>();
-  for (const item of sophiaItems) {
-    seen.set(item.productName, (seen.get(item.productName) ?? 0) + 1);
-  }
-  const hasDup = [...seen.values()].some((n) => n > 1);
-  if (hasDup) {
-    let nextGuess = 4;
-    const used = new Set<number>();
-    for (const item of sophiaItems) {
-      const version = parseProductVersion(item.productName);
-      if (version.length > 0) used.add(version[0]);
-    }
-    for (const item of sophiaItems) {
-      if (parseProductVersion(item.productName).length > 0) continue;
-      while (used.has(nextGuess)) nextGuess += 1;
-      item.productName = `${item.productName.replace(/\s*v\d.*$/i, "").trim()} v${nextGuess}`;
-      used.add(nextGuess);
-    }
-  }
-
-  const authoritative = new Map(cleaned.map((o) => [o.reportId, o.productName]));
-  const nextFeedback = payload.summary?.perReportFeedback?.map((f) => ({
-    ...f,
-    productName: authoritative.get(f.reportId) ?? canonicalizeProductName(f.productName),
-  }));
-
-  return {
-    ...payload,
-    summary: {
-      ...payload.summary,
-      overallScores: cleaned,
-      ...(nextFeedback ? { perReportFeedback: nextFeedback } : {}),
-    },
-  };
-}
-
-function orderReportIds(overall: EvaluationOutboxPayload["summary"]["overallScores"]): string[] {
-  const withIdx = overall.map((o, idx) => ({ ...o, idx }));
-  withIdx.sort((a, b) => {
-    const sa = isSophia({ name: a.productName });
-    const sb = isSophia({ name: b.productName });
-    if (sa && !sb) return -1;
-    if (!sa && sb) return 1;
-    if (sa && sb) {
-      return -compareVersionArr(parseProductVersion(a.productName), parseProductVersion(b.productName));
-    }
-    return a.idx - b.idx;
-  });
-  return withIdx.map((o) => o.reportId);
-}
+import {
+  type ContractVersion,
+  resolveDimensionName,
+  normalizePayloadProductNames,
+  orderReportIds,
+  reportHintFor,
+} from "../lib/contractAdapter";
 
 const formatRelTime = (mtime: number) => {
   const diff = Date.now() - mtime;
@@ -279,12 +136,7 @@ export default function EvaluationReportView({
   }
 
   const { summary, report, evaluator, evaluatedAt, contractVersion } = currentPayload;
-  const reportHint =
-    contractVersion === "3.2"
-      ? "评分总表之外的核验记录、每份反馈与聚焦诊断都应写入正文，不再拆成独立模块。"
-      : contractVersion === "3.1"
-        ? "正文按总-分-总四段结构展开，重点把事实错误、逻辑错误与证据写透。"
-        : "正文按产物原样渲染。";
+  const reportHint = reportHintFor(contractVersion);
 
   return (
     <div className="space-y-6">

@@ -86,9 +86,11 @@ export interface InboxTask {
    * - "1.0"：2026-04 ~ 2026-04-27 使用，candidate 只承载单版本 report
    * - "2.0"：2026-04-27 起使用，candidate.reportVersions[] + activeReportVersion
    *
-   * 注意：这是 **inbox schema 版本**，与 outbox payload 的 contractVersion 独立。
+   * 注意：这是 **inbox schema 版本**，与 outbox payload 的 contractVersion（rubric 契约版本）
+   * 完全独立。2026-04-27 起字段名从 `contractVersion` 迁移为 `inboxSchemaVersion`，避免命名混淆；
+   * 磁盘上的旧文件仍可能写着 `contractVersion`，读取端要兼容两者（见 readInboxSchemaVersion）。
    */
-  contractVersion: "1.0" | "2.0";
+  inboxSchemaVersion: "1.0" | "2.0";
   query: {
     id: string;
     code: string;
@@ -370,10 +372,14 @@ export type EvaluationPass =
   | "feedback";
 
 /**
- * 45 分钟时间盒的实际执行报表（v2.2 新增，必填）。
+ * 评测节奏报表（v2.2 新增；v3.3 起取消硬时间盒）。
  */
 export interface VerificationBudget {
-  /** 固定 45 */
+  /**
+   * 节奏参考（分钟）。
+   * - v2.2 ~ v3.2：固定 45（硬时间盒）
+   * - v3.3 起：仅作节奏参考，不再硬性封顶；评测官可按 claim 复杂度延长。lint 仅要求 > 0
+   */
   targetMinutes: number;
   /** 实际耗时（分钟）；自 v3.0 起取消硬上限，仅要求 > 0，并作为观测指标保留 */
   actualMinutes: number;
@@ -505,11 +511,12 @@ export interface EvaluationOutboxPayload {
    * - `"3.0"`：2026-04-25 晚起使用的契约（评测焦点重定位到 Sophia，新增 summary.crossProductInsights；report 正文从六大章节硬约束改为三稳定锚点 + 自由生成层；低分证据密度硬约束）
    * - `"3.1"`：2026-04-25 深夜起使用的契约（先查错再评分；report 收敛为总-分-总四段锚点）
    * - `"3.2"`：2026-04-26 起使用的契约（评分总表之外的核验/反馈/聚焦诊断全部回归正文；页面主阅读路径收敛为“评分总表 + 正文”）
+   * - `"3.3"`：2026-04-27 起使用的契约（取消 45min 硬时间盒；承重 claim 容量 Top 5 → Top 10；文档精简）
    *
    * 前端渲染时按此字段分支兼容——历史版本保留原样展示，新版本启用新 UI 能力
    * （档位标签、veto 徽章、激活的扩展维度纳入总分展示、正文四段锚点校验、低分证据高亮等）。
    */
-  contractVersion: "1.0" | "2.0" | "2.1" | "2.2" | "3.0" | "3.1" | "3.2";
+  contractVersion: "1.0" | "2.0" | "2.1" | "2.2" | "3.0" | "3.1" | "3.2" | "3.3";
   /**
    * 冗余写入的 query 永久 id（2026-04-21 方案 D 新增）。
    * - 由 bus / bake 统一注入，payload 原作者（LLM）不需要填
@@ -610,8 +617,27 @@ export async function computeContentHash(content: string): Promise<string> {
 // ------------------------------------------------------------
 
 /**
+ * 兼容读取 inbox schema 版本。
+ *
+ * 2026-04-27 字段从 `contractVersion` 迁移到 `inboxSchemaVersion`。
+ * 磁盘上的旧文件可能还写着 `contractVersion`，用这个工具函数统一读取；
+ * 写入端一律写 `inboxSchemaVersion`（由 startup 自动迁移就地改写）。
+ *
+ * 返回字符串即可，不做严格 "1.0" | "2.0" 联合类型限制——留给消费端校验。
+ */
+export function readInboxSchemaVersion(
+  raw: unknown
+): string | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const obj = raw as Record<string, unknown>;
+  if (typeof obj.inboxSchemaVersion === "string") return obj.inboxSchemaVersion;
+  if (typeof obj.contractVersion === "string") return obj.contractVersion;
+  return undefined;
+}
+
+/**
  * 构造 v2 schema 的 InboxTask 骨架：
- * - contractVersion = "2.0"
+ * - inboxSchemaVersion = "2.0"
  * - 每个 candidate 带 candidateId、activeReportVersion=1、reportVersions=[{version:1,...,contentHash:""}]
  * - contentHash 字段占位为空，调用方负责提交前调 `fillInboxContentHashes` 填好
  *
@@ -651,7 +677,7 @@ export function buildInboxTask(input: {
   return {
     taskId,
     createdAt: nowIso,
-    contractVersion: "2.0",
+    inboxSchemaVersion: "2.0",
     query: {
       id: input.query.id,
       code: input.query.code,

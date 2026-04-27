@@ -753,7 +753,7 @@ function goodInboxV2() {
   return {
     taskId: "EV-9999-abcDEF",
     createdAt: "2026-04-27T12:00:00.000Z",
-    contractVersion: "2.0",
+    inboxSchemaVersion: "2.0",
     query: { id: "q_1", code: "EV-9999" },
     candidates: [
       {
@@ -786,13 +786,32 @@ describe("validateInboxTask · v2 schema", () => {
     expect(lintInboxTask(goodInboxV2())).toEqual([]);
   });
 
-  it("contractVersion=1.0 → 报错并提示 migrate-inbox", () => {
+  it("inboxSchemaVersion=1.0 → 报错并提示 migrate-inbox", () => {
     const t: any = goodInboxV2();
-    t.contractVersion = "1.0";
+    t.inboxSchemaVersion = "1.0";
     const errors = lintInboxTask(t);
-    expect(errors.some((e) => e.path === "contractVersion" && /migrate-inbox/.test(e.msg))).toBe(
-      true
-    );
+    expect(
+      errors.some((e) => e.path === "inboxSchemaVersion" && /migrate-inbox/.test(e.msg))
+    ).toBe(true);
+  });
+
+  it("旧字段名 contractVersion 残留（新字段缺失）→ 报错并提示改名", () => {
+    const t: any = goodInboxV2();
+    delete t.inboxSchemaVersion;
+    t.contractVersion = "2.0";
+    const errors = lintInboxTask(t);
+    expect(
+      errors.some((e) => e.path === "inboxSchemaVersion" && /contractVersion/.test(e.msg))
+    ).toBe(true);
+  });
+
+  it("新旧字段并存 → 报错要求删除旧字段", () => {
+    const t: any = goodInboxV2();
+    t.contractVersion = "2.0";
+    const errors = lintInboxTask(t);
+    expect(
+      errors.some((e) => e.path === "contractVersion" && /删除/.test(e.msg))
+    ).toBe(true);
   });
 
   it("candidates 为空数组 → 报错", () => {
@@ -850,4 +869,146 @@ describe("validateInboxTask · v2 schema", () => {
   });
 });
 
+// ============================================================
+// v3.3 专属测试（取消 45min 硬时间盒 + claim Top 5 → Top 10）
+// ============================================================
+
+/** 构造一个最小合法的 v3.3 payload（基于 v3.2 + targetMinutes 放宽） */
+function goodPayloadV33() {
+  const p: any = goodPayloadV32();
+  p.contractVersion = "3.3";
+  // v3.3 起 targetMinutes 仅作节奏参考，不再固定 45；但 >0 仍必须
+  p.summary.verificationBudget.targetMinutes = 60;
+  return p;
+}
+
+describe("validatePayload · v3.3 最小合法 payload", () => {
+  it("最小合法 v3.3 payload 无违规", () => {
+    const errors = lint(goodPayloadV33());
+    expect(errors).toEqual([]);
+  });
+});
+
+describe("validatePayload · v3.3 verificationBudget 去硬时间盒", () => {
+  it("v3.3 targetMinutes=60（非 45）不再报错", () => {
+    const p: any = goodPayloadV33();
+    p.summary.verificationBudget.targetMinutes = 60;
+    const errors = lint(p);
+    expect(errors.some((e) => e.path.includes("targetMinutes"))).toBe(false);
+  });
+
+  it("v3.3 targetMinutes=90 也通过（质量优先的长评测）", () => {
+    const p: any = goodPayloadV33();
+    p.summary.verificationBudget.targetMinutes = 90;
+    const errors = lint(p);
+    expect(errors.some((e) => e.path.includes("targetMinutes"))).toBe(false);
+  });
+
+  it("v3.3 targetMinutes=0 仍报错（结构性校验：必须是正数）", () => {
+    const p: any = goodPayloadV33();
+    p.summary.verificationBudget.targetMinutes = 0;
+    const errors = lint(p);
+    expect(errors.some((e) => e.path.includes("targetMinutes"))).toBe(true);
+  });
+
+  it("v3.2 targetMinutes=60（非 45） 仍报错（v3.2 硬锁 45 不变）", () => {
+    const p: any = goodPayloadV32();
+    p.summary.verificationBudget.targetMinutes = 60;
+    const errors = lint(p);
+    expect(errors.some((e) => e.path.includes("targetMinutes"))).toBe(true);
+  });
+});
+
+describe("validatePayload · v3.3 claimInventory 容量 Top 10", () => {
+  it("v3.3 每份报告可抽 10 条承重 claim（含 1 条 logic）→ 通过", () => {
+    const p: any = goodPayloadV33();
+    // 给 sub_1 扩到 10 条 claim（原有 3 条 + 新增 7 条）
+    const extraClaims = Array.from({ length: 7 }, (_, i) => ({
+      claimId: `c1_extra_${i + 1}`,
+      reportId: "sub_1",
+      claim: `补充承重 claim ${i + 1}`,
+      type: "fact",
+      supportWeight: "medium",
+    }));
+    p.summary.claimInventory.push(...extraClaims);
+    // claimChecks 同步补齐
+    const extraChecks = extraClaims.map((c) => ({
+      claimId: c.claimId,
+      status: "verified-correct",
+      evidence: `已核验 ${c.claimId}`,
+      checkedBy: "外部核验",
+    }));
+    p.summary.claimChecks.push(...extraChecks);
+    const errors = lint(p);
+    expect(errors.some((e) => e.path.includes("claimInventory") && /3~/.test(e.msg))).toBe(false);
+  });
+
+  it("v3.3 每份报告抽 11 条（超过 Top 10 上限） → 报错", () => {
+    const p: any = goodPayloadV33();
+    const extraClaims = Array.from({ length: 8 }, (_, i) => ({
+      claimId: `c1_extra_${i + 1}`,
+      reportId: "sub_1",
+      claim: `补充承重 claim ${i + 1}`,
+      type: "fact",
+      supportWeight: "medium",
+    }));
+    p.summary.claimInventory.push(...extraClaims);
+    const extraChecks = extraClaims.map((c) => ({
+      claimId: c.claimId,
+      status: "verified-correct",
+      evidence: `已核验 ${c.claimId}`,
+      checkedBy: "外部核验",
+    }));
+    p.summary.claimChecks.push(...extraChecks);
+    const errors = lint(p);
+    expect(errors.some((e) => e.path.includes("claimInventory") && /3~10/.test(e.msg))).toBe(true);
+  });
+
+  it("v3.2 每份报告抽 6 条（超过 Top 5 上限）→ 报错（v3.2 上限不变）", () => {
+    const p: any = goodPayloadV32();
+    const extraClaims = Array.from({ length: 3 }, (_, i) => ({
+      claimId: `c1_extra_${i + 1}`,
+      reportId: "sub_1",
+      claim: `补充承重 claim ${i + 1}`,
+      type: "fact",
+      supportWeight: "medium",
+    }));
+    p.summary.claimInventory.push(...extraClaims);
+    const extraChecks = extraClaims.map((c) => ({
+      claimId: c.claimId,
+      status: "verified-correct",
+      evidence: `已核验 ${c.claimId}`,
+      checkedBy: "外部核验",
+    }));
+    p.summary.claimChecks.push(...extraChecks);
+    const errors = lint(p);
+    expect(errors.some((e) => e.path.includes("claimInventory") && /3~5/.test(e.msg))).toBe(true);
+  });
+
+  it("v3.3 每份报告仅 2 条 → 仍报错（下限 ≥3 不变）", () => {
+    const p: any = goodPayloadV33();
+    p.summary.claimInventory = p.summary.claimInventory.filter(
+      (c: any) => c.reportId !== "sub_1" || c.claimId === "c1" || c.claimId === "c3"
+    );
+    p.summary.claimChecks = p.summary.claimChecks.filter((ck: any) =>
+      p.summary.claimInventory.some((c: any) => c.claimId === ck.claimId)
+    );
+    const errors = lint(p);
+    expect(errors.some((e) => e.msg.includes("3~10"))).toBe(true);
+  });
+});
+
+describe("validatePayload · v3.3 report 锚点（与 v3.2 同规则）", () => {
+  it("v3.3 四段锚点齐全 → 通过", () => {
+    const errors = lint(goodPayloadV33());
+    expect(errors.some((e) => e.path === "report")).toBe(false);
+  });
+
+  it("v3.3 缺“按维度展开”锚点 → 报错", () => {
+    const p: any = goodPayloadV33();
+    p.report = p.report.replace("## 二、按维度展开评测结论、详情与论据", "## 二、观察笔记");
+    const errors = lint(p);
+    expect(errors.some((e) => e.path === "report" && e.msg.includes("按维度展开"))).toBe(true);
+  });
+});
 

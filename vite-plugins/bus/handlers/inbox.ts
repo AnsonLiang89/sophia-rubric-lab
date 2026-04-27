@@ -23,6 +23,7 @@ import {
   isSafeTaskId,
 } from "../helpers";
 import type { BusContext, BusReq, BusRes } from "../types";
+import { readInboxSchemaVersion } from "../../../src/lib/contract";
 
 /** 计算报告 content 的 sha256 前 16 位 hex（8 字节）。与 src/lib/contract.ts 的 computeContentHash 必须保持一致。 */
 function computeContentHashNode(content: string): string {
@@ -60,11 +61,12 @@ export async function handlePostInbox(
     });
   }
   // v2 schema 入口守卫：禁止再写入 v1 payload（历史遗留文件由启动期 migrate-inbox 一次性迁移）
-  // 这里 contractVersion 指的是 inbox schema 版本，不是 outbox contractVersion
-  const cv = payload.contractVersion;
-  if (cv !== "2.0") {
+  // 这里 inboxSchemaVersion 指的是 **inbox schema 版本**，不是 outbox payload.contractVersion。
+  // 兼容读：优先 inboxSchemaVersion，回退 contractVersion（2026-04-27 前的旧字段名）。
+  const inboxSchemaVersion = readInboxSchemaVersion(payload);
+  if (inboxSchemaVersion !== "2.0") {
     return send(res, 400, {
-      error: `inbox contractVersion must be "2.0"; got ${JSON.stringify(cv ?? null)}. 前端请用 buildInboxTask + fillInboxContentHashes 构造 v2 payload`,
+      error: `inbox schema version must be "2.0"; got ${JSON.stringify(inboxSchemaVersion ?? null)}. 前端请用 buildInboxTask + fillInboxContentHashes 构造 v2 payload（字段名 inboxSchemaVersion）`,
     });
   }
   // v2 结构最基本的一致性校验：candidates[].reportVersions[activeReportVersion] 必须存在
@@ -235,9 +237,10 @@ export async function handlePatchInboxTask(
   const task = readJson(file);
   if (!task) return send(res, 500, { error: "corrupt inbox json" });
 
-  if (task.contractVersion !== "2.0") {
+  const diskInboxSchemaVersion = readInboxSchemaVersion(task);
+  if (diskInboxSchemaVersion !== "2.0") {
     return send(res, 400, {
-      error: `inbox task is schema v${task.contractVersion ?? "1.0"}; run "npm run migrate-inbox" before PATCH`,
+      error: `inbox task is schema v${diskInboxSchemaVersion ?? "1.0"}; run "npm run migrate-inbox" before PATCH`,
     });
   }
 

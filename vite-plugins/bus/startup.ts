@@ -5,8 +5,9 @@
  *   1. reconcile：把 seed / runtime snapshot 里的每条 query 登记到 _code-registry.json，
  *      冲突时按 createdAt 重新编号，同步重命名 inbox/outbox 目录前缀
  *   2. bake freshness：检查对外版产物是否落后于源文件，落后就打印警告
- *   3. inbox auto-migrate：扫 .evaluations/inbox/*.json，若发现 v1 schema（contractVersion!="2.0"）
- *      自动就地升级到 v2。保持 POST /_bus/inbox 入口的 v2 硬约束不会因为老文件而爆。
+ *   3. inbox auto-migrate：扫 .evaluations/inbox/*.json，若发现 v1 schema
+ *      或"v2 但顶层字段还叫 contractVersion"（2026-04-27 前旧字段名），自动就地升级到
+ *      inboxSchemaVersion="2.0"。保持 POST /_bus/inbox 入口的 v2 硬约束不会因为老文件而爆。
  *
  * 三者都是**非阻塞**——即使失败也允许 dev server 继续启动。
  */

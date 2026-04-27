@@ -9,7 +9,7 @@ import { pickPrimaryProduct, displayProductName } from "../lib/sortProducts";
 import MarkdownView from "../components/MarkdownView";
 import EvaluationRunModal, { type EvaluationTaskSpec } from "../components/EvaluationRunModal";
 import EvaluationReportView from "../components/EvaluationReportView";
-import { contractBus, IS_READONLY, type OutboxListItem } from "../lib/contract";
+import { contractBus, IS_READONLY, type OutboxListItem, type InboxReportVersion } from "../lib/contract";
 import { flattenTaskVersions, type FlatTaskVersion } from "../lib/outboxUtils";
 import { computeSubmissionDisplayCodes } from "../lib/submissionDisplayCode";
 import { getReadonlyReportLoader } from "../storage";
@@ -43,6 +43,19 @@ type CohortItem = {
  * 以减少本文件其它地方的连带改动。
  */
 type FlatReport = FlatTaskVersion;
+
+/**
+ * Inbox 审计轨条目：一个 submission（candidateId）对应它在 inbox 里的全部历史版本。
+ *
+ * 用于 RawReportModal 的"历史版本"折叠入口——展示 replacedReason / 版本切换 /
+ * 任意历史版本的正文。只有 dev 模式下可见（prod 不可读 inbox）。
+ */
+type CandidateHistoryEntry = {
+  taskId: string;
+  candidateId: string;
+  activeVersion: number;
+  versions: InboxReportVersion[];
+};
 
 export default function ReportPage() {
   const { id } = useParams();
@@ -367,6 +380,68 @@ function ReportHero({
   );
   const currentDisplayCode = current ? displayCodeMap.get(current.sub.id) : undefined;
 
+  // ------------------------------------------------------------
+  // Inbox 审计轨：按 candidateId 聚合报告版本历史
+  //
+  // 设计（2026-04-27 P2）：
+  //  - 同一 query 下可能对应多个 inbox task（多次"召唤评测"），每个 task.candidates[] 里
+  //    的 candidateId 对应唯一一个 Submission。当用 replace-report 或 PATCH 替换时，
+  //    新版本会追加到那个 candidate 的 reportVersions[]（只追加不删）。
+  //  - 因此 Map<candidateId, historyEntry> 足够定位任意 submission 的全部历史版本。
+  //  - dev 模式下可用；prod(IS_READONLY) 下 listInbox 返回 null → 历史 Map 为空，
+  //    审计轨 UI 自然隐藏（submission.reportVersions?.length ? 展开 : 隐藏）。
+  // ------------------------------------------------------------
+  const [inboxHistoryMap, setInboxHistoryMap] = useState<Map<string, CandidateHistoryEntry>>(
+    () => new Map()
+  );
+
+  useEffect(() => {
+    if (IS_READONLY) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const listed = await contractBus.listInbox();
+        if (cancelled || !listed) return;
+        const mine = listed.tasks.filter((t) => t.queryCode === code);
+        if (mine.length === 0) {
+          setInboxHistoryMap(new Map());
+          return;
+        }
+        const tasks = await Promise.all(mine.map((m) => contractBus.getInbox(m.taskId)));
+        if (cancelled) return;
+        const map = new Map<string, CandidateHistoryEntry>();
+        for (const t of tasks) {
+          if (!t || !Array.isArray(t.candidates)) continue;
+          for (const c of t.candidates) {
+            const cid = c.candidateId ?? c.reportId;
+            if (!cid) continue;
+            const versions = Array.isArray(c.reportVersions) ? c.reportVersions : [];
+            if (versions.length === 0) continue;
+            // 同一个 candidateId 只可能落在一个 task 上（replace-report 只改追加现有 task）；
+            // 但万一多个 inbox 各写一遍（比如重复召唤），保留"版本数最多"的那条。
+            const prev = map.get(cid);
+            if (!prev || versions.length > prev.versions.length) {
+              map.set(cid, {
+                taskId: t.taskId,
+                candidateId: cid,
+                activeVersion: c.activeReportVersion ?? 1,
+                versions,
+              });
+            }
+          }
+        }
+        setInboxHistoryMap(map);
+      } catch {
+        /* dev-only 调试能力，失败静默 */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [code]);
+
+  const currentHistory = current ? inboxHistoryMap.get(current.sub.id) : undefined;
+
   return (
     <header className="bg-white rounded-2xl shadow-soft border border-paper-200 overflow-hidden">
       {/* 第一行：面包屑 + 操作区 */}
@@ -505,6 +580,7 @@ function ReportHero({
         sub={current?.sub ?? null}
         product={current?.product ?? null}
         displayCode={currentDisplayCode}
+        history={currentHistory}
         onClose={() => setOpenSubId(null)}
       />
     </header>
@@ -521,15 +597,29 @@ function RawReportModal({
   sub,
   product,
   displayCode,
+  history,
   onClose,
 }: {
   open: boolean;
   sub: Submission | null;
   product: AIProduct | null;
   displayCode?: string;
+  history?: CandidateHistoryEntry;
   onClose: () => void;
 }) {
   const [fullscreen, setFullscreen] = useState(false);
+
+  /**
+   * 历史版本选择：
+   *  - null：默认视图（读 submission.content = 当前激活版本的镜像）
+   *  - number：选中某个历史 / 激活版本；正文直接从 inbox history.versions 同步取
+   *
+   * 为什么"激活版本"也给一个显式选项？因为当用户切到历史版本再点"回到激活"，
+   * 我们要回到稳定的 number 状态（而不是 null），方便展开审计轨 bar 高亮。
+   */
+  const [selectedVersion, setSelectedVersion] = useState<number | null>(null);
+  // 审计轨面板是否展开（仅 history 存在且版本 >1 时有意义）
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   /**
    * 对外版正文懒加载：
@@ -539,13 +629,29 @@ function RawReportModal({
    * 返回的 `content` 是空字符串。必须显式调 getReadonlyReportLoader 去拉。
    *
    * dev 下 storage 是 LocalStorageAdapter，loader 为 null，直接用 sub.content。
+   *
+   * 历史版本走独立路径：直接从 inbox history.versions 同步取 content，
+   * 因为 inbox v2 schema 把每版本的 content 都完整保留在内存里，无需懒加载。
    */
   const reportLoader = useMemo(() => getReadonlyReportLoader(), []);
   const [lazyContent, setLazyContent] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // 当前应该渲染的正文：
+  //  - selectedVersion 非 null：从 history.versions 里选取（同步即得）
+  //  - 否则：走 lazyContent 懒加载路径
+  const selectedVersionRecord = useMemo(() => {
+    if (selectedVersion == null || !history) return null;
+    return history.versions.find((v) => v.version === selectedVersion) ?? null;
+  }, [selectedVersion, history]);
+  const displayContent = selectedVersionRecord
+    ? selectedVersionRecord.content
+    : lazyContent;
+  const displayLoading = !selectedVersionRecord && loading;
+
   useEffect(() => {
-    if (!open || !sub) return;
+    // 激活版本路径（selectedVersion == null）才走懒加载
+    if (!open || !sub || selectedVersion != null) return;
     // dev 模式：直接用 localStorage 里的完整 content
     if (!reportLoader) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -571,7 +677,7 @@ function RawReportModal({
     return () => {
       cancelled = true;
     };
-  }, [open, sub, reportLoader]);
+  }, [open, sub, reportLoader, selectedVersion]);
 
   // ESC 关闭 / 锁滚动
   useEffect(() => {
@@ -601,8 +707,18 @@ function RawReportModal({
       setFullscreen(false);
       setLazyContent(null);
       setLoading(false);
+      setSelectedVersion(null);
+      setHistoryOpen(false);
     }
   }, [open]);
+
+  // sub 变化时重置版本选择（不同 submission 的 history 互不相干）
+  useEffect(() => {
+    setSelectedVersion(null);
+    setHistoryOpen(false);
+  }, [sub?.id]);
+
+  const hasHistory = !!history && history.versions.length > 1;
 
   return (
     <AnimatePresence>
@@ -656,12 +772,26 @@ function RawReportModal({
                     <span>{formatDate(sub.submittedAt, true)}</span>
                     <span className="text-ink-300">·</span>
                     <span>
-                      {loading
+                      {displayLoading
                         ? "加载中…"
-                        : lazyContent != null
-                        ? `${lazyContent.length.toLocaleString()} 字符`
+                        : displayContent != null
+                        ? `${displayContent.length.toLocaleString()} 字符`
                         : "—"}
                     </span>
+                    {selectedVersionRecord && (
+                      <>
+                        <span className="text-ink-300">·</span>
+                        <span
+                          className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-50 text-amber-dark border border-amber-100 font-mono"
+                          title="当前查看的历史版本"
+                        >
+                          v{selectedVersionRecord.version}
+                          {selectedVersionRecord.version === history?.activeVersion && (
+                            <span className="text-[10px] text-ink-500">（激活）</span>
+                          )}
+                        </span>
+                      </>
+                    )}
                     {sub.sourceUrl && (
                       <>
                         <span className="text-ink-300">·</span>
@@ -707,6 +837,145 @@ function RawReportModal({
               </div>
             </div>
 
+            {/* 审计轨：历史版本折叠入口（dev-only；inbox v2 schema 的 reportVersions[]） */}
+            {hasHistory && history && (
+              <div className="shrink-0 border-b border-paper-200 bg-amber-50/40">
+                <button
+                  type="button"
+                  onClick={() => setHistoryOpen((v) => !v)}
+                  className="w-full flex items-center gap-2 px-5 md:px-7 py-2 text-[12px] text-ink-700 hover:bg-amber-50/80 transition"
+                  aria-expanded={historyOpen}
+                >
+                  <svg
+                    className={clsx(
+                      "w-3 h-3 text-ink-500 transition-transform",
+                      historyOpen && "rotate-90"
+                    )}
+                    viewBox="0 0 12 12"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M4 3l4 3-4 3"
+                      stroke="currentColor"
+                      strokeWidth="1.4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  <span className="font-medium">
+                    历史版本 · {history.versions.length} 版
+                  </span>
+                  <span className="text-ink-400">
+                    （激活 v{history.activeVersion}；只追加不删，点击查看任意历史版本）
+                  </span>
+                </button>
+                {historyOpen && (
+                  <div className="px-5 md:px-7 pb-3 pt-1 space-y-1.5">
+                    {/* 版本列表：最新在顶（倒序） */}
+                    {[...history.versions]
+                      .sort((a, b) => b.version - a.version)
+                      .map((v) => {
+                        const isSelected =
+                          selectedVersion == null
+                            ? v.version === history.activeVersion
+                            : v.version === selectedVersion;
+                        const isActive = v.version === history.activeVersion;
+                        return (
+                          <div
+                            key={v.version}
+                            className={clsx(
+                              "rounded-lg border px-3 py-2 text-[11.5px] transition",
+                              isSelected
+                                ? "border-amber-dark bg-white shadow-sm"
+                                : "border-paper-200 bg-white/60 hover:border-paper-400"
+                            )}
+                          >
+                            <div className="flex items-start gap-2">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setSelectedVersion(
+                                    selectedVersion === v.version ? null : v.version
+                                  )
+                                }
+                                className={clsx(
+                                  "shrink-0 font-mono px-1.5 py-0.5 rounded border",
+                                  isActive
+                                    ? "bg-amber-50 text-amber-dark border-amber-200"
+                                    : "bg-paper-100 text-ink-600 border-paper-300",
+                                  "hover:ring-1 hover:ring-amber"
+                                )}
+                                title={
+                                  isSelected
+                                    ? "再次点击回到默认视图"
+                                    : `切换到 v${v.version} 的正文`
+                                }
+                              >
+                                v{v.version}
+                                {isActive && (
+                                  <span className="ml-1 text-[10px] text-ink-500">激活</span>
+                                )}
+                              </button>
+                              <div className="min-w-0 flex-1 space-y-0.5">
+                                <div className="flex items-center gap-2 text-ink-500 text-[10.5px] flex-wrap">
+                                  {v.replacedAt ? (
+                                    <span title="替换进来的时间">
+                                      替换于 {formatDate(v.replacedAt, true)}
+                                    </span>
+                                  ) : (
+                                    <span title="初版写入 inbox 的时间">
+                                      提交于 {formatDate(v.submittedAt, true)}
+                                    </span>
+                                  )}
+                                  {v.producedAt && (
+                                    <>
+                                      <span className="text-ink-300">·</span>
+                                      <span title="报告生成时间">
+                                        报告生成 {formatDate(v.producedAt, true)}
+                                      </span>
+                                    </>
+                                  )}
+                                  <span className="text-ink-300">·</span>
+                                  <span
+                                    className="font-mono text-ink-400"
+                                    title="contentHash（sha256 前 16 位）"
+                                  >
+                                    #{v.contentHash.slice(0, 8)}
+                                  </span>
+                                  <span className="text-ink-300">·</span>
+                                  <span>{v.content.length.toLocaleString()} 字符</span>
+                                </div>
+                                {v.replacedReason && (
+                                  <div className="text-ink-700 text-[11.5px] leading-relaxed">
+                                    <span className="text-ink-400 mr-1">替换原因：</span>
+                                    {v.replacedReason}
+                                  </div>
+                                )}
+                                {!v.replacedReason && v.version > 1 && (
+                                  <div className="text-ink-400 italic text-[11px]">
+                                    （未填写替换原因）
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    {selectedVersion != null && (
+                      <button
+                        type="button"
+                        onClick={() => setSelectedVersion(null)}
+                        className="text-[11px] text-amber-dark hover:underline px-1 py-0.5"
+                      >
+                        ← 回到默认视图（激活版本）
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* 正文：独立滚动区域，大尺寸沉浸阅读 */}
             <article className="flex-1 overflow-y-auto bg-white">
               <div
@@ -715,16 +984,16 @@ function RawReportModal({
                   fullscreen ? "max-w-4xl" : "max-w-none"
                 )}
               >
-                {loading ? (
+                {displayLoading ? (
                   <div className="text-sm text-ink-500 py-12 text-center">
                     正在加载报告正文…
                   </div>
-                ) : lazyContent == null || lazyContent.length === 0 ? (
+                ) : displayContent == null || displayContent.length === 0 ? (
                   <div className="text-sm text-ink-500 py-12 text-center">
                     （报告正文为空或加载失败）
                   </div>
                 ) : (
-                  <MarkdownView content={lazyContent} />
+                  <MarkdownView content={displayContent} />
                 )}
               </div>
             </article>

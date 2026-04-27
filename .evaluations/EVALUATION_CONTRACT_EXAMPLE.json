@@ -1,0 +1,257 @@
+{
+  "_comment": "v3.3 outbox 完整示例。EVALUATION_CONTRACT.md §3.0.1 的正文骨架请以此文件为准。字段定义见契约正文 §3.1 硬约束表与 §3.2~§3.15 分字段说明。",
+  "taskId": "EV-0001-dlqvY6",
+  "version": 1,
+  "evaluator": "Sophia (Claude-Opus-4.7 via WorkBuddy)",
+  "evaluatedAt": "2026-04-25T14:30:00.000Z",
+  "contractVersion": "3.3",
+
+  "summary": {
+    "overallScores": [
+      {
+        "reportId": "sub_abc123",
+        "productName": "SophiaAI",
+        "score": 8.4,
+        "verdict": "优秀",
+        "vetoTriggered": false
+      },
+      {
+        "reportId": "sub_def456",
+        "productName": "MiroThink",
+        "score": 6.9,
+        "verdict": "合格",
+        "vetoTriggered": true,
+        "vetoReason": "claim c3（量级错 V1）：报告写 600 万美元，实际一手源为 600 亿美元"
+      }
+    ],
+
+    "rubric": [
+      {
+        "dimensionId": "R1",
+        "name": "准确性",
+        "weight": 0.40,
+        "subscores": {
+          "R1a": { "score": 10, "tier": "S", "weight": 0.28, "comment": "claim 核验命中率 100%，信源全部一手" },
+          "R1b": { "score": 8,  "tier": "A", "weight": 0.12, "comment": "量纲 / 因果链通过；第 3 段有一处边角前后不一致" }
+        },
+        "scores": [
+          {
+            "reportId": "sub_abc123",
+            "score": 10,
+            "tier": "S",
+            "comment": "R1a=S, R1b=A。7 项 checklist 全过；承重 claim 10 条外部核验全部 verified-correct",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "sub_def456",
+            "score": 2,
+            "tier": "D",
+            "comment": "触发 V1 量级错（claim c3）；R1a=D, R1b=C（内部算术不自洽）",
+            "confidence": "high",
+            "issueTags": ["数字量级错", "事实错误"]
+          }
+        ]
+      },
+      { "dimensionId": "R2", "name": "相关性",   "weight": 0.15, "scores": [] },
+      { "dimensionId": "R3", "name": "论证深度", "weight": 0.20, "scores": [] },
+      { "dimensionId": "R4", "name": "完备性",   "weight": 0.10, "scores": [] },
+      { "dimensionId": "R5", "name": "决策价值", "weight": 0.15, "scores": [] }
+    ],
+
+    "extraDimensions": [
+      {
+        "dimensionId": "X1",
+        "name": "本地化适配度",
+        "rationale": "此 Query 涉及跨文化 BD，本地化敏感度是关键差异点",
+        "activated": true,
+        "weight": 0.10,
+        "scores": [
+          { "reportId": "sub_abc123", "score": 8, "tier": "A", "comment": "提到目标市场监管差异" },
+          { "reportId": "sub_def456", "score": 4, "tier": "C", "comment": "完全忽略本地化" }
+        ]
+      }
+    ],
+
+    "sbs": {
+      "pairs": [
+        {
+          "reportIdA": "sub_abc123",
+          "reportIdB": "sub_def456",
+          "winner": "A",
+          "margin": "overwhelming",
+          "dimensionDriver": ["R1", "R3", "R5"],
+          "keyReason": "A 在 R1/R3/R5 全面领先；B 因 R1 V1 量级错触发 veto 被封顶 6.9"
+        }
+      ]
+    },
+
+    "perReportFeedback": [
+      {
+        "reportId": "sub_abc123",
+        "productName": "SophiaAI",
+        "strengths": [
+          "R1 准确性：承重数字全部一手源并经外部核验（例：XX 亿对齐 Wind 2026-04-20）",
+          "R3 论证深度：三阶推导闭环"
+        ],
+        "weaknesses": [
+          "R4 完备性：缺少竞争格局章节"
+        ],
+        "improvements": [
+          "补齐竞争格局与替代方案章节"
+        ]
+      },
+      {
+        "reportId": "sub_def456",
+        "productName": "MiroThink",
+        "strengths": ["R2 贴题，未跑题"],
+        "weaknesses": [
+          "R1 触发 V1 量级错（claim c3）",
+          "R5 通篇废话型 take-away"
+        ],
+        "improvements": [
+          "写数字前对照一手源；take-away 给出具体可执行条目"
+        ]
+      }
+    ],
+
+    "_claimInventoryNote": "v3.3 起：每份报告 3~10 条承重 claim；下方示意仅列关键 4 条，实战应拉满到 10 条以充分暴露事实/数字/逻辑/因果类问题。",
+    "claimInventory": [
+      {
+        "claimId": "c1",
+        "reportId": "sub_abc123",
+        "type": "fact",
+        "claim": "2026-04-20 Wind 口径，XX 行业规模 600 亿美元",
+        "supportWeight": "high",
+        "locationHint": "第 2 段第 3 句"
+      },
+      {
+        "claimId": "c2",
+        "reportId": "sub_abc123",
+        "type": "number",
+        "claim": "YoY 增速 32.1%",
+        "supportWeight": "high",
+        "locationHint": "第 2 段末句"
+      },
+      {
+        "claimId": "c3",
+        "reportId": "sub_def456",
+        "type": "number",
+        "claim": "XX 行业规模 600 万美元",
+        "supportWeight": "high",
+        "locationHint": "第 1 段首句"
+      },
+      {
+        "claimId": "c4",
+        "reportId": "sub_def456",
+        "type": "logic",
+        "claim": "因 A 上涨 → B 下跌 → C 萎缩（因果链）",
+        "supportWeight": "high",
+        "locationHint": "第 3 段"
+      }
+    ],
+
+    "claimChecks": [
+      {
+        "claimId": "c1",
+        "status": "verified-correct",
+        "evidence": "Wind 终端 2026-04-20 口径一致",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "c2",
+        "status": "verified-correct",
+        "evidence": "统计局 2026 年 4 月发布 32.1%",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "c3",
+        "status": "refuted",
+        "evidence": "Wind / 统计局口径均为 600 亿美元；报告量级错 (V1)",
+        "checkedBy": "pass2-external-search",
+        "vetoMode": "V1"
+      },
+      {
+        "claimId": "c4",
+        "status": "refuted",
+        "evidence": "因果链中 B 下跌其实是 C 萎缩的滞后结果，顺序倒置 (V4)",
+        "checkedBy": "pass3-logic",
+        "vetoMode": "V4"
+      }
+    ],
+
+    "dimensionChecklists": {
+      "R1": {
+        "reportIds": ["sub_abc123", "sub_def456"],
+        "items": [
+          { "label": "承重 claim 3~10 条含 ≥1 条 logic 类", "passedFor": ["sub_abc123", "sub_def456"] },
+          { "label": "核验覆盖率 ≥85%",                     "passedFor": ["sub_abc123", "sub_def456"] },
+          { "label": "承重数字一手源对照",                   "passedFor": ["sub_abc123", "sub_def456"] },
+          { "label": "veto 候选全部外部验证",                 "passedFor": ["sub_abc123", "sub_def456"] },
+          { "label": "关键量纲/占比/汇率手算",               "passedFor": ["sub_abc123", "sub_def456"] },
+          { "label": "跨段落口径一致性至少 1 处",            "passedFor": ["sub_abc123", "sub_def456"] },
+          { "label": "核验过程落入 report「事实核验记录」",  "passedFor": ["sub_abc123", "sub_def456"] }
+        ]
+      },
+      "R2": {
+        "items": [
+          { "label": "列出核心诉求 + 锚点",           "passedFor": ["sub_abc123", "sub_def456"] },
+          { "label": "核心诉求逐条找到正面回应",      "passedFor": ["sub_abc123"] },
+          { "label": "锚点逐个确认响应",               "passedFor": ["sub_abc123"] },
+          { "label": "潜在诉求识别或说明",             "passedFor": ["sub_abc123"] },
+          { "label": "无明显跑题/无关填充（<10%）",    "passedFor": ["sub_abc123", "sub_def456"] }
+        ]
+      },
+      "R3": { "items": [] },
+      "R4": { "items": [] },
+      "R5": { "items": [] }
+    },
+
+    "_verificationBudgetNote": "v3.3 起：targetMinutes 仅作为节奏参考，不再硬性封顶；评测质量优先，按需展开核验。",
+    "verificationBudget": {
+      "targetMinutes": 45,
+      "actualMinutes": 62,
+      "passesCompleted": ["read", "claim-inventory", "pass1", "pass2", "pass3", "score", "feedback"],
+      "claimsSkippedDueToBudget": 0,
+      "claimsOutOfScope": 0,
+      "notes": "按质量需要展开；承重 claim 拉满 10 条以强化事实核验"
+    },
+
+    "crossProductInsights": {
+      "focusProductName": "SophiaAI",
+      "strongerThan": [
+        {
+          "dimension": "R3",
+          "vsProducts": ["MiroThink"],
+          "gapSummary": "Sophia 给出了「税率变动→利润结构重构→供应链重定价」的三阶推导闭环；MiroThink 仅停在一阶因果。",
+          "evidenceQuotes": [
+            { "product": "SophiaAI", "quote": "税率从 25% 降至 15% 不仅直接提升 EPS ~12%，更关键的是会推动上游原材料议价权重新分配——我们测算 SKU-A 的采购价将在 6 个月内因竞价压力下浮 3-5%，这部分让利最终会……" },
+            { "product": "MiroThink", "quote": "减税有助于提升公司利润。" }
+          ]
+        }
+      ],
+      "weakerThan": [
+        {
+          "dimension": "R1",
+          "vsProducts": ["Gemini", "MiroThink"],
+          "gapSummary": "Sophia 有两处编造信源（claim c10 / c11），对手在同一 query 下均给出了可核查一手链接。",
+          "evidenceQuotes": [
+            { "product": "SophiaAI", "quote": "根据中国驻福冈总领馆 2025 年 10 月 15 日发布的《避免前往日本全境的安全提示》……" },
+            { "product": "Gemini", "quote": "目前外交部官网 mfa.gov.cn/xxx 发布的提示范围仅限九州北部，并未扩及日本全境。" }
+          ],
+          "claimRefs": ["c10"]
+        }
+      ],
+      "sharedWeakness": [
+        {
+          "dimension": "R4",
+          "acrossProducts": ["SophiaAI", "MiroThink", "Gemini"],
+          "gapSummary": "三方均未覆盖「对冲方案」这一决策必备维度，只讨论了正向敞口而忽略了对立策略。",
+          "suggestion": "补齐反向情景与对冲工具的对照章节。"
+        }
+      ]
+    }
+  },
+
+  "report": "# Sophia v4 聚焦诊断 · 日本出行风险 query 横评\n\n## 一、评测结论\n...（总-分-总的「总」：核心结论 + 评分总表引用）...\n\n## 二、按维度展开（R1~R5）\n### R1 准确性\n...（评分 + 详情 + 论据 + 原文引用）...\n### R2 相关性\n...\n### R3 论证深度\n...\n### R4 完备性\n...\n### R5 决策价值\n...\n\n## 三、额外重点问题\n...（X 系列额外维度 / 跨产品对比 / 事实核验记录）...\n\n## 四、做得好的 / 做得不好的 / 建议\n### Sophia\n...\n### 其他评测对象\n...\n### 改进建议\n..."
+}
