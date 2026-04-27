@@ -117,3 +117,24 @@ export function isSafeTaskId(taskId: string): boolean {
 
 /** queryId 合法校验——和 isSafeTaskId 规则相同，语义上是"文件系统 key 级"的安全串 */
 export const isSafeQueryId = isSafeTaskId;
+
+/**
+ * 兼容读取 inbox schema 版本。
+ *
+ * 2026-04-27 字段从 `contractVersion` 迁移到 `inboxSchemaVersion`。
+ * 磁盘上的旧文件可能还写着 `contractVersion`，用这个工具函数统一读取；
+ * 写入端一律写 `inboxSchemaVersion`（由 startup 自动迁移就地改写）。
+ *
+ * 语义与 src/lib/contract.ts::readInboxSchemaVersion 完全一致；
+ * 不直接 import 前端模块是为了避免 vite-plugin 打包时把
+ * dataSource.ts 里的 `import.meta.env.PROD` 拉进 Node 端求值
+ * （Node 没有 import.meta.env，会抛 "Cannot read properties of undefined"）。
+ * 逻辑非常简单，双份维护成本低于跨边界耦合。
+ */
+export function readInboxSchemaVersion(raw: unknown): string | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const obj = raw as Record<string, unknown>;
+  if (typeof obj.inboxSchemaVersion === "string") return obj.inboxSchemaVersion;
+  if (typeof obj.contractVersion === "string") return obj.contractVersion;
+  return undefined;
+}

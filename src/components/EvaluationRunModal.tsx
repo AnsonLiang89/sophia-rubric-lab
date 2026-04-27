@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { motion, AnimatePresence } from "framer-motion";
-import { buildInboxTask, buildSummonPrompt, contractBus } from "../lib/contract";
+import { buildInboxTask, buildSummonPrompt, contractBus, fillInboxContentHashes } from "../lib/contract";
 import type { AIProduct, Query, Submission } from "../types";
 
 /**
@@ -68,6 +68,10 @@ export default function EvaluationRunModal({
           submissions: spec.submissions,
           products: spec.products,
         });
+        // v2 schema 要求 reportVersions[].contentHash 有值（sha256 前 16 位 hex）。
+        // buildInboxTask 只占位为 ""，必须在 POST 前异步算好——否则后端虽然当前不强校验，
+        // 后续 lint:outbox / migrate 消费端都会报不一致。
+        await fillInboxContentHashes(task);
         await contractBus.submitInbox(task);
         setTaskId(task.taskId);
         setPrompt(buildSummonPrompt(task.taskId));

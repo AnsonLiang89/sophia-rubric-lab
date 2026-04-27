@@ -9,7 +9,10 @@ import { pickPrimaryProduct, displayProductName } from "../lib/sortProducts";
 import MarkdownView from "../components/MarkdownView";
 import EvaluationRunModal, { type EvaluationTaskSpec } from "../components/EvaluationRunModal";
 import EvaluationReportView from "../components/EvaluationReportView";
-import { contractBus, IS_READONLY, type OutboxListItem, type InboxReportVersion } from "../lib/contract";
+import ManageSourcesModal, {
+  type SubmissionInboxInfo,
+} from "../components/ManageSourcesModal";
+import { contractBus, IS_READONLY, type OutboxListItem } from "../lib/contract";
 import { flattenTaskVersions, type FlatTaskVersion } from "../lib/outboxUtils";
 import { computeSubmissionDisplayCodes } from "../lib/submissionDisplayCode";
 import { getReadonlyReportLoader } from "../storage";
@@ -28,7 +31,7 @@ import { getReadonlyReportLoader } from "../storage";
  *   不动）。UI 层把所有 (taskId, n) 对扁平化 + 重编号。
  *
  * 结构：
- *   Hero 区：面包屑 + 操作区（召唤评测 / 追加对比源 / 删除） + Query 主文 + 元信息 + 参评 AI 胶囊
+ *   Hero 区：面包屑 + 操作区（召唤评测 / 编辑对比源 / 删除） + Query 主文 + 元信息 + 参评 AI 胶囊
  *   评测产物区：统一一个"版本"下拉 + 内容区
  */
 
@@ -44,23 +47,18 @@ type CohortItem = {
  */
 type FlatReport = FlatTaskVersion;
 
-/**
- * Inbox 审计轨条目：一个 submission（candidateId）对应它在 inbox 里的全部历史版本。
- *
- * 用于 RawReportModal 的"历史版本"折叠入口——展示 replacedReason / 版本切换 /
- * 任意历史版本的正文。只有 dev 模式下可见（prod 不可读 inbox）。
- */
-type CandidateHistoryEntry = {
-  taskId: string;
-  candidateId: string;
-  activeVersion: number;
-  versions: InboxReportVersion[];
-};
-
 export default function ReportPage() {
   const { id } = useParams();
   const nav = useNavigate();
-  const { queries, submissions, products, createSubmission, deleteQuery } = useLab();
+  const {
+    queries,
+    submissions,
+    products,
+    createSubmission,
+    updateSubmission,
+    deleteSubmission,
+    deleteQuery,
+  } = useLab();
 
   const q = queries.find((x) => x.id === id);
   const subs = useMemo(
@@ -68,7 +66,7 @@ export default function ReportPage() {
     [submissions, id]
   );
 
-  const [addOpen, setAddOpen] = useState(false);
+  const [manageOpen, setManageOpen] = useState(false);
   const [evalTask, setEvalTask] = useState<EvaluationTaskSpec | null>(null);
 
   // outbox 任务列表：只保留当前 queryCode 的
@@ -130,6 +128,67 @@ export default function ReportPage() {
       return { taskId: top.taskId, diskVersion: top.diskVersion };
     });
   }, [flatReports]);
+
+  // ------------------------------------------------------------
+  // Inbox 审计轨：按 candidateId 聚合报告版本历史
+  //
+  // 设计（2026-04-27 P2，2026-04-27 晚迁移到 ReportPage 根）：
+  //  - 同一 query 下可能对应多个 inbox task（多次"召唤评测"），每个 task.candidates[] 里
+  //    的 candidateId 对应唯一一个 Submission。当用 replace-report 或 PATCH 替换时，
+  //    新版本会追加到那个 candidate 的 reportVersions[]（只追加不删）。
+  //  - 因此 Map<candidateId, historyEntry> 足够定位任意 submission 的全部历史版本。
+  //  - 同时被 RawReportModal（审计轨查看）和 ManageSourcesModal（替换正文定位 taskId）复用。
+  //  - dev 模式下可用；prod(IS_READONLY) 下 listInbox 返回 null → 历史 Map 为空，
+  //    审计轨 UI 自然隐藏。
+  // ------------------------------------------------------------
+  const [inboxHistoryMap, setInboxHistoryMap] = useState<Map<string, SubmissionInboxInfo>>(
+    () => new Map()
+  );
+
+  useEffect(() => {
+    if (IS_READONLY || !qCode) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const listed = await contractBus.listInbox();
+        if (cancelled || !listed) return;
+        const mine = listed.tasks.filter((t) => t.queryCode === qCode);
+        if (mine.length === 0) {
+          setInboxHistoryMap(new Map());
+          return;
+        }
+        const tasks = await Promise.all(mine.map((m) => contractBus.getInbox(m.taskId)));
+        if (cancelled) return;
+        const map = new Map<string, SubmissionInboxInfo>();
+        for (const t of tasks) {
+          if (!t || !Array.isArray(t.candidates)) continue;
+          for (const c of t.candidates) {
+            const cid = c.candidateId ?? c.reportId;
+            if (!cid) continue;
+            const versions = Array.isArray(c.reportVersions) ? c.reportVersions : [];
+            if (versions.length === 0) continue;
+            // 同一个 candidateId 只可能落在一个 task 上（replace-report 只追加到现有 task）；
+            // 但万一多个 inbox 各写一遍（比如重复召唤），保留"版本数最多"的那条，以便
+            // 替换正文能指向真正富含历史的 task。
+            const prev = map.get(cid);
+            if (!prev || versions.length > prev.versions.length) {
+              map.set(cid, {
+                taskId: t.taskId,
+                activeVersion: c.activeReportVersion ?? 1,
+                versions,
+              });
+            }
+          }
+        }
+        setInboxHistoryMap(map);
+      } catch {
+        /* dev-only 调试能力，失败静默 */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [qCode, refreshTick]);
 
   if (!q) {
     return (
@@ -209,7 +268,8 @@ export default function ReportPage() {
         createdAt={q.createdAt}
         cohort={cohort}
         primaryProductId={primaryId}
-        onAddSource={() => setAddOpen(true)}
+        inboxHistoryMap={inboxHistoryMap}
+        onManageSources={() => setManageOpen(true)}
         onRunEval={handleRunEval}
         onDelete={handleDelete}
       />
@@ -291,30 +351,52 @@ export default function ReportPage() {
         )}
       </section>
 
-      {/* 追加对比源 Modal（只读模式不渲染） */}
+      {/* 编辑对比源 Modal（只读模式不渲染） */}
       {!IS_READONLY && (
-        <AddSubmissionModal
-          open={addOpen}
-          onClose={() => setAddOpen(false)}
-          products={products}
-          existingProductIds={cohort.map((c) => c.product.id)}
-          onCreate={async (payload) => {
-            const newSub = await createSubmission({
+        <ManageSourcesModal
+          open={manageOpen}
+          onClose={() => setManageOpen(false)}
+          rows={cohort}
+          allProducts={products}
+          defaultReportDate={q.reportDate}
+          inboxInfo={inboxHistoryMap}
+          onCreate={async (payload) =>
+            await createSubmission({
               queryId: q.id,
               productId: payload.productId,
-              productVersion: payload.version || undefined,
-              submittedAt: new Date(payload.reportDate || q.reportDate || new Date()).toISOString(),
+              productVersion: payload.productVersion,
+              submittedAt: payload.submittedAt,
               contentFormat: "markdown",
               content: payload.content,
-              sourceUrl: payload.sourceUrl || undefined,
+              sourceUrl: payload.sourceUrl,
+            })
+          }
+          onUpdateMeta={async ({ sub, productVersion, submittedAt, sourceUrl }) => {
+            // store.updateSubmission 接收完整 Submission；用当前记录合并字段后持久化。
+            await updateSubmission({
+              ...sub,
+              productVersion,
+              submittedAt,
+              sourceUrl,
             });
-            // 追加完后对 cohort + 新增一起发起评测
+          }}
+          onDelete={async (sub) => {
+            await deleteSubmission(sub.id);
+          }}
+          onReplaceContentLocal={async ({ sub, content, submittedAt }) => {
+            // 先落 localStorage 镜像：这样列表/Hero 胶囊立刻能看到新字符数与新生成时间。
+            // inbox PATCH 由 ManageSourcesModal 内部直接发起。
+            await updateSubmission({ ...sub, content, submittedAt });
+          }}
+          onSummonAfterCreate={(newSub) => {
+            // 用户勾选了"立即召唤评测"：把新 submission 与当前 cohort 一起拉起 evalTask
             setEvalTask({
               query: q,
               submissions: [...cohort.map((c) => c.sub), newSub],
               products,
             });
           }}
+          onMutated={() => setRefreshTick((t) => t + 1)}
         />
       )}
 
@@ -349,7 +431,8 @@ function ReportHero({
   createdAt,
   cohort,
   primaryProductId,
-  onAddSource,
+  inboxHistoryMap,
+  onManageSources,
   onRunEval,
   onDelete,
 }: {
@@ -362,7 +445,8 @@ function ReportHero({
   createdAt: string;
   cohort: CohortItem[];
   primaryProductId?: string;
-  onAddSource: () => void;
+  inboxHistoryMap: Map<string, SubmissionInboxInfo>;
+  onManageSources: () => void;
   onRunEval: () => void;
   onDelete: () => void;
 }) {
@@ -380,66 +464,7 @@ function ReportHero({
   );
   const currentDisplayCode = current ? displayCodeMap.get(current.sub.id) : undefined;
 
-  // ------------------------------------------------------------
-  // Inbox 审计轨：按 candidateId 聚合报告版本历史
-  //
-  // 设计（2026-04-27 P2）：
-  //  - 同一 query 下可能对应多个 inbox task（多次"召唤评测"），每个 task.candidates[] 里
-  //    的 candidateId 对应唯一一个 Submission。当用 replace-report 或 PATCH 替换时，
-  //    新版本会追加到那个 candidate 的 reportVersions[]（只追加不删）。
-  //  - 因此 Map<candidateId, historyEntry> 足够定位任意 submission 的全部历史版本。
-  //  - dev 模式下可用；prod(IS_READONLY) 下 listInbox 返回 null → 历史 Map 为空，
-  //    审计轨 UI 自然隐藏（submission.reportVersions?.length ? 展开 : 隐藏）。
-  // ------------------------------------------------------------
-  const [inboxHistoryMap, setInboxHistoryMap] = useState<Map<string, CandidateHistoryEntry>>(
-    () => new Map()
-  );
-
-  useEffect(() => {
-    if (IS_READONLY) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        const listed = await contractBus.listInbox();
-        if (cancelled || !listed) return;
-        const mine = listed.tasks.filter((t) => t.queryCode === code);
-        if (mine.length === 0) {
-          setInboxHistoryMap(new Map());
-          return;
-        }
-        const tasks = await Promise.all(mine.map((m) => contractBus.getInbox(m.taskId)));
-        if (cancelled) return;
-        const map = new Map<string, CandidateHistoryEntry>();
-        for (const t of tasks) {
-          if (!t || !Array.isArray(t.candidates)) continue;
-          for (const c of t.candidates) {
-            const cid = c.candidateId ?? c.reportId;
-            if (!cid) continue;
-            const versions = Array.isArray(c.reportVersions) ? c.reportVersions : [];
-            if (versions.length === 0) continue;
-            // 同一个 candidateId 只可能落在一个 task 上（replace-report 只改追加现有 task）；
-            // 但万一多个 inbox 各写一遍（比如重复召唤），保留"版本数最多"的那条。
-            const prev = map.get(cid);
-            if (!prev || versions.length > prev.versions.length) {
-              map.set(cid, {
-                taskId: t.taskId,
-                candidateId: cid,
-                activeVersion: c.activeReportVersion ?? 1,
-                versions,
-              });
-            }
-          }
-        }
-        setInboxHistoryMap(map);
-      } catch {
-        /* dev-only 调试能力，失败静默 */
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [code]);
-
+  // inbox 审计轨（由 ReportPage 根部聚合后通过 prop 下发；详见根部的 effect）。
   const currentHistory = current ? inboxHistoryMap.get(current.sub.id) : undefined;
 
   return (
@@ -455,10 +480,11 @@ function ReportHero({
         </nav>
         <div className={clsx("flex items-center gap-1.5 flex-wrap", IS_READONLY && "hidden")}>
           <button
-            onClick={onAddSource}
+            onClick={onManageSources}
             className="text-xs border border-paper-300 rounded-lg px-3 py-1.5 hover:border-amber hover:text-amber-dark transition"
+            title="新增 / 修改 / 删除 参评 AI 的原始报告"
           >
-            + 追加对比源
+            📝 编辑对比源
           </button>
           <button
             onClick={onRunEval}
@@ -516,11 +542,18 @@ function ReportHero({
         </div>
 
         <div>
-          <div className="text-[11px] uppercase tracking-wider text-ink-400 mb-1.5 flex items-center gap-2">
+          <div className="text-[11px] uppercase tracking-wider text-ink-400 mb-1.5 flex items-center gap-2 flex-wrap">
             <span>参评 AI · {cohort.length} 个</span>
             <span className="text-ink-300 normal-case tracking-normal">
-              （点击胶囊查看原始报告）
+              （点击胶囊查看原始报告；如需新增、修改、删除，请使用右上方「📝 编辑对比源」）
             </span>
+            {/* 图例：只有存在"已登记但未参评"的候选时才露出，减少正常情况下的视觉噪音 */}
+            {cohort.some((c) => !inboxHistoryMap.get(c.sub.id)) && !IS_READONLY && (
+              <span className="inline-flex items-center gap-1 text-[10px] normal-case tracking-normal text-ink-500">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-ink-300" />
+                <span>灰点 = 已登记但尚未召唤评测</span>
+              </span>
+            )}
           </div>
           <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
             {cohort.length === 0 && (
@@ -528,24 +561,46 @@ function ReportHero({
             )}
             {cohort.map(({ sub, product }) => {
               const isPrimary = product.id === primaryProductId;
+              // 是否已经被召唤过评测（即 inbox 里存在对应的 candidate）
+              // 只有 dev 模式下 inboxHistoryMap 才会被填充；prod(IS_READONLY) 下
+              // listInbox 不可用，inboxHistoryMap 为空，此时不强调该差异
+              // （所有胶囊统一作为"已参评"样式渲染，避免误导公开读者）。
+              const hasInbox = inboxHistoryMap.has(sub.id);
+              const showPendingBadge = !IS_READONLY && !hasInbox;
               return (
                 <button
                   key={product.id}
                   type="button"
                   onClick={() => setOpenSubId(sub.id)}
                   className={clsx(
-                    "shrink-0 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm transition",
+                    "shrink-0 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm transition relative",
                     isPrimary
                       ? "bg-amber/10 border-amber/40 text-ink-900 hover:bg-amber/20"
-                      : "bg-white border-paper-300 text-ink-700 hover:border-ink-400"
+                      : "bg-white border-paper-300 text-ink-700 hover:border-ink-400",
+                    // 未参评的胶囊改用虚线边 + 略降饱和，强化"还没真正提交"感
+                    showPendingBadge && "border-dashed opacity-80"
                   )}
-                  title={`查看 ${displayProductName(product)} 的原始报告`}
+                  title={
+                    showPendingBadge
+                      ? `${displayProductName(product)}：已登记到本地但尚未召唤评测（inbox 里还没有这份报告）`
+                      : `查看 ${displayProductName(product)} 的原始报告`
+                  }
                 >
                   <span
                     className="w-2 h-2 rounded-full"
-                    style={{ background: product.color ?? "#8B8272" }}
+                    style={{
+                      // 未参评时色点也降成灰，避免产品色掩盖"未参评"信号
+                      background: showPendingBadge
+                        ? "#B8B09F"
+                        : product.color ?? "#8B8272",
+                    }}
                   />
                   <span className="font-medium">{displayProductName(product)}</span>
+                  {showPendingBadge && (
+                    <span className="text-[10px] font-normal px-1 py-0.5 rounded bg-paper-200 text-ink-500 leading-none">
+                      未参评
+                    </span>
+                  )}
                   <svg
                     className="w-3 h-3 text-ink-400"
                     viewBox="0 0 12 12"
@@ -604,7 +659,7 @@ function RawReportModal({
   sub: Submission | null;
   product: AIProduct | null;
   displayCode?: string;
-  history?: CandidateHistoryEntry;
+  history?: SubmissionInboxInfo;
   onClose: () => void;
 }) {
   const [fullscreen, setFullscreen] = useState(false);
@@ -714,6 +769,7 @@ function RawReportModal({
 
   // sub 变化时重置版本选择（不同 submission 的 history 互不相干）
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedVersion(null);
     setHistoryOpen(false);
   }, [sub?.id]);
@@ -1151,218 +1207,6 @@ function ReportVersionPicker({
 }
 
 // ============================================================
-// 追加对比源 Modal（保留，未变）
+// 追加对比源 Modal → 已升级为 ManageSourcesModal（src/components/ManageSourcesModal.tsx）
+// 这里原来的 AddSubmissionModal 组件已整体移除。
 // ============================================================
-
-interface AddPayload {
-  productId: string;
-  version: string;
-  reportDate: string;
-  content: string;
-  sourceUrl: string;
-}
-
-function AddSubmissionModal({
-  open,
-  onClose,
-  products,
-  existingProductIds,
-  onCreate,
-}: {
-  open: boolean;
-  onClose: () => void;
-  products: AIProduct[];
-  existingProductIds: string[];
-  onCreate: (p: AddPayload) => Promise<void>;
-}) {
-  const [payload, setPayload] = useState<AddPayload>({
-    productId: "",
-    version: "",
-    reportDate: "",
-    content: "",
-    sourceUrl: "",
-  });
-  const [submitting, setSubmitting] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !submitting) onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = prev;
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [open, submitting, onClose]);
-
-  const reset = () => {
-    setPayload({ productId: "", version: "", reportDate: "", content: "", sourceUrl: "" });
-    setErr(null);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErr(null);
-    if (!payload.productId) return setErr("请选择 AI 产品");
-    if (!payload.content.trim()) return setErr("请填写报告正文");
-    setSubmitting(true);
-    try {
-      await onCreate(payload);
-      reset();
-      onClose();
-    } catch (e) {
-      setErr((e as Error).message || "创建失败");
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const available = products.filter((p) => !existingProductIds.includes(p.id));
-
-  return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-40 bg-ink-900/40 backdrop-blur-sm flex items-start md:items-center justify-center p-4 overflow-y-auto"
-          onClick={(e) => {
-            if (e.target === e.currentTarget && !submitting) {
-              reset();
-              onClose();
-            }
-          }}
-        >
-          <motion.form
-            initial={{ opacity: 0, scale: 0.97, y: 12 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.97, y: 12 }}
-            transition={{ duration: 0.18 }}
-            onSubmit={handleSubmit}
-            className="relative bg-white rounded-2xl shadow-2xl border border-paper-200 w-full max-w-2xl my-8 flex flex-col max-h-[calc(100vh-4rem)]"
-          >
-            <div className="flex items-center justify-between px-6 py-4 border-b border-paper-200 shrink-0">
-              <div>
-                <div className="text-lg font-semibold text-ink-900">追加对比源</div>
-                <div className="text-xs text-ink-500 mt-0.5">
-                  增加一份 AI 报告用于对比；保存后会顺势召唤一次评测
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  if (submitting) return;
-                  reset();
-                  onClose();
-                }}
-                className="w-8 h-8 rounded-full hover:bg-paper-100 text-ink-500 text-xl leading-none"
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
-              <div>
-                <label className="text-sm font-medium text-ink-700">
-                  AI 产品 <span className="text-clay">*</span>
-                </label>
-                <select
-                  value={payload.productId}
-                  onChange={(e) => setPayload({ ...payload, productId: e.target.value })}
-                  className="mt-1 w-full px-3 py-2 border border-paper-300 rounded-lg bg-paper-50 text-sm"
-                >
-                  <option value="">-- 选择尚未参评的 AI --</option>
-                  {available.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {displayProductName(p)}
-                    </option>
-                  ))}
-                </select>
-                {available.length === 0 && (
-                  <p className="text-xs text-clay mt-1">所有已有 AI 产品都已参评本题</p>
-                )}
-              </div>
-              <div className="grid md:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-sm font-medium text-ink-700">版本号</label>
-                  <input
-                    value={payload.version}
-                    onChange={(e) => setPayload({ ...payload, version: e.target.value })}
-                    placeholder="例 v4.2（选填）"
-                    className="mt-1 w-full px-3 py-2 border border-paper-300 rounded-lg bg-paper-50 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-ink-700">报告生成时间</label>
-                  <input
-                    type="date"
-                    value={payload.reportDate}
-                    onChange={(e) => setPayload({ ...payload, reportDate: e.target.value })}
-                    className="mt-1 w-full px-3 py-2 border border-paper-300 rounded-lg bg-paper-50 text-sm"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-ink-700">
-                  报告正文 <span className="text-clay">*</span>
-                </label>
-                <textarea
-                  value={payload.content}
-                  onChange={(e) => setPayload({ ...payload, content: e.target.value })}
-                  rows={8}
-                  placeholder="粘贴该 AI 产出的报告正文（Markdown）..."
-                  className="mt-1 w-full px-3 py-2 border border-paper-300 rounded-lg bg-paper-50 text-sm font-mono"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-ink-700">原文链接</label>
-                <input
-                  value={payload.sourceUrl}
-                  onChange={(e) => setPayload({ ...payload, sourceUrl: e.target.value })}
-                  placeholder="选填"
-                  className="mt-1 w-full px-3 py-2 border border-paper-300 rounded-lg bg-paper-50 text-sm"
-                />
-              </div>
-              {err && (
-                <div className="text-sm text-clay bg-clay/10 border border-clay/30 rounded-lg px-3 py-2">
-                  {err}
-                </div>
-              )}
-            </div>
-
-            <div className="shrink-0 px-6 py-4 border-t border-paper-200 bg-paper-50/60 flex items-center justify-end gap-2 rounded-b-2xl">
-              <button
-                type="button"
-                onClick={() => {
-                  reset();
-                  onClose();
-                }}
-                disabled={submitting}
-                className="px-4 py-2 rounded-lg text-ink-700 hover:bg-paper-100 text-sm"
-              >
-                取消
-              </button>
-              <button
-                type="submit"
-                disabled={submitting}
-                className={clsx(
-                  "px-5 py-2 rounded-lg font-medium transition shadow-soft text-sm",
-                  submitting
-                    ? "bg-paper-200 text-ink-400 cursor-not-allowed"
-                    : "bg-amber text-white hover:bg-amber-dark"
-                )}
-              >
-                {submitting ? "保存中..." : "保存并召唤评测"}
-              </button>
-            </div>
-          </motion.form>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-}

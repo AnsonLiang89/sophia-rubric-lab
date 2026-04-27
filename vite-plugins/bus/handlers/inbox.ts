@@ -21,9 +21,9 @@ import {
   readJson,
   parseQueryCode,
   isSafeTaskId,
+  readInboxSchemaVersion,
 } from "../helpers";
 import type { BusContext, BusReq, BusRes } from "../types";
-import { readInboxSchemaVersion } from "../../../src/lib/contract";
 
 /** 计算报告 content 的 sha256 前 16 位 hex（8 字节）。与 src/lib/contract.ts 的 computeContentHash 必须保持一致。 */
 function computeContentHashNode(content: string): string {

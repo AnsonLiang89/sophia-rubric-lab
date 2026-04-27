@@ -239,17 +239,35 @@ export const useLab = create<LabState>((set, get) => ({
     }
     const item: Submission = { ...s, id: nanoid(10), createdAt: new Date().toISOString() };
     await storage.upsertSubmission(item);
+    // 落 localStorage 后打一条结构化 log。
+    // 注意：这里写的是 localStorage 镜像，不是 inbox（inbox 只有在用户召唤评测时才会被写）。
+    console.info("[store.submission] create", {
+      id: item.id,
+      queryId: item.queryId,
+      productId: item.productId,
+      productVersion: item.productVersion,
+      contentLen: (item.content ?? "").length,
+    });
     await get().refresh();
     return item;
   },
   updateSubmission: async (s) => {
     if (readonlyWarn("updateSubmission")) return;
     await storage.upsertSubmission(s);
+    console.info("[store.submission] update", {
+      id: s.id,
+      queryId: s.queryId,
+      productId: s.productId,
+      productVersion: s.productVersion,
+      contentLen: (s.content ?? "").length,
+      submittedAt: s.submittedAt,
+    });
     await get().refresh();
   },
   deleteSubmission: async (id) => {
     if (readonlyWarn("deleteSubmission")) return;
     await storage.deleteSubmission(id);
+    console.info("[store.submission] delete", { id });
     await get().refresh();
   },
 }));
