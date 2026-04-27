@@ -21,20 +21,74 @@ export { IS_READONLY, ReadOnlyError };
 // Inbox（网站 → LLM）
 // ------------------------------------------------------------
 
+/**
+ * 单次报告内容的历史版本（v2 schema 新增，2026-04-27 方案 B+）。
+ *
+ * 为什么要有这个：历史上同一个 candidate 只能承载一份报告正文，
+ * 一旦用户发现"当时粘的不是最终版"或"这家 AI 几周后又重跑了一次"，
+ * 只能删 outbox + 重发 inbox，历史 LLM 评分全丢。
+ *
+ * v2 schema 把每个 candidate 的报告拆成 reportVersions[] 数组；
+ * 当前 LLM 要评的永远是 activeReportVersion 指向的那一版，
+ * 其余版本作为审计轨保留。只追加不删。
+ */
+export interface InboxReportVersion {
+  /** 报告版本号，从 1 开始递增。activeReportVersion 指的就是它 */
+  version: number;
+  /** 报告 markdown 正文。LLM 读的是 activeReportVersion 对应这条的 content */
+  content: string;
+  /** 内容哈希（sha256 前 16 位）。stale 判定、reportContentHash 等以此为准 */
+  contentHash: string;
+  /** 报告生成时间（ISO）。沿用 submission.submittedAt 语义 */
+  producedAt?: string;
+  /** 本版本写入 inbox 的时间（ISO） */
+  submittedAt: string;
+  /** 替换进来的时间（如果是 v2 起的新版本）。v=1 时缺省 */
+  replacedAt?: string;
+  /** 替换动机（用户填写；仅为审计记录） */
+  replacedReason?: string;
+  /** 报告原始链接（若有） */
+  sourceUrl?: string;
+}
+
 export interface InboxCandidate {
+  /**
+   * v2 schema 新增：candidate 的稳定 id（独立于 reportId，永远不变）。
+   * v1 兼容：迁移时回填为 reportId。前端新建时 = submissionId。
+   */
+  candidateId?: string;
   /** 对应前端 Submission.id，LLM 必须原样回写到 outbox */
   reportId: string;
   productName: string;
   productVersion?: string;
   authorNote?: string;
-  /** 报告 markdown 正文，直接内联，LLM 不需再外部取数 */
+  /**
+   * 报告 markdown 正文。v2 schema 下，是 reportVersions[activeReportVersion] 的镜像
+   * （冗余写入，保持 v1 消费端直接 candidate.report 能拿到当前版本，零改动）。
+   */
   report: string;
+  /**
+   * v2 schema 新增：当前激活版本号。LLM 消费的永远是它对应的那一份。
+   * v1 产物没有此字段，等同 activeReportVersion=1 + reportVersions=[{version:1, content:report}]。
+   */
+  activeReportVersion?: number;
+  /**
+   * v2 schema 新增：报告版本历史（追加型，永不删）。
+   */
+  reportVersions?: InboxReportVersion[];
 }
 
 export interface InboxTask {
   taskId: string;
   createdAt: string;
-  contractVersion: "1.0";
+  /**
+   * inbox schema 版本：
+   * - "1.0"：2026-04 ~ 2026-04-27 使用，candidate 只承载单版本 report
+   * - "2.0"：2026-04-27 起使用，candidate.reportVersions[] + activeReportVersion
+   *
+   * 注意：这是 **inbox schema 版本**，与 outbox payload 的 contractVersion 独立。
+   */
+  contractVersion: "1.0" | "2.0";
   query: {
     id: string;
     code: string;
@@ -525,10 +579,45 @@ export function makeTaskId(queryCode: string): string {
   return `${queryCode}-${nano6()}`;
 }
 
+/**
+ * 计算报告内容的哈希（sha256 前 16 位 hex，8 字节足够避碰）。
+ *
+ * 同时兼容浏览器 `crypto.subtle` 与 Node 20+ 的 `crypto.subtle`（migrate CLI 会在 Node 下调用）。
+ * 旧环境无 subtle 时退化到 FNV-1a 32-bit（极小概率碰撞，但足够做"内容是否变化"判定）。
+ */
+export async function computeContentHash(content: string): Promise<string> {
+  if (typeof crypto !== "undefined" && crypto.subtle) {
+    const bytes = new TextEncoder().encode(content);
+    const digest = await crypto.subtle.digest("SHA-256", bytes);
+    const hex: string[] = [];
+    const view = new Uint8Array(digest);
+    for (let i = 0; i < 8; i++) {
+      hex.push(view[i].toString(16).padStart(2, "0"));
+    }
+    return hex.join("");
+  }
+  // 兜底：FNV-1a 32-bit，长度 8 char。碰撞概率 2^-32，对"检测篡改 + stale 提示"够用
+  let h = 0x811c9dc5;
+  for (let i = 0; i < content.length; i++) {
+    h ^= content.charCodeAt(i);
+    h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
+  }
+  return h.toString(16).padStart(8, "0");
+}
+
 // ------------------------------------------------------------
 // 组装 Inbox
 // ------------------------------------------------------------
 
+/**
+ * 构造 v2 schema 的 InboxTask 骨架：
+ * - contractVersion = "2.0"
+ * - 每个 candidate 带 candidateId、activeReportVersion=1、reportVersions=[{version:1,...,contentHash:""}]
+ * - contentHash 字段占位为空，调用方负责提交前调 `fillInboxContentHashes` 填好
+ *
+ * 设计：保持同步，因为 computeContentHash 是 async（subtle.digest），
+ * 单独拉一个 async helper 让外层串起来更干净。
+ */
 export function buildInboxTask(input: {
   query: Query;
   submissions: Submission[];
@@ -537,19 +626,32 @@ export function buildInboxTask(input: {
 }): InboxTask {
   const taskId = input.taskId ?? makeTaskId(input.query.code);
   const productMap = new Map(input.products.map((p) => [p.id, p]));
+  const nowIso = new Date().toISOString();
   const candidates: InboxCandidate[] = input.submissions.map((s) => {
     const p = productMap.get(s.productId);
+    const version1: InboxReportVersion = {
+      version: 1,
+      content: s.content,
+      contentHash: "", // 由 fillInboxContentHashes 填入
+      producedAt: s.submittedAt,
+      submittedAt: nowIso,
+      sourceUrl: s.sourceUrl,
+    };
     return {
+      candidateId: s.id,
       reportId: s.id,
       productName: p?.name ?? "Unknown",
       productVersion: s.productVersion ?? p?.version,
+      // v2：冗余写入 activeReportVersion 对应的 content，保持 LLM / 老消费端直接 .report 即可用
       report: s.content,
+      activeReportVersion: 1,
+      reportVersions: [version1],
     };
   });
   return {
     taskId,
-    createdAt: new Date().toISOString(),
-    contractVersion: "1.0",
+    createdAt: nowIso,
+    contractVersion: "2.0",
     query: {
       id: input.query.id,
       code: input.query.code,
@@ -560,6 +662,27 @@ export function buildInboxTask(input: {
     },
     candidates,
   };
+}
+
+/**
+ * 给 InboxTask v2 里所有 reportVersions 填 contentHash（异步）。
+ *
+ * 设计：就地改参数对象（mutates）。
+ * 调用方典型流程：
+ *   const task = buildInboxTask({...});
+ *   await fillInboxContentHashes(task);
+ *   await contractBus.submitInbox(task);
+ */
+export async function fillInboxContentHashes(task: InboxTask): Promise<void> {
+  if (!task.candidates) return;
+  for (const c of task.candidates) {
+    if (!c.reportVersions) continue;
+    for (const rv of c.reportVersions) {
+      if (!rv.contentHash) {
+        rv.contentHash = await computeContentHash(rv.content);
+      }
+    }
+  }
 }
 
 // ------------------------------------------------------------
@@ -577,7 +700,7 @@ export function buildInboxTask(input: {
  * "正常空态"，不应该让全局 banner 红成一片。
  */
 async function rawBusFetch<T>(
-  method: "GET" | "POST" | "DELETE",
+  method: "GET" | "POST" | "DELETE" | "PATCH",
   path: string,
   body?: unknown,
   silentErrors: boolean = false
@@ -636,7 +759,7 @@ const dataSource = makeDataSource(rawBusFetch);
  * GET → dataSource.read；其余 → dataSource.write。
  */
 async function busFetch<T>(
-  method: "GET" | "POST" | "DELETE",
+  method: "GET" | "POST" | "DELETE" | "PATCH",
   path: string,
   body?: unknown
 ): Promise<T | null> {
@@ -869,6 +992,50 @@ export const contractBus = {
 
   deleteInbox(taskId: string): Promise<{ ok: true } | null> {
     return busFetch("DELETE", `/_bus/inbox/${encodeURIComponent(taskId)}`);
+  },
+
+  /**
+   * 用新内容替换某 candidate 的激活报告版本（v2 schema 专用）。
+   *
+   * 服务端语义（PATCH /_bus/inbox/:taskId）：
+   *  - 在 candidates[candidateId] 上 push 一条新 reportVersions[]，version = prev+1
+   *  - 更新 activeReportVersion = 新 version
+   *  - 同步 candidate.report = 新 content（冗余镜像）
+   *  - 历史版本永远保留，不会覆盖或删除
+   *
+   * 失败：
+   *  - 400 任务不是 v2 schema（需先跑 migrate-inbox CLI）
+   *  - 404 任务或 candidate 不存在
+   *  - 409 contentHash 与现有 activeReportVersion 一致（没变就别覆盖）
+   */
+  replaceInboxCandidateReport(
+    taskId: string,
+    input: {
+      candidateId: string;
+      content: string;
+      contentHash: string;
+      producedAt?: string;
+      replacedReason?: string;
+      sourceUrl?: string;
+      /** 可选：一并更新 productVersion / authorNote 等元数据 */
+      productVersion?: string;
+      authorNote?: string;
+    }
+  ): Promise<
+    | {
+        ok: true;
+        taskId: string;
+        candidateId: string;
+        activeReportVersion: number;
+        totalVersions: number;
+      }
+    | null
+  > {
+    return busFetch(
+      "PATCH",
+      `/_bus/inbox/${encodeURIComponent(taskId)}`,
+      input
+    );
   },
 
   listOutbox(): Promise<{ results: OutboxListItem[] } | null> {

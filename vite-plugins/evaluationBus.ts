@@ -35,6 +35,7 @@
  *   POST   /_bus/inbox                     ──► handlers/inbox.ts · handlePostInbox
  *   GET    /_bus/inbox                     ──► handlers/inbox.ts · handleListInbox
  *   GET    /_bus/inbox/:taskId             ──► handlers/inbox.ts · handleGetInboxTask
+ *   PATCH  /_bus/inbox/:taskId             ──► handlers/inbox.ts · handlePatchInboxTask（v2 schema：替换 candidate 的激活 reportVersion）
  *   DELETE /_bus/inbox/:taskId             ──► handlers/inbox.ts · handleDeleteInboxTask
  *
  *   GET    /_bus/outbox                    ──► handlers/outbox.ts · handleListOutbox
@@ -75,6 +76,7 @@ import {
   handlePostInbox,
   handleListInbox,
   handleGetInboxTask,
+  handlePatchInboxTask,
   handleDeleteInboxTask,
 } from "./bus/handlers/inbox";
 import {
@@ -204,6 +206,14 @@ async function dispatch(
     const inboxDelMatch = url.match(/^\/_bus\/inbox\/([\w.-]+)$/);
     if (inboxDelMatch) {
       return handleDeleteInboxTask(res, ctx, inboxDelMatch[1]);
+    }
+  }
+
+  // ========== PATCH ==========
+  if (method === "PATCH") {
+    const inboxPatchMatch = url.match(/^\/_bus\/inbox\/([\w.-]+)$/);
+    if (inboxPatchMatch) {
+      return handlePatchInboxTask(req, res, ctx, inboxPatchMatch[1]);
     }
   }
 

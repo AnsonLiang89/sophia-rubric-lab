@@ -17,7 +17,10 @@
     "lint:outbox": "node scripts/lint-outbox.mjs",
     "build:public": "npm run lint:outbox && npm test && npm run seed:dump && npm run bake:public && tsc -b && vite build",
     "cleanup-inbox": "node scripts/cleanup-orphan-inbox.mjs",
-    "cleanup-inbox:apply": "node scripts/cleanup-orphan-inbox.mjs --apply"
+    "cleanup-inbox:apply": "node scripts/cleanup-orphan-inbox.mjs --apply",
+    "migrate-inbox": "node scripts/migrate-inbox.mjs",
+    "migrate-inbox:apply": "node scripts/migrate-inbox.mjs --apply",
+    "replace-report": "node scripts/replace-report.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",

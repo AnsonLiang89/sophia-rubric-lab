@@ -33,7 +33,7 @@
 
 外加 1 个激活式"扩展维度"（X1/X2/X3）—— 针对特定 Query 的关键差异维度（如本地化、时政锚点捕捉、行业专业度等）。
 
-**完整评测标准**：[`.evaluations/RUBRIC_STANDARD.md`](.evaluations/RUBRIC_STANDARD.md)（v2.1，2026-04-22 生效）
+**完整评测标准**：[`.evaluations/RUBRIC_STANDARD.md`](.evaluations/RUBRIC_STANDARD.md)（v3.2，当前生效）
 **LLM 工作协议**：[`.evaluations/EVALUATION_CONTRACT.md`](.evaluations/EVALUATION_CONTRACT.md)
 
 ---
@@ -120,15 +120,18 @@ git push                # CI 自动部署到 GitHub Pages
 
 | 命令 | 用途 |
 |---|---|
-| `npm run dev` | 管理员本地开发（可写） |
-| `npm test` | 跑 vitest 单元测试 |
+| `npm run dev` | 管理员本地开发（可写，dev 启动期自动把 v1 inbox 迁移到 v2） |
+| `npm test` | 跑 vitest 单元测试（当前 113 条） |
 | `npm run lint` | ESLint |
-| `npm run lint:outbox` | 校验所有 outbox 产物的 schema（必填字段 / tier-score 一致性 / 加权和 / 权重总和 等） |
+| `npm run lint:outbox` | 双校验 outbox + inbox v2 schema（outbox：必填字段 / tier-score 一致 / 加权和 / 权重总和 / R1 veto / hasQuotedSnippet；inbox：contractVersion="2.0" / reportVersions 完整性 / activeReportVersion 命中 / contentHash 一致） |
 | `npm run seed:dump` | 把 `src/seed.ts` 物化成 `.evaluations/_seed-snapshot.json` |
 | `npm run bake:public` | 把所有数据烘焙成 `public/data/*.json` |
 | `npm run bake:check` | 检查对外版是否跟得上 `.evaluations/` 源（bake freshness） |
-| `npm run build:public` | 一条龙：`lint:outbox → seed:dump → bake:public → tsc → vite build` |
+| `npm run build:public` | 一条龙：`lint:outbox → test → seed:dump → bake:public → tsc → vite build` |
 | `npm run cleanup-inbox` | 清理已有 outbox 的孤儿 inbox |
+| `npm run migrate-inbox` | 扫描 `.evaluations/inbox/*.json`，diff v1→v2 schema 升级（dry-run，不落盘） |
+| `npm run migrate-inbox:apply` | 实际把 inbox v1 升级到 v2（追加 `contractVersion="2.0"` / `reportVersions[]` / `activeReportVersion` / `contentHash`） |
+| `npm run replace-report` | 批量替换 inbox 里某个 candidate 的报告正文（保留 reportVersions 历史，切换 active 指针） |
 
 ---
 
@@ -159,11 +162,13 @@ sophia-rubric-lab/
 │   ├── evaluationBus.ts          ← /_bus/* API 中间件（dev 专用）
 │   └── codeRegistry.ts           ← queryCode 注册簿
 ├── scripts/
-│   ├── lint-outbox.mjs           ← Schema linter（pre-bake 防护）
+│   ├── lint-outbox.mjs           ← Schema linter（pre-bake 防护，双校验 outbox + inbox v2）
 │   ├── check-bake-freshness.mjs  ← 对外版同步检查
 │   ├── bake-public-data.mjs      ← 烘焙静态快照
 │   ├── dump-seed.mjs             ← 物化 seed
-│   └── cleanup-orphan-inbox.mjs  ← 清理孤儿 inbox
+│   ├── cleanup-orphan-inbox.mjs  ← 清理孤儿 inbox
+│   ├── migrate-inbox.mjs         ← inbox v1→v2 schema 迁移（支持 dry-run / --apply）
+│   └── replace-report.mjs        ← 替换 candidate 报告正文，保留 reportVersions 历史
 └── tests/                        ← vitest 单元测试
 ```
 
@@ -173,10 +178,12 @@ sophia-rubric-lab/
 
 这个项目对"契约 + 防御纵深"投入不少，因为**评测产物一旦污染就会误导决策**。主要机制：
 
-1. **契约版本化**：`contractVersion` 从 v1.0 → v2.0 → v2.1 平滑演进；旧产物按原版本继续渲染，网站同时支持 3 个版本
-2. **Schema Linter**（`scripts/lint-outbox.mjs`）：自动校验所有 outbox 产物的 schema（字段名、枚举值、tier-score 一致性、权重总和、加权和校验）。**挂在 `build:public` 前置，schema 不过 → bake 不跑**
-3. **Bake Freshness 三层警卫**：dev 启动打印警告 + UI 页脚红点 + bake 脚本 fail-fast，防止"改完 `.evaluations/` 忘 bake 导致对外版悄悄陈旧"
-4. **前端兜底**：维度 name / 字段缺失时按 contractVersion 回退默认值，永远不会出现"白板表头"
+1. **契约版本化**：outbox `contractVersion` 从 v1.0 → v2.0 → v2.1 → v3.0 → v3.1 → v3.2 平滑演进；inbox schema 锁定在 v2.0（candidates/reportVersions/activeReportVersion/contentHash）。旧产物按原版本继续渲染，网站同时兼容所有历史版本
+2. **Schema Linter**（`scripts/lint-outbox.mjs`）：双校验 outbox + inbox v2 schema。outbox 层检查字段名、枚举值、tier-score 一致性、权重总和、加权和、R1 veto 封顶、v3.0+ 的 `hasQuotedSnippet`（tier C/D comment 与 refuted/inconclusive evidence 必须含 ≥15 字原文引用）；inbox 层检查 `contractVersion="2.0"` / candidates 非空 / candidateId 必填 / reportVersions 版本号唯一且递增 / `activeReportVersion` 必须命中 / `contentHash` 16 位 hex 且与 report 字段一致。**挂在 `build:public` 前置 + pre-push hook，schema 不过 → bake 不跑**
+3. **POST 入口守卫**：`POST /_bus/inbox` 在写盘前强校验 `contractVersion === "2.0"` 与结构一致性，v1 payload 直接 400 拒绝，不让脏数据落地
+4. **Inbox 自动迁移**：`npm run dev` 启动期按 reconcile → inbox auto-migrate → bake freshness 三段式跑，自动把 v1 inbox 升级到 v2，开发者无感
+5. **Bake Freshness 三层警卫**：dev 启动打印警告 + UI 页脚红点 + bake 脚本 fail-fast，防止"改完 `.evaluations/` 忘 bake 导致对外版悄悄陈旧"
+6. **前端兜底**：维度 name / 字段缺失时按 contractVersion 回退默认值，永远不会出现"白板表头"
 
 详细设计沉淀见 [`.evaluations/README.md`](./.evaluations/README.md) 与 `.workbuddy/memory/MEMORY.md`（工程侧踩坑沉淀）。
 
@@ -190,10 +197,11 @@ npm run test:watch    # watch 模式
 npm run test:coverage # 覆盖率报告
 ```
 
-当前覆盖 3 个 critical 纯逻辑模块：
+当前 113 条单测，覆盖 4 个 critical 纯逻辑模块：
 - `tests/sortProducts.test.ts` — AI 产品排序（Sophia 优先 + 版本比较 + orderHint）
 - `tests/score.test.ts` — 分数着色阈值
-- `tests/lintOutbox.test.mjs` — Schema linter 对合法/非法 payload 的判定
+- `tests/lintOutbox.test.ts` — outbox schema linter 合法/非法 payload 判定 + v3.0+ hasQuotedSnippet 硬约束 + sbs.dimensionDriver 数组形式
+- `tests/lintOutbox.test.ts · validateInboxTask` — inbox v2 schema 9 条回归（contractVersion/candidates/reportVersions/activeReportVersion/contentHash/report 镜像）
 
 ---
 

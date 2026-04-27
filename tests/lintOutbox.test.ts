@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect } from "vitest";
 // @ts-expect-error — .mjs no type decl
-import { validatePayload } from "../scripts/lint-outbox.mjs";
+import { validatePayload, validateInboxTask } from "../scripts/lint-outbox.mjs";
 
 /**
  * 构造一个最小合法的 v2.1 payload（6 维度 × 2 候选）。
@@ -462,6 +462,27 @@ describe("validatePayload · v2.2 SBS 结构升级", () => {
     const errors = lint(p);
     expect(errors.some((e) => e.path.includes("dimensionDriver"))).toBe(true);
   });
+
+  it("SBS dimensionDriver 是非空字符串数组 → 通过（v2.2+ 支持多维度）", () => {
+    const p: any = goodPayloadV22();
+    p.summary.sbs.pairs[0].dimensionDriver = ["R1", "R3"];
+    const errors = lint(p);
+    expect(errors.some((e) => e.path.includes("dimensionDriver"))).toBe(false);
+  });
+
+  it("SBS dimensionDriver 是空数组 → 报错", () => {
+    const p: any = goodPayloadV22();
+    p.summary.sbs.pairs[0].dimensionDriver = [];
+    const errors = lint(p);
+    expect(errors.some((e) => e.path.includes("dimensionDriver"))).toBe(true);
+  });
+
+  it("SBS dimensionDriver 数组中含空串 → 报错", () => {
+    const p: any = goodPayloadV22();
+    p.summary.sbs.pairs[0].dimensionDriver = ["R1", ""];
+    const errors = lint(p);
+    expect(errors.some((e) => e.path.includes("dimensionDriver"))).toBe(true);
+  });
 });
 
 describe("validatePayload · v2.2 claimInventory 硬约束", () => {
@@ -722,6 +743,110 @@ describe("validatePayload · productName 展示一致性", () => {
     const errors = lint(p);
     const bad = errors.filter((e) => e.path.includes("productName") || e.msg.includes("productName"));
     expect(bad).toHaveLength(0);
+  });
+});
+
+// ========== inbox v2 schema ==========
+
+function goodInboxV2() {
+  const content = "# 报告 A\n\n内容";
+  return {
+    taskId: "EV-9999-abcDEF",
+    createdAt: "2026-04-27T12:00:00.000Z",
+    contractVersion: "2.0",
+    query: { id: "q_1", code: "EV-9999" },
+    candidates: [
+      {
+        reportId: "sub_1",
+        productName: "ProductA",
+        report: content,
+        candidateId: "sub_1",
+        activeReportVersion: 1,
+        reportVersions: [
+          {
+            version: 1,
+            content,
+            contentHash: "0123456789abcdef",
+            submittedAt: "2026-04-27T12:00:00.000Z",
+          },
+        ],
+      },
+    ],
+  };
+}
+
+function lintInboxTask(task: unknown) {
+  const errors: Array<{ path: string; msg: string }> = [];
+  validateInboxTask("virtual-inbox", task, errors);
+  return errors;
+}
+
+describe("validateInboxTask · v2 schema", () => {
+  it("合法 v2 inbox payload 无违规", () => {
+    expect(lintInboxTask(goodInboxV2())).toEqual([]);
+  });
+
+  it("contractVersion=1.0 → 报错并提示 migrate-inbox", () => {
+    const t: any = goodInboxV2();
+    t.contractVersion = "1.0";
+    const errors = lintInboxTask(t);
+    expect(errors.some((e) => e.path === "contractVersion" && /migrate-inbox/.test(e.msg))).toBe(
+      true
+    );
+  });
+
+  it("candidates 为空数组 → 报错", () => {
+    const t: any = goodInboxV2();
+    t.candidates = [];
+    const errors = lintInboxTask(t);
+    expect(errors.some((e) => e.path === "candidates")).toBe(true);
+  });
+
+  it("candidate 缺 candidateId → 报错", () => {
+    const t: any = goodInboxV2();
+    delete t.candidates[0].candidateId;
+    const errors = lintInboxTask(t);
+    expect(errors.some((e) => /candidateId/.test(e.path))).toBe(true);
+  });
+
+  it("reportVersions 为空数组 → 报错", () => {
+    const t: any = goodInboxV2();
+    t.candidates[0].reportVersions = [];
+    const errors = lintInboxTask(t);
+    expect(errors.some((e) => /reportVersions/.test(e.path))).toBe(true);
+  });
+
+  it("activeReportVersion 未命中 reportVersions → 报错", () => {
+    const t: any = goodInboxV2();
+    t.candidates[0].activeReportVersion = 999;
+    const errors = lintInboxTask(t);
+    expect(errors.some((e) => /activeReportVersion/.test(e.path))).toBe(true);
+  });
+
+  it("contentHash 非 16 位 hex → 报错", () => {
+    const t: any = goodInboxV2();
+    t.candidates[0].reportVersions[0].contentHash = "not-hex";
+    const errors = lintInboxTask(t);
+    expect(errors.some((e) => /contentHash/.test(e.path))).toBe(true);
+  });
+
+  it("report 与 active 版本 content 不一致 → 报错", () => {
+    const t: any = goodInboxV2();
+    t.candidates[0].report = "不一样的内容";
+    const errors = lintInboxTask(t);
+    expect(errors.some((e) => /report/.test(e.path) && /一致/.test(e.msg))).toBe(true);
+  });
+
+  it("版本号重复 → 报错", () => {
+    const t: any = goodInboxV2();
+    t.candidates[0].reportVersions.push({
+      version: 1,
+      content: "# v2",
+      contentHash: "fedcba9876543210",
+    });
+    t.candidates[0].activeReportVersion = 1;
+    const errors = lintInboxTask(t);
+    expect(errors.some((e) => /版本号重复/.test(e.msg))).toBe(true);
   });
 });
 

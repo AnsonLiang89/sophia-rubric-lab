@@ -1,0 +1,97 @@
+#!/usr/bin/env python3
+"""EV-0003-cWQMJx evaluation builder - Part 1: Core structure"""
+import json, os
+
+BASE = "/Users/anson_liang/WorkBuddy/20260419144025/sophia-rubric-lab/.evaluations"
+
+# Read inbox
+with open(f"{BASE}/inbox/EV-0003-cWQMJx.json") as f:
+    inbox = json.load(f)
+
+# reportIds
+MANUS = "sLfcXcMjxo"
+MIRO = "bDgPS6OPUf"
+SOPHIA4 = "re9wstntq1"
+SOPHIA5 = "W9JyedQ7hW"
+ALL_IDS = [MANUS, MIRO, SOPHIA4, SOPHIA5]
+
+# ============================================================
+# Claim Inventory (Top 5 per report, at least 1 logic type)
+# ============================================================
+claim_inventory = [
+    # --- Manus ---
+    {"claimId":"c1","reportId":MANUS,"type":"number","claim":"富祥药业2026Q1净利润预增2222.67%-3250.01%，预计5200万-7500万","supportWeight":"high","locationHint":"第一梯队表格首行"},
+    {"claimId":"c2","reportId":MANUS,"type":"fact","claim":"海思科2026年1月HSK39004授权AirNexis Therapeutics获FDA突破性疗法认定","supportWeight":"high","locationHint":"海思科分析段"},
+    {"claimId":"c3","reportId":MANUS,"type":"number","claim":"纳微科技净利润6535.09万，同比增长123.69%","supportWeight":"high","locationHint":"第一梯队表格"},
+    {"claimId":"c4","reportId":MANUS,"type":"logic","claim":"创新药企预增核心驱动力分三大类：核心产品放量、BD授权收入、创新管线突破","supportWeight":"high","locationHint":"总结段"},
+    {"claimId":"c5","reportId":MANUS,"type":"fact","claim":"诺诚健华-B 2026年首个商业化产品收入突破1亿元人民币","supportWeight":"medium","locationHint":"诺诚健华分析段"},
+    # --- MiroThink ---
+    {"claimId":"c6","reportId":MIRO,"type":"number","claim":"已确认预增公告的企业共9家，另有4家高度可能预增","supportWeight":"high","locationHint":"第一段概览"},
+    {"claimId":"c7","reportId":MIRO,"type":"fact","claim":"翰森制药(688197)净利润预增1300%，约2800万元，扭亏为盈","supportWeight":"high","locationHint":"潜在预增A类表格"},
+    {"claimId":"c8","reportId":MIRO,"type":"number","claim":"富祥药业VC产品价格从2025年9月约5元/千克涨至14-22元/千克，涨幅180%-340%","supportWeight":"high","locationHint":"3.1段富祥分析"},
+    {"claimId":"c9","reportId":MIRO,"type":"logic","claim":"创新药预增的核心逻辑是'政策催化（医保谈判）→核心品种放量→BD出海变现'的三段联动","supportWeight":"high","locationHint":"4.1趋势分析段"},
+    {"claimId":"c10","reportId":MIRO,"type":"fact","claim":"康方生物2025年报净利润增长311.35%，2026Q1业绩预告4月25日披露","supportWeight":"medium","locationHint":"潜在预增B类表格"},
+    # --- SophiaAI v4 ---
+    {"claimId":"c11","reportId":SOPHIA4,"type":"number","claim":"海思科BD授权收入占比51.9%-60.6%，HSK39004海外授权获2.89亿美元里程碑付款","supportWeight":"high","locationHint":"海思科数据行"},
+    {"claimId":"c12","reportId":SOPHIA4,"type":"number","claim":"恒瑞医药创新药营收占比92%，创新药1号IND申报占22%","supportWeight":"high","locationHint":"深层洞察第1条"},
+    {"claimId":"c13","reportId":SOPHIA4,"type":"logic","claim":"9家预增企业中8家是alpha型驱动（核心产品放量），仅CDMO为beta型（行业复苏）","supportWeight":"high","locationHint":"alpha/beta分类表"},
+    {"claimId":"c14","reportId":SOPHIA4,"type":"number","claim":"博腾股份CDMO新签订单21.76亿，行业产能利用率回升至50%","supportWeight":"high","locationHint":"博腾分析段"},
+    {"claimId":"c15","reportId":SOPHIA4,"type":"fact","claim":"艾力斯2025年获批2个新适应症，在研管线46个适应症，核心产品收入增长41.12%","supportWeight":"medium","locationHint":"艾力斯数据行"},
+    # --- SophiaAI v5 ---
+    {"claimId":"c16","reportId":SOPHIA5,"type":"number","claim":"恒瑞医药创新药收入占比92.13%，BD收入7.87亿","supportWeight":"high","locationHint":"全景表格恒瑞行"},
+    {"claimId":"c17","reportId":SOPHIA5,"type":"number","claim":"强生2026Q1 EPS同比增9.6%，营收超380亿美元，Carvykti +62.1%","supportWeight":"high","locationHint":"全景表格JNJ行"},
+    {"claimId":"c18","reportId":SOPHIA5,"type":"fact","claim":"一品红(A股SZ002082)净利润预增985%","supportWeight":"high","locationHint":"全景表格第二行"},
+    {"claimId":"c19","reportId":SOPHIA5,"type":"logic","claim":"创新药预增六大驱动力：医保放量、BD授权、差异化管线、原料药周期、CXO复苏、海外龙头GLP-1/CGT","supportWeight":"high","locationHint":"Why段六小节标题"},
+    {"claimId":"c20","reportId":SOPHIA5,"type":"number","claim":"West Pharmaceutical 2026Q1 营收同比+21%，调整后EPS+46.9%","supportWeight":"medium","locationHint":"全景表格WST行"},
+]
+
+# ============================================================
+# Claim Checks
+# ============================================================
+claim_checks = [
+    {"claimId":"c1","status":"verified-correct","evidence":"富祥药业2026-03-24业绩预告确认净利润预增2222.67%-3250.01%，预计5200万-7500万，与Wind/巨潮信息网一致","checkedBy":"pass2-external-search"},
+    {"claimId":"c2","status":"verified-correct","evidence":"海思科2026年1月公告HSK39004授权AirNexis，获FDA突破性疗法认定属实","checkedBy":"pass2-external-search"},
+    {"claimId":"c3","status":"verified-correct","evidence":"纳微科技2026-04-09公告Q1净利润6535万，同比增长123.69%，与公告原文一致","checkedBy":"pass2-external-search"},
+    {"claimId":"c4","status":"verified-correct","evidence":"分类逻辑合理，与实际预增企业驱动力分布一致","checkedBy":"pass3-logic"},
+    {"claimId":"c5","status":"inconclusive","evidence":"诺诚健华-B商业化产品收入突破1亿的说法缺少直接一手源对照，公司尚未披露完整Q1数据","checkedBy":"pass2-external-search"},
+    {"claimId":"c6","status":"verified-correct","evidence":"截至2026年4月中旬，确认发布预增公告的创新药企约9家，与东方财富/同花顺统计一致","checkedBy":"pass2-external-search"},
+    {"claimId":"c7","status":"inconclusive","evidence":"翰森制药(688197)2026Q1净利润预增数据尚未找到直接一手公告源，MiroThink引用的1300%/2800万可能来自券商预测而非正式公告，翰森制药实际为港股18A上市公司(HK:03692)而非A股688197","checkedBy":"pass2-external-search"},
+    {"claimId":"c8","status":"verified-correct","evidence":"VC(维生素C)价格从2025年9月约5元/千克涨至2026Q1的14-22元/千克，与行业数据和财经报道基本一致","checkedBy":"pass2-external-search"},
+    {"claimId":"c9","status":"verified-correct","evidence":"三段联动逻辑与实际企业表现吻合：医保谈判→品种放量（恒瑞/艾力斯等）→BD出海（海思科/诺诚健华等）","checkedBy":"pass3-logic"},
+    {"claimId":"c10","status":"inconclusive","evidence":"康方生物2025年报净利润增长311.35%的具体数字未找到一手确认源，但康方生物2025年整体盈利大幅增长是行业共识","checkedBy":"pass2-external-search"},
+    {"claimId":"c11","status":"refuted","evidence":"海思科HSK39004海外授权首付款为1.08亿美元（公告确认），但报告中'2.89亿美元里程碑付款'未找到一手源支持，公开资料仅披露首付款1.08亿美元+后续里程碑付款（总金额未披露）。BD授权收入占比51.9%-60.6%为推算值，缺乏一手源","checkedBy":"pass2-external-search"},
+    {"claimId":"c12","status":"refuted","evidence":"恒瑞医药2026Q1创新药收入占比并非92%。92.13%实际是'创新药中非肿瘤产品收入同比增长率'，恒瑞2026Q1创新药收入占总营收比例约为61.69%（恒瑞官方公告）。SophiaAI v4将增长率误当成占比，属V1量级性质的语义错误","checkedBy":"pass2-external-search","vetoMode":"V1"},
+    {"claimId":"c13","status":"verified-correct","evidence":"alpha/beta分类逻辑自洽：8家靠核心产品放量驱动属alpha，博腾CDMO靠行业复苏属beta，分类合理","checkedBy":"pass3-logic"},
+    {"claimId":"c14","status":"verified-correct","evidence":"博腾股份2026年新签订单21.76亿的数据与其2025年报/券商研报一致；行业产能利用率回升至50%为行业报告估值，基本合理","checkedBy":"pass2-external-search"},
+    {"claimId":"c15","status":"verified-correct","evidence":"艾力斯2025年获批新适应症、核心产品伏美替尼收入增长约41%与公司年报/公告一致","checkedBy":"pass2-external-search"},
+    {"claimId":"c16","status":"refuted","evidence":"SophiaAI v5报告写恒瑞医药'创新药收入占比92.13%'，但92.13%实际是恒瑞创新药中非肿瘤产品收入的同比增速，而非创新药占总收入比例。恒瑞2026Q1创新药收入占总营收约61.69%（恒瑞2026年一季报公告），语义错误导致数字含义完全偏差","checkedBy":"pass2-external-search","vetoMode":"V1"},
+    {"claimId":"c17","status":"refuted","evidence":"SophiaAI v5写强生2026Q1'EPS同比增9.6%，营收超380亿美元'，但强生2026Q1实际营收约240.6亿美元（非380亿），调整后EPS约$2.70 vs 去年$2.77实际同比下降约2.5%（非增9.6%）。营收量级错误（240亿 vs 380亿），EPS方向完全相反（跌写成涨），属V1量级错+V2主体/指标错","checkedBy":"pass2-external-search","vetoMode":"V1"},
+    {"claimId":"c18","status":"refuted","evidence":"SophiaAI v5将一品红标注为'A股SZ002082'，但002082实为万邦德；一品红的正确代码是300723。985%/1.65亿是万邦德的预增数据，一品红实际Q1净利润约5.94亿、增长约950.53%。属V2主体错误（张冠李戴）","checkedBy":"pass2-external-search","vetoMode":"V2"},
+    {"claimId":"c19","status":"verified-correct","evidence":"六大驱动力分类覆盖了国内核心品种放量、BD出海、差异化管线、原料药周期、CXO复苏、海外龙头等维度，逻辑自洽且与行业实际吻合","checkedBy":"pass3-logic"},
+    {"claimId":"c20","status":"verified-correct","evidence":"West Pharmaceutical 2026Q1营收$844.9M同比+21%、调整后EPS $2.13同比+46.9%，与公司财报及Seeking Alpha/Trading View报道一致","checkedBy":"pass2-external-search"},
+]
+
+# Save intermediate
+output = {
+    "claimInventory": claim_inventory,
+    "claimChecks": claim_checks,
+}
+with open("/Users/anson_liang/WorkBuddy/20260419144025/sophia-rubric-lab/.workbuddy/tmp/ev0003_claims.json", "w") as f:
+    json.dump(output, f, ensure_ascii=False, indent=2)
+
+print(f"Claims saved: {len(claim_inventory)} inventory, {len(claim_checks)} checks")
+
+# Stats
+statuses = {}
+for c in claim_checks:
+    s = c["status"]
+    statuses[s] = statuses.get(s, 0) + 1
+print(f"Status distribution: {statuses}")
+
+# Coverage check
+non_skipped = [c for c in claim_checks if not c["status"].startswith("skipped")]
+verified = [c for c in claim_checks if c["status"] == "verified-correct"]
+refuted = [c for c in claim_checks if c["status"] == "refuted"]
+inconclusive = [c for c in claim_checks if c["status"] == "inconclusive"]
+coverage = (len(verified) + len(refuted) + len(inconclusive)) / len(non_skipped) if non_skipped else 0
+print(f"Coverage: {coverage:.0%} ({len(verified)} verified + {len(refuted)} refuted + {len(inconclusive)} inconclusive / {len(non_skipped)} non-skipped)")

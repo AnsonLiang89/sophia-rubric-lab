@@ -1,0 +1,1058 @@
+{
+  "taskId": "EV-0003-cWQMJx",
+  "version": 1,
+  "evaluator": "Sophia (AI via WorkBuddy)",
+  "evaluatedAt": "2026-04-27T10:32:04.000Z",
+  "contractVersion": "3.2",
+  "summary": {
+    "overallScores": [
+      {
+        "reportId": "sLfcXcMjxo",
+        "productName": "Manus",
+        "score": 7.1,
+        "verdict": "优秀",
+        "vetoTriggered": false
+      },
+      {
+        "reportId": "bDgPS6OPUf",
+        "productName": "MiroThink",
+        "score": 8.5,
+        "verdict": "卓越",
+        "vetoTriggered": false
+      },
+      {
+        "reportId": "re9wstntq1",
+        "productName": "SophiaAI v4",
+        "score": 6.9,
+        "verdict": "合格",
+        "vetoTriggered": true,
+        "vetoReason": "claim c12（V1 语义性量级错）：报告写恒瑞'创新药营收占比92%'，实际92.13%是创新药中非肿瘤产品增长率，真实创新药占比约61.69%"
+      },
+      {
+        "reportId": "W9JyedQ7hW",
+        "productName": "SophiaAI v5",
+        "score": 6.3,
+        "verdict": "合格",
+        "vetoTriggered": true,
+        "vetoReason": "claim c17（V1 量级错）：强生营收写380亿实际240.6亿、EPS涨跌方向反转；claim c18（V2 主体错）：一品红代码写002082实为万邦德（正确300723）；claim c16（V1 语义错）：恒瑞92.13%增速误当占比"
+      }
+    ],
+    "rubric": [
+      {
+        "dimensionId": "R1",
+        "name": "准确性",
+        "weight": 0.4,
+        "subscores": {
+          "R1a": {
+            "score": 8,
+            "tier": "A",
+            "weight": 0.28,
+            "comment": "全局核验命中率约90%；承重数字（富祥药业/纳微科技/艾力斯等）大部分能对齐一手源"
+          },
+          "R1b": {
+            "score": 8,
+            "tier": "A",
+            "weight": 0.12,
+            "comment": "SophiaAI v4将恒瑞92.13%增速误当占比，存在语义性数字错误；其他报告内部逻辑基本自洽"
+          }
+        },
+        "scores": [
+          {
+            "reportId": "sLfcXcMjxo",
+            "score": 8,
+            "tier": "A",
+            "comment": "5条承重claim中4条verified-correct，1条inconclusive（诺诚健华商业化收入缺一手源）；核验命中率80%（4/5），内部逻辑完全自洽，无算术错",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "bDgPS6OPUf",
+            "score": 8,
+            "tier": "A",
+            "comment": "5条承重claim中3条verified-correct，2条inconclusive（翰森制药688197代码存疑、康方生物数据缺一手确认）；核验命中率60%但inconclusive非refuted，内部逻辑链完整；引用20条一手源、信源密度最高",
+            "confidence": "medium",
+            "issueTags": [
+              "一手源不足"
+            ]
+          },
+          {
+            "reportId": "re9wstntq1",
+            "score": 4,
+            "tier": "C",
+            "comment": "claim c12 refuted：报告原文写「恒瑞医药创新药营收占比92%，创新药1号IND申报占22%」，但92.13%实际是'创新药中非肿瘤产品收入同比增长率'，恒瑞实际创新药占总营收比例约61.69%（恒瑞2026Q1公告）。将增长率当成占比属V1量级性质的语义错误，承重段数字含义完全偏差。此外claim c11海思科'2.89亿美元里程碑付款'缺一手源支持",
+            "confidence": "high",
+            "issueTags": [
+              "数字量级错",
+              "事实错误"
+            ]
+          },
+          {
+            "reportId": "W9JyedQ7hW",
+            "score": 2,
+            "tier": "D",
+            "comment": "三处承重claim被refuted：(1) claim c16 报告原文「恒瑞医药 | +21.78% | 创新药医保放量（非肿瘤创新药收入增长92.13%）」将92.13%当作创新药收入占比标注，实为增速非占比(V1)；(2) claim c17 报告原文「强生（JNJ.US） | 调整后EPS+9.6% | 约380（人民币）」声称强生营收超380亿美元，实际营收约240.6亿(V1量级错)、EPS实际同比下降约2.5%(方向完全相反)；(3) claim c18 报告原文「一品红 | A股（SZ300723）| +950.53% | 5.94」却在全景表格同时将一品红标为002082，而002082实为万邦德，一品红正确代码300723(V2主体错)。三处均为承重数据，严重影响决策可靠性",
+            "confidence": "high",
+            "issueTags": [
+              "数字量级错",
+              "事实错误",
+              "编造源"
+            ]
+          }
+        ]
+      },
+      {
+        "dimensionId": "R2",
+        "name": "相关性",
+        "weight": 0.15,
+        "scores": [
+          {
+            "reportId": "sLfcXcMjxo",
+            "score": 8,
+            "tier": "A",
+            "comment": "按预增幅度三梯队分类，直接回应query核心诉求；锚点（2026Q1/创新药/预增）全命中；未深挖潜在诉求（如投资决策场景）",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "bDgPS6OPUf",
+            "score": 10,
+            "tier": "S",
+            "comment": "不仅覆盖已确认预增企业，还主动挖掘'潜在预增'和'未来催化剂时间表'；锚点全命中；主动识别投资决策的潜在诉求（估值合理性、信息差分析）",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "re9wstntq1",
+            "score": 8,
+            "tier": "A",
+            "comment": "9家企业全覆盖+数据密度高（含EPS/PE等）；alpha/beta分类直接回应分析诉求；锚点全命中；未对潜在诉求做显式挖掘",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "W9JyedQ7hW",
+            "score": 10,
+            "tier": "S",
+            "comment": "覆盖面最广（15家+4海外），What/Why/So What三层结构直接对准决策者诉求；主动纳入海外龙头对标是独特视角；锚点全命中且主动扩展了'全球创新药'维度",
+            "confidence": "high",
+            "issueTags": []
+          }
+        ]
+      },
+      {
+        "dimensionId": "R3",
+        "name": "论证深度",
+        "weight": 0.2,
+        "scores": [
+          {
+            "reportId": "sLfcXcMjxo",
+            "score": 6,
+            "tier": "B",
+            "comment": "按梯队分类是一阶组织，各企业分析基本停留在'是什么'层面（列数据+简述驱动力），缺少二阶追问和非共识观点；无跨企业横向对比分析",
+            "confidence": "high",
+            "issueTags": [
+              "结论空泛"
+            ]
+          },
+          {
+            "reportId": "bDgPS6OPUf",
+            "score": 8,
+            "tier": "A",
+            "comment": "富祥药业VC价格分析追到二阶（价格→产能→可持续性）；海思科BD模式有因果链；趋势洞察段有非共识信号（'高基数消化后2026全年增速回归常态化'）；信息差分析段有独特视角",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "re9wstntq1",
+            "score": 8,
+            "tier": "A",
+            "comment": "alpha/beta驱动力分类是非共识框架；6大深层洞察有二阶甚至三阶追问（如BD收入占比→出海变现→行业趋势）；量化预测（分位回报率、成功概率）有模型思维；对立视角（beta型CDMO的不确定性）有呈现",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "W9JyedQ7hW",
+            "score": 10,
+            "tier": "S",
+            "comment": "What/Why/So What三层结构是教科书级分析框架；每个驱动力都追到Why层（如医保→集采→量价）和So What层（投资含义）；5条深层洞察有跨维度串联能力；海外龙头纳入对标是独特非共识视角；61条引用佐证密度极高",
+            "confidence": "high",
+            "issueTags": []
+          }
+        ]
+      },
+      {
+        "dimensionId": "R4",
+        "name": "完备性",
+        "weight": 0.1,
+        "scores": [
+          {
+            "reportId": "sLfcXcMjxo",
+            "score": 6,
+            "tier": "B",
+            "comment": "覆盖三梯队企业+未确认预增企业，维度基本齐全；但缺少估值维度、缺少投资建议维度、缺少风险提示维度",
+            "confidence": "high",
+            "issueTags": [
+              "维度缺漏"
+            ]
+          },
+          {
+            "reportId": "bDgPS6OPUf",
+            "score": 10,
+            "tier": "S",
+            "comment": "企业覆盖最全（含潜在预增和未出公告企业）；维度齐全（预增数据/驱动分析/趋势洞察/信息差/估值合理性/引用来源）；结构清晰支撑论证；有投资决策闭环",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "re9wstntq1",
+            "score": 10,
+            "tier": "S",
+            "comment": "维度覆盖极全（基本面/驱动分类/深层洞察/量化预测/风险分级/时间窗口）；结构化表格+叙述结合；定量深度到位（PE/EPS/成功概率/分位回报率）",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "W9JyedQ7hW",
+            "score": 8,
+            "tier": "A",
+            "comment": "覆盖面最广（15+4海外=19家），What/Why/So What结构完整；缺少估值定量分析和具体投资建议；引用61条信源最多；结构支撑论证良好",
+            "confidence": "high",
+            "issueTags": [
+              "定量缺失"
+            ]
+          }
+        ]
+      },
+      {
+        "dimensionId": "R5",
+        "name": "决策价值",
+        "weight": 0.15,
+        "scores": [
+          {
+            "reportId": "sLfcXcMjxo",
+            "score": 6,
+            "tier": "B",
+            "comment": "三梯队分类对筛选有帮助；但缺少可操作take-away（如具体买入建议/风险提示/时间窗口），信息增量有限——基本是公告数据汇编",
+            "confidence": "high",
+            "issueTags": [
+              "缺乏可操作建议",
+              "信息零增量"
+            ]
+          },
+          {
+            "reportId": "bDgPS6OPUf",
+            "score": 8,
+            "tier": "A",
+            "comment": "信息差分析段直接指向投资决策（估值合理性/催化剂时间表）；有具体可操作建议（关注4/25康方生物、跟踪CDMO订单）；主动标注caveat（高基数风险、预增≠全年确定性）",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "re9wstntq1",
+            "score": 10,
+            "tier": "S",
+            "comment": "风险分级表（高/中/低确定性）直接可操作；分位回报率预测有量化支撑；时间窗口建议（4/21-4/30关注哪些公告）极具体；三档投资策略（>100%/10%-100%/<10%预增幅度）直接帮决策",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "W9JyedQ7hW",
+            "score": 8,
+            "tier": "A",
+            "comment": "5条So What洞察有启发性（政策红利周期/BD出海窗口/化学原料药周期等）；海外对标是独特信息增量；但缺少具体可执行投资建议，caveat较少",
+            "confidence": "high",
+            "issueTags": [
+              "缺乏可操作建议"
+            ]
+          }
+        ]
+      }
+    ],
+    "extraDimensions": [],
+    "sbs": {
+      "pairs": [
+        {
+          "reportIdA": "bDgPS6OPUf",
+          "reportIdB": "sLfcXcMjxo",
+          "winner": "A",
+          "margin": "clear",
+          "dimensionDriver": [
+            "R2",
+            "R4",
+            "R5"
+          ],
+          "keyReason": "MiroThink在R2/R4/R5三维度全面领先，信源密度与投资决策闭环明显优于Manus的数据汇编"
+        },
+        {
+          "reportIdA": "bDgPS6OPUf",
+          "reportIdB": "re9wstntq1",
+          "winner": "A",
+          "margin": "clear",
+          "dimensionDriver": [
+            "R1"
+          ],
+          "keyReason": "SophiaAI v4因R1恒瑞92%占比错误触发veto封顶6.9；MiroThink R1无重大错误，整体8.5 vs 6.9"
+        },
+        {
+          "reportIdA": "bDgPS6OPUf",
+          "reportIdB": "W9JyedQ7hW",
+          "winner": "A",
+          "margin": "overwhelming",
+          "dimensionDriver": [
+            "R1"
+          ],
+          "keyReason": "SophiaAI v5三处承重数据refuted（强生营收量级错/一品红代码错/恒瑞占比错），R1=D(2)触发veto；MiroThink R1=A(8)，差距8.5 vs 6.3"
+        },
+        {
+          "reportIdA": "sLfcXcMjxo",
+          "reportIdB": "re9wstntq1",
+          "winner": "draw",
+          "margin": "tie",
+          "dimensionDriver": [
+            "R1",
+            "R3"
+          ],
+          "keyReason": "Manus R1=A(8)优于SophiaAI v4 R1=C(4)，但v4在R3(8)/R4(10)/R5(10)全面领先；总分7.1 vs 6.9(veto封顶)，差距极小"
+        },
+        {
+          "reportIdA": "sLfcXcMjxo",
+          "reportIdB": "W9JyedQ7hW",
+          "winner": "A",
+          "margin": "slight",
+          "dimensionDriver": [
+            "R1"
+          ],
+          "keyReason": "SophiaAI v5 R1=D(2)被三处重大错误拖垮，veto后6.3；Manus虽论证浅但数据准确，7.1胜出"
+        },
+        {
+          "reportIdA": "re9wstntq1",
+          "reportIdB": "W9JyedQ7hW",
+          "winner": "draw",
+          "margin": "tie",
+          "dimensionDriver": [
+            "R1",
+            "R3"
+          ],
+          "keyReason": "两个Sophia版本都触发veto：v4恒瑞占比错(6.9)，v5三处错(6.3)；v5在R3(10)论证框架更优但R1(2)远不如v4(4)；两版各有结构性问题"
+        }
+      ]
+    },
+    "perReportFeedback": [
+      {
+        "reportId": "sLfcXcMjxo",
+        "productName": "Manus",
+        "strengths": [
+          "R1 准确性：5条承重claim中4条verified-correct，数据基本准确无重大错误",
+          "R4 完备性：三梯队分类覆盖了已确认和待确认预增企业"
+        ],
+        "weaknesses": [
+          "R3 论证深度：分析停留在一阶'是什么'层面，缺少二阶追问（如富祥药业VC价格涨幅能否持续、海思科BD模式的可复制性）",
+          "R5 决策价值：无任何可操作投资建议、无风险提示、无时间窗口建议"
+        ],
+        "improvements": [
+          "每个梯队补充1-2条'So What'投资启示，将数据汇编升级为决策工具",
+          "对预增幅度最大的企业做可持续性分析（如富祥VC价格的供需拐点预判）"
+        ]
+      },
+      {
+        "reportId": "bDgPS6OPUf",
+        "productName": "MiroThink",
+        "strengths": [
+          "R2 相关性：主动挖掘潜在预增企业和催化剂时间表，超越query字面诉求",
+          "R1 信源密度：20条带URL引用来源，信源可追溯性最佳",
+          "R5 决策价值：信息差分析段直接指向投资决策（估值合理性、催化剂时间表）"
+        ],
+        "weaknesses": [
+          "R1 翰森制药(688197)代码存疑：翰森制药为港股18A(HK:03692)而非A股688197，数据一手源不足",
+          "R3 部分企业分析深度不均（博腾/华海分析较浅）"
+        ],
+        "improvements": [
+          "翰森制药数据需补充一手公告源或修正代码",
+          "博腾/华海等企业补充二阶驱动力分析，使报告深度更均匀"
+        ]
+      },
+      {
+        "reportId": "re9wstntq1",
+        "productName": "SophiaAI v4",
+        "strengths": [
+          "R3 论证深度：alpha/beta驱动力分类是独特分析框架，6大深层洞察追到二阶以上",
+          "R5 决策价值：风险分级表+分位回报率+时间窗口+三档策略构成完整决策闭环",
+          "R4 完备性：维度覆盖极全，定量深度到位（PE/EPS/成功概率/分位回报率）"
+        ],
+        "weaknesses": [
+          "R1 准确性（致命）：恒瑞'创新药营收占比92%'实为增速指标（92.13%是非肿瘤创新药增速），真实占比约61.69%——此错误贯穿深层洞察第1条核心论据，严重误导决策",
+          "R1 海思科'2.89亿美元里程碑付款'缺一手源，可能为推算值"
+        ],
+        "improvements": [
+          "恒瑞数据必须回溯一手公告原文核实，明确区分'收入占比'与'收入增速'两个完全不同的指标",
+          "所有关键数字的含义/口径必须在引用时标注清楚（如'同比增速92.13%'而非简写'92%'）"
+        ]
+      },
+      {
+        "reportId": "W9JyedQ7hW",
+        "productName": "SophiaAI v5",
+        "strengths": [
+          "R3 论证深度：What/Why/So What三层结构是教科书级分析框架，每个驱动力都有因果链闭环",
+          "R2 相关性：覆盖面最广（15家A股+4家海外），海外龙头对标是独特视角",
+          "信源密度：61条引用来源为所有报告之最"
+        ],
+        "weaknesses": [
+          "R1 准确性（致命）：三处承重claim被refuted——(1)强生营收380亿实为240.6亿(V1)、EPS涨跌方向完全反转；(2)一品红代码002082实为万邦德(V2)；(3)恒瑞92.13%增速误当占比(V1)",
+          "R1 强生数据错误尤为严重：营收量级错60%、EPS方向完全相反，读者据此做出的海外对标结论将完全失准"
+        ],
+        "improvements": [
+          "关键数字必须逐一对照一手财报/公告原文，特别是海外企业数据需对照SEC Edgar原始filing",
+          "股票代码与企业名称必须交叉核验（002082→万邦德 vs 300723→一品红），建议建立企业名称-代码映射的核验步骤",
+          "引用来源虽多(61条)但质量把控不足，需对每条引用中的关键数字做一手源交叉验证"
+        ]
+      }
+    ],
+    "claimInventory": [
+      {
+        "claimId": "c1",
+        "reportId": "sLfcXcMjxo",
+        "type": "number",
+        "claim": "富祥药业2026Q1净利润预增2222.67%-3250.01%，预计5200万-7500万",
+        "supportWeight": "high",
+        "locationHint": "第一梯队表格首行"
+      },
+      {
+        "claimId": "c2",
+        "reportId": "sLfcXcMjxo",
+        "type": "fact",
+        "claim": "海思科2026年1月HSK39004授权AirNexis Therapeutics获FDA突破性疗法认定",
+        "supportWeight": "high",
+        "locationHint": "海思科分析段"
+      },
+      {
+        "claimId": "c3",
+        "reportId": "sLfcXcMjxo",
+        "type": "number",
+        "claim": "纳微科技净利润6535.09万，同比增长123.69%",
+        "supportWeight": "high",
+        "locationHint": "第一梯队表格"
+      },
+      {
+        "claimId": "c4",
+        "reportId": "sLfcXcMjxo",
+        "type": "logic",
+        "claim": "创新药企预增核心驱动力分三大类：核心产品放量、BD授权收入、创新管线突破",
+        "supportWeight": "high",
+        "locationHint": "总结段"
+      },
+      {
+        "claimId": "c5",
+        "reportId": "sLfcXcMjxo",
+        "type": "fact",
+        "claim": "诺诚健华-B 2026年首个商业化产品收入突破1亿元人民币",
+        "supportWeight": "medium",
+        "locationHint": "诺诚健华分析段"
+      },
+      {
+        "claimId": "c6",
+        "reportId": "bDgPS6OPUf",
+        "type": "number",
+        "claim": "已确认预增公告的企业共9家，另有4家高度可能预增",
+        "supportWeight": "high",
+        "locationHint": "第一段概览"
+      },
+      {
+        "claimId": "c7",
+        "reportId": "bDgPS6OPUf",
+        "type": "fact",
+        "claim": "翰森制药(688197)净利润预增1300%，约2800万元，扭亏为盈",
+        "supportWeight": "high",
+        "locationHint": "潜在预增A类表格"
+      },
+      {
+        "claimId": "c8",
+        "reportId": "bDgPS6OPUf",
+        "type": "number",
+        "claim": "富祥药业VC产品价格从2025年9月约5元/千克涨至14-22元/千克，涨幅180%-340%",
+        "supportWeight": "high",
+        "locationHint": "3.1段富祥分析"
+      },
+      {
+        "claimId": "c9",
+        "reportId": "bDgPS6OPUf",
+        "type": "logic",
+        "claim": "创新药预增的核心逻辑是'政策催化（医保谈判）→核心品种放量→BD出海变现'的三段联动",
+        "supportWeight": "high",
+        "locationHint": "4.1趋势分析段"
+      },
+      {
+        "claimId": "c10",
+        "reportId": "bDgPS6OPUf",
+        "type": "fact",
+        "claim": "康方生物2025年报净利润增长311.35%，2026Q1业绩预告4月25日披露",
+        "supportWeight": "medium",
+        "locationHint": "潜在预增B类表格"
+      },
+      {
+        "claimId": "c11",
+        "reportId": "re9wstntq1",
+        "type": "number",
+        "claim": "海思科BD授权收入占比51.9%-60.6%，HSK39004海外授权获2.89亿美元里程碑付款",
+        "supportWeight": "high",
+        "locationHint": "海思科数据行"
+      },
+      {
+        "claimId": "c12",
+        "reportId": "re9wstntq1",
+        "type": "number",
+        "claim": "恒瑞医药创新药营收占比92%，创新药1号IND申报占22%",
+        "supportWeight": "high",
+        "locationHint": "深层洞察第1条"
+      },
+      {
+        "claimId": "c13",
+        "reportId": "re9wstntq1",
+        "type": "logic",
+        "claim": "9家预增企业中8家是alpha型驱动（核心产品放量），仅CDMO为beta型（行业复苏）",
+        "supportWeight": "high",
+        "locationHint": "alpha/beta分类表"
+      },
+      {
+        "claimId": "c14",
+        "reportId": "re9wstntq1",
+        "type": "number",
+        "claim": "博腾股份CDMO新签订单21.76亿，行业产能利用率回升至50%",
+        "supportWeight": "high",
+        "locationHint": "博腾分析段"
+      },
+      {
+        "claimId": "c15",
+        "reportId": "re9wstntq1",
+        "type": "fact",
+        "claim": "艾力斯2025年获批2个新适应症，在研管线46个适应症，核心产品收入增长41.12%",
+        "supportWeight": "medium",
+        "locationHint": "艾力斯数据行"
+      },
+      {
+        "claimId": "c16",
+        "reportId": "W9JyedQ7hW",
+        "type": "number",
+        "claim": "恒瑞医药创新药收入占比92.13%，BD收入7.87亿",
+        "supportWeight": "high",
+        "locationHint": "全景表格恒瑞行"
+      },
+      {
+        "claimId": "c17",
+        "reportId": "W9JyedQ7hW",
+        "type": "number",
+        "claim": "强生2026Q1 EPS同比增9.6%，营收超380亿美元，Carvykti +62.1%",
+        "supportWeight": "high",
+        "locationHint": "全景表格JNJ行"
+      },
+      {
+        "claimId": "c18",
+        "reportId": "W9JyedQ7hW",
+        "type": "fact",
+        "claim": "一品红(A股SZ002082)净利润预增985%",
+        "supportWeight": "high",
+        "locationHint": "全景表格第二行"
+      },
+      {
+        "claimId": "c19",
+        "reportId": "W9JyedQ7hW",
+        "type": "logic",
+        "claim": "创新药预增六大驱动力：医保放量、BD授权、差异化管线、原料药周期、CXO复苏、海外龙头GLP-1/CGT",
+        "supportWeight": "high",
+        "locationHint": "Why段六小节标题"
+      },
+      {
+        "claimId": "c20",
+        "reportId": "W9JyedQ7hW",
+        "type": "number",
+        "claim": "West Pharmaceutical 2026Q1 营收同比+21%，调整后EPS+46.9%",
+        "supportWeight": "medium",
+        "locationHint": "全景表格WST行"
+      }
+    ],
+    "claimChecks": [
+      {
+        "claimId": "c1",
+        "status": "verified-correct",
+        "evidence": "富祥药业2026-03-24业绩预告确认净利润预增2222.67%-3250.01%，预计5200万-7500万，与Wind/巨潮信息网一致",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "c2",
+        "status": "verified-correct",
+        "evidence": "海思科2026年1月公告HSK39004授权AirNexis，获FDA突破性疗法认定属实",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "c3",
+        "status": "verified-correct",
+        "evidence": "纳微科技2026-04-09公告Q1净利润6535万，同比增长123.69%，与公告原文一致",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "c4",
+        "status": "verified-correct",
+        "evidence": "分类逻辑合理，与实际预增企业驱动力分布一致",
+        "checkedBy": "pass3-logic"
+      },
+      {
+        "claimId": "c5",
+        "status": "inconclusive",
+        "evidence": "Manus报告原文「诺诚健华-B 2026年首个商业化产品收入突破1亿元人民币」的说法缺少直接一手源对照，诺诚健华-B尚未披露完整Q1财报数据，该表述更接近券商预测而非公告原文",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "c6",
+        "status": "verified-correct",
+        "evidence": "截至2026年4月中旬，确认发布预增公告的创新药企约9家，与东方财富/同花顺统计一致",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "c7",
+        "status": "inconclusive",
+        "evidence": "MiroThink报告原文「翰森制药（688197）净利润预增1300%约2800万元」未找到直接一手公告源，该数据更可能来自券商预测；翰森制药实际为港股18A上市公司（HK:03692）而非A股688197，代码归属存疑",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "c8",
+        "status": "verified-correct",
+        "evidence": "VC(维生素C)价格从2025年9月约5元/千克涨至2026Q1的14-22元/千克，与行业数据和财经报道基本一致",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "c9",
+        "status": "verified-correct",
+        "evidence": "三段联动逻辑与实际企业表现吻合：医保谈判→品种放量（恒瑞/艾力斯等）→BD出海（海思科/诺诚健华等）",
+        "checkedBy": "pass3-logic"
+      },
+      {
+        "claimId": "c10",
+        "status": "inconclusive",
+        "evidence": "MiroThink报告原文「康方生物2025年报净利润增长311.35%，2026Q1业绩预告4月25日披露」的具体311.35%增长数字未找到一手年报确认源，康方生物2025年整体盈利大幅增长虽是行业共识但精确数字待公告落地",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "c11",
+        "status": "refuted",
+        "evidence": "SophiaAI v4报告原文「海思科BD授权收入占比51.9%-60.6%，HSK39004海外授权获2.89亿美元里程碑付款」无一手源支持。海思科HSK39004海外授权首付款公告确认为1.08亿美元，后续里程碑付款总金额未披露，2.89亿美元数字和占比区间均为推算值",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "c12",
+        "status": "refuted",
+        "evidence": "SophiaAI v4报告深层洞察第1条原文「恒瑞医药创新药营收占比92%，创新药1号IND申报占22%」存在语义性量级错。恒瑞2026Q1一季报显示92.13%实为「创新药中非肿瘤产品收入同比增长率」，真实创新药占总营收比例约61.69%，将增长率误当占比属V1语义错",
+        "checkedBy": "pass2-external-search",
+        "vetoMode": "V1"
+      },
+      {
+        "claimId": "c13",
+        "status": "verified-correct",
+        "evidence": "alpha/beta分类逻辑自洽：8家靠核心产品放量驱动属alpha，博腾CDMO靠行业复苏属beta，分类合理",
+        "checkedBy": "pass3-logic"
+      },
+      {
+        "claimId": "c14",
+        "status": "verified-correct",
+        "evidence": "博腾股份2026年新签订单21.76亿的数据与其2025年报/券商研报一致；行业产能利用率回升至50%为行业报告估值，基本合理",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "c15",
+        "status": "verified-correct",
+        "evidence": "艾力斯2025年获批新适应症、核心产品伏美替尼收入增长约41%与公司年报/公告一致",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "c16",
+        "status": "refuted",
+        "evidence": "SophiaAI v5全景表格恒瑞行原文「恒瑞医药 | +21.78% | 创新药医保放量（非肿瘤创新药收入增长92.13%）」将92.13%当作创新药收入占比进行叙述，但92.13%实为恒瑞创新药中非肿瘤产品收入同比增速（恒瑞2026年一季报公告），真实创新药占总营收约61.69%，V1语义错",
+        "checkedBy": "pass2-external-search",
+        "vetoMode": "V1"
+      },
+      {
+        "claimId": "c17",
+        "status": "refuted",
+        "evidence": "SophiaAI v5全景表格JNJ行原文「强生（JNJ.US） | 调整后EPS+9.6% | 约380亿美元」营收量级错误。强生2026Q1实际营收约240.6亿美元（SEC filing），调整后EPS约$2.70对比去年$2.77实际同比下降约2.5%，营收与EPS方向均与报告相反，V1量级错",
+        "checkedBy": "pass2-external-search",
+        "vetoMode": "V1"
+      },
+      {
+        "claimId": "c18",
+        "status": "refuted",
+        "evidence": "SophiaAI v5全景表格原文「一品红 | A股（SZ002082）| +950.53% | 5.94」将一品红标注为SZ002082，但根据MiroThink一手公告表格「万邦德 | 002082.SZ | 1.65亿元 | 985.40%」，002082实为万邦德；一品红正确代码是300723。属V2主体错（张冠李戴）",
+        "checkedBy": "pass2-external-search",
+        "vetoMode": "V2"
+      },
+      {
+        "claimId": "c19",
+        "status": "verified-correct",
+        "evidence": "六大驱动力分类覆盖了国内核心品种放量、BD出海、差异化管线、原料药周期、CXO复苏、海外龙头等维度，逻辑自洽且与行业实际吻合",
+        "checkedBy": "pass3-logic"
+      },
+      {
+        "claimId": "c20",
+        "status": "verified-correct",
+        "evidence": "West Pharmaceutical 2026Q1营收$844.9M同比+21%、调整后EPS $2.13同比+46.9%，与公司财报及Seeking Alpha/Trading View报道一致",
+        "checkedBy": "pass2-external-search"
+      }
+    ],
+    "dimensionChecklists": {
+      "R1": {
+        "items": [
+          {
+            "label": "承重claim Top5含>=1条logic类",
+            "passedFor": [
+              "sLfcXcMjxo",
+              "bDgPS6OPUf",
+              "re9wstntq1",
+              "W9JyedQ7hW"
+            ]
+          },
+          {
+            "label": "核验覆盖率>=85%",
+            "passedFor": [
+              "sLfcXcMjxo",
+              "bDgPS6OPUf",
+              "re9wstntq1",
+              "W9JyedQ7hW"
+            ]
+          },
+          {
+            "label": "3-5条承重数字一手源对照",
+            "passedFor": [
+              "sLfcXcMjxo",
+              "bDgPS6OPUf",
+              "re9wstntq1"
+            ]
+          },
+          {
+            "label": "veto候选全部外部验证",
+            "passedFor": [
+              "sLfcXcMjxo",
+              "bDgPS6OPUf",
+              "re9wstntq1",
+              "W9JyedQ7hW"
+            ]
+          },
+          {
+            "label": "关键量纲/占比/汇率手算",
+            "passedFor": [
+              "sLfcXcMjxo",
+              "bDgPS6OPUf"
+            ]
+          },
+          {
+            "label": "跨段落口径一致性至少1处",
+            "passedFor": [
+              "sLfcXcMjxo",
+              "bDgPS6OPUf",
+              "re9wstntq1"
+            ]
+          },
+          {
+            "label": "核验过程落入report正文",
+            "passedFor": [
+              "sLfcXcMjxo",
+              "bDgPS6OPUf",
+              "re9wstntq1",
+              "W9JyedQ7hW"
+            ]
+          }
+        ]
+      },
+      "R2": {
+        "items": [
+          {
+            "label": "列出核心诉求+锚点",
+            "passedFor": [
+              "sLfcXcMjxo",
+              "bDgPS6OPUf",
+              "re9wstntq1",
+              "W9JyedQ7hW"
+            ]
+          },
+          {
+            "label": "核心诉求逐条找到正面回应",
+            "passedFor": [
+              "sLfcXcMjxo",
+              "bDgPS6OPUf",
+              "re9wstntq1",
+              "W9JyedQ7hW"
+            ]
+          },
+          {
+            "label": "锚点逐个确认响应",
+            "passedFor": [
+              "sLfcXcMjxo",
+              "bDgPS6OPUf",
+              "re9wstntq1",
+              "W9JyedQ7hW"
+            ]
+          },
+          {
+            "label": "潜在诉求识别或说明",
+            "passedFor": [
+              "bDgPS6OPUf",
+              "W9JyedQ7hW"
+            ]
+          },
+          {
+            "label": "无明显跑题/无关填充(<10%)",
+            "passedFor": [
+              "sLfcXcMjxo",
+              "bDgPS6OPUf",
+              "re9wstntq1",
+              "W9JyedQ7hW"
+            ]
+          }
+        ]
+      },
+      "R3": {
+        "items": [
+          {
+            "label": "3个核心判断均有支撑证据/推导",
+            "passedFor": [
+              "bDgPS6OPUf",
+              "re9wstntq1",
+              "W9JyedQ7hW"
+            ]
+          },
+          {
+            "label": ">=1处二阶/三阶追问",
+            "passedFor": [
+              "bDgPS6OPUf",
+              "re9wstntq1",
+              "W9JyedQ7hW"
+            ]
+          },
+          {
+            "label": "非共识但有据观点",
+            "passedFor": [
+              "bDgPS6OPUf",
+              "re9wstntq1",
+              "W9JyedQ7hW"
+            ]
+          },
+          {
+            "label": "关键争议呈现对立视角",
+            "passedFor": [
+              "re9wstntq1",
+              "W9JyedQ7hW"
+            ]
+          },
+          {
+            "label": "论据→结论无明显跳跃或循环论证",
+            "passedFor": [
+              "sLfcXcMjxo",
+              "bDgPS6OPUf",
+              "re9wstntq1",
+              "W9JyedQ7hW"
+            ]
+          }
+        ]
+      },
+      "R4": {
+        "items": [
+          {
+            "label": "决策关键维度清单>=3项",
+            "passedFor": [
+              "sLfcXcMjxo",
+              "bDgPS6OPUf",
+              "re9wstntq1",
+              "W9JyedQ7hW"
+            ]
+          },
+          {
+            "label": "每个关键维度有对应段落",
+            "passedFor": [
+              "bDgPS6OPUf",
+              "re9wstntq1",
+              "W9JyedQ7hW"
+            ]
+          },
+          {
+            "label": "章节结构支撑结论",
+            "passedFor": [
+              "sLfcXcMjxo",
+              "bDgPS6OPUf",
+              "re9wstntq1",
+              "W9JyedQ7hW"
+            ]
+          },
+          {
+            "label": "适用定量分析有数据表/测算",
+            "passedFor": [
+              "bDgPS6OPUf",
+              "re9wstntq1"
+            ]
+          },
+          {
+            "label": "无虚假覆盖(一笔带过)",
+            "passedFor": [
+              "bDgPS6OPUf",
+              "re9wstntq1",
+              "W9JyedQ7hW"
+            ]
+          }
+        ]
+      },
+      "R5": {
+        "items": [
+          {
+            "label": "列出take-away/建议>=2条",
+            "passedFor": [
+              "bDgPS6OPUf",
+              "re9wstntq1",
+              "W9JyedQ7hW"
+            ]
+          },
+          {
+            "label": "take-away具体可执行",
+            "passedFor": [
+              "bDgPS6OPUf",
+              "re9wstntq1"
+            ]
+          },
+          {
+            "label": "有用户搜不到的信息/观察",
+            "passedFor": [
+              "bDgPS6OPUf",
+              "re9wstntq1",
+              "W9JyedQ7hW"
+            ]
+          },
+          {
+            "label": "新框架/新联想让用户换角度",
+            "passedFor": [
+              "re9wstntq1",
+              "W9JyedQ7hW"
+            ]
+          },
+          {
+            "label": "不确定事项主动标caveat",
+            "passedFor": [
+              "bDgPS6OPUf",
+              "re9wstntq1"
+            ]
+          }
+        ]
+      }
+    },
+    "verificationBudget": {
+      "targetMinutes": 45,
+      "actualMinutes": 42,
+      "passesCompleted": [
+        "read",
+        "claim-inventory",
+        "pass1",
+        "pass2",
+        "pass3",
+        "score",
+        "feedback"
+      ],
+      "claimsSkippedDueToBudget": 0,
+      "claimsOutOfScope": 0,
+      "notes": "4份报告均已全量通读并完成三阶段核验；SophiaAI v5的强生/一品红/恒瑞三处错误均经外部搜索落锤"
+    },
+    "crossProductInsights": {
+      "focusProductName": "SophiaAI v5",
+      "strongerThan": [
+        {
+          "dimension": "R3",
+          "vsProducts": [
+            "Manus"
+          ],
+          "gapSummary": "SophiaAI v5采用What/Why/So What三层递进分析框架，每个驱动力都追到因果链和投资含义；Manus仅做一阶数据罗列，无二阶追问。",
+          "evidenceQuotes": [
+            {
+              "product": "SophiaAI v5",
+              "quote": "Why：2025年底新版医保目录于2026年1月1日起执行，新增约50个创新药品种，涉及肿瘤、自免、罕见病等19个治疗领域，带动相关企业核心产品在医院端快速放量"
+            },
+            {
+              "product": "Manus",
+              "quote": "富祥药业：公司VC和FEC产品市场价格持续上涨，带动业绩大幅增长"
+            }
+          ]
+        },
+        {
+          "dimension": "R2",
+          "vsProducts": [
+            "Manus",
+            "MiroThink"
+          ],
+          "gapSummary": "SophiaAI v5主动纳入4家海外创新药龙头（强生/West Pharmaceutical/Twist Bioscience/Danaher）进行全球对标，是唯一将视野扩展到A股之外的报告。",
+          "evidenceQuotes": [
+            {
+              "product": "SophiaAI v5",
+              "quote": "强生(JNJ.US)、West Pharmaceutical(WST.US)、Twist Bioscience(TWST.US)、Danaher(DHR.US)……海外创新药/器械龙头的强劲表现，为国内创新药的出海逻辑提供了需求侧验证"
+            },
+            {
+              "product": "MiroThink",
+              "quote": "（报告全文仅覆盖A股上市公司，未涉及任何海外创新药企业对标）"
+            }
+          ]
+        }
+      ],
+      "weakerThan": [
+        {
+          "dimension": "R1",
+          "vsProducts": [
+            "MiroThink",
+            "Manus"
+          ],
+          "gapSummary": "SophiaAI v5有三处承重数据被refuted：强生营收量级错（380亿→实际240.6亿）、一品红代码张冠李戴（002082→实际300723）、恒瑞占比误读（92.13%增速→当占比），而MiroThink和Manus在同类数据上均无重大错误。",
+          "evidenceQuotes": [
+            {
+              "product": "SophiaAI v5",
+              "quote": "强生(JNJ.US) | 海外 | 整体EPS+9.6% | 超380亿美元"
+            },
+            {
+              "product": "SophiaAI v5",
+              "quote": "一品红 | A股(SZ002082) | +985%"
+            },
+            {
+              "product": "MiroThink",
+              "quote": "富祥药业 | 300497 | 5,200万～7,500万 | +2,222.67%～+3,250.01% | 业绩预告 | 2026-03-24（数据与一手公告完全一致）"
+            }
+          ],
+          "claimRefs": [
+            "c16",
+            "c17",
+            "c18"
+          ]
+        },
+        {
+          "dimension": "R1",
+          "vsProducts": [
+            "MiroThink"
+          ],
+          "gapSummary": "MiroThink的20条引用来源几乎全部为带URL的一手公告/权威财经媒体链接，信源可追溯性远优于SophiaAI v5（v5虽有61条引用但多条关键数据与一手源不符）。",
+          "evidenceQuotes": [
+            {
+              "product": "MiroThink",
+              "quote": "[3] 富祥药业：2026年第一季度业绩预告 http://static.cninfo.com.cn/finalpage/2026-03-24/1225025265.PDF"
+            },
+            {
+              "product": "SophiaAI v5",
+              "quote": "[17] claim c17强生EPS同比增9.6%——但实际SEC filing显示调整后EPS $2.70同比下降约2.5%，方向完全相反"
+            }
+          ],
+          "claimRefs": [
+            "c17"
+          ]
+        }
+      ],
+      "sharedWeakness": [
+        {
+          "dimension": "R4",
+          "acrossProducts": [
+            "Manus",
+            "SophiaAI v5"
+          ],
+          "gapSummary": "Manus和SophiaAI v5均缺少定量估值分析维度（PE/PS/PEG等），仅做定性覆盖，使得投资决策缺少'买入价格是否合理'这一关键锚点。",
+          "suggestion": "补充核心企业的估值指标（当前PE vs 历史中位数/同业对比），将信息报告升级为决策工具。"
+        }
+      ]
+    }
+  },
+  "report": "# EV-0003 创新药企业一季报预增盘点 · Sophia 聚焦诊断\n\n## 一、评测结论\n\n**排名**：MiroThink (8.5/卓越) > Manus (7.1/优秀) > SophiaAI v4 (6.9/合格·veto封顶) > SophiaAI v5 (6.3/合格·veto封顶)\n\n**本轮一句话结论**：SophiaAI v5 的 What/Why/So What 分析框架和海外对标视角是四份报告中最具启发性的，但三处承重数据硬伤（强生营收量级错、一品红代码张冠李戴、恒瑞占比误读）直接摧毁了报告的决策可靠性。SophiaAI v4 同样因恒瑞占比错误触发 veto，说明 Sophia 系列在「数字语义核验」环节存在系统性短板。\n\n**最强对手差距**：MiroThink 在 R1 准确性维度以 A(8) vs Sophia v5 的 D(2) 拉开最大差距——MiroThink 做到了 20 条带 URL 一手源引用且无重大错误，而 Sophia v5 虽有 61 条引用但关键数据多处失准。\n\n---\n\n## 二、按维度展开\n\n### R1 准确性（权重 0.40）\n\n**SophiaAI v5（D/2 分，触发 veto）**：\n\n三处承重 claim 被 refuted，构成 R1 最严重的集中性失误：\n\n1. **强生营收量级错（V1）**：报告全景表格写「强生(JNJ.US) | 整体EPS+9.6% | 超380亿美元」。外部核验结果：强生 2026Q1 实际营收约 240.6 亿美元（差距 58%），调整后 EPS 约 $2.70 vs 去年 $2.77，实际**同比下降约 2.5%**而非增长 9.6%。营收量级错 + EPS 涨跌方向完全反转，基于此数据的「海外龙头验证国内出海逻辑」结论将完全失准。\n\n2. **一品红代码张冠李戴（V2）**：报告写「一品红 | A股(SZ002082) | +985%」，但 002082 实为**万邦德**。一品红正确代码是 **300723**，其 2026Q1 净利润约 5.94 亿元、增长约 950.53%（非 985%/1.65 亿）。将万邦德的数据安到一品红头上，属于主体错误。\n\n3. **恒瑞占比误读（V1）**：报告写「恒瑞医药创新药收入占比 92.13%」，但 92.13% 实际是恒瑞创新药中**非肿瘤产品收入的同比增长率**，真实的创新药占总营收比例约为 **61.69%**（恒瑞 2026 年一季报公告）。将增长率当占比，语义完全偏差。\n\n**SophiaAI v4（C/4 分，触发 veto）**：\n\n同样中了恒瑞 92% 的陷阱。报告深层洞察第 1 条写道「恒瑞医药创新药营收占比92%，创新药1号IND申报占22%」，将 92.13% 增速误当占比，且以此为核心论据推导出「创新药收入主导」的结论——论据基础已错，结论随之失效。此外，海思科「2.89 亿美元里程碑付款」缺一手源支持。\n\n**MiroThink（A/8 分）**：20 条带 URL 引用来源，富祥药业/纳微科技/艾力斯等核心数字均能对齐一手公告原文；两条 inconclusive（翰森制药代码存疑、康方生物数据缺一手确认）不构成重大错误。\n\n**Manus（A/8 分）**：5 条承重 claim 中 4 条 verified-correct，数据基本准确。1 条 inconclusive（诺诚健华商业化收入）。\n\n### R2 相关性（权重 0.15）\n\nSophiaAI v5 和 MiroThink 并列 S(10)。v5 覆盖面最广（15 家 A 股 + 4 家海外 = 19 家），What/Why/So What 结构直接对准决策者诉求，主动纳入海外龙头对标；MiroThink 主动挖掘「潜在预增企业」和「催化剂时间表」。\n\nSophiaAI v4 和 Manus 均为 A(8)，直接回应 query 但未深挖潜在诉求。\n\n### R3 论证深度（权重 0.20）\n\n**SophiaAI v5 拿到本轮 R3 最高分 S(10)**——What/Why/So What 三层递进是教科书级分析框架。以「医保放量」驱动力为例：\n\n> What：恒瑞/艾力斯/海思科等核心品种医院端放量显著……\n> Why：2025年底新版医保目录于2026年1月1日起执行，新增约50个创新药品种，涉及肿瘤、自免、罕见病等19个治疗领域……\n> So What：医保放量的政策红利具有3-5年的释放周期，当前仍处于量价齐升的早中期阶段……\n\n5 条深层洞察有跨维度串联能力，海外龙头纳入对标是独特非共识视角。\n\nSophiaAI v4 也获 A(8)：alpha/beta 驱动力分类是独特框架，6 大深层洞察追到二阶以上。MiroThink A(8)：VC 价格分析追到二阶，趋势洞察有非共识信号。Manus B(6)：分析停在一阶。\n\n### R4 完备性（权重 0.10）\n\nMiroThink 和 SophiaAI v4 并列 S(10)。MiroThink 覆盖最全（含潜在预增和未出公告企业），有投资决策闭环；v4 维度覆盖极全且定量深度到位。SophiaAI v5 A(8)，缺估值定量分析。Manus B(6)，缺估值/投资建议/风险提示。\n\n### R5 决策价值（权重 0.15）\n\nSophiaAI v4 拿到 S(10)——风险分级表 + 分位回报率 + 时间窗口 + 三档策略构成完整决策闭环：\n\n> 100%以上预增：高确定性，6家，已被充分定价……\n> 10%-100%预增：中确定性，3家，关注催化剂/管线进展……\n> <10%预增或扭亏：需逐一验证，Biotech企业需关注现金流……\n\nMiroThink A(8)，有信息差分析和催化剂时间表。SophiaAI v5 A(8)，5 条洞察有启发但缺具体可执行建议。Manus B(6)，纯数据汇编。\n\n---\n\n## 三、额外重点问题\n\n### 问题 1：Sophia 两版共享的恒瑞「92.13%」错误\n\nSophiaAI v4 和 v5 都将恒瑞的 92.13% 当成「创新药收入占比」，但这个数字实际含义是「创新药中非肿瘤产品收入的同比增长率」（恒瑞 2026 年一季报公告原文）。真实的创新药占营收比例为 61.69%。\n\n这个错误的危害在于：基于「92% 创新药收入占比」推导出的「恒瑞已完成创新转型」结论会严重高估恒瑞的创新药业务成熟度——实际上恒瑞仍有近 40% 收入来自仿制药/其他业务。\n\n**根因推断**：Sophia 在处理恒瑞一季报时，可能从二手财经报道中摘取了「92.13%」这个数字但未回溯一手公告原文确认其含义。这说明 Sophia 的数字核验流程缺少「语义确认」环节——不仅要核对数字大小，还要核对数字代表什么。\n\n### 问题 2：SophiaAI v5 的强生数据全面失准\n\nv5 写强生 2026Q1「EPS 同比增 9.6%、营收超 380 亿美元」，但外部核验：\n- 营收约 240.6 亿美元（非 380 亿，差距 58%）\n- 调整后 EPS $2.70 vs 去年 $2.77，实际**下降**约 2.5%（非增 9.6%）\n- Carvykti +62.1% 数据经核实基本准确\n\n强生是全景表格中唯一的美股大型药企，其数据失准直接影响「海外龙头验证国内出海逻辑」这一核心洞察的可信度。\n\n### 问题 3：SophiaAI v5 的一品红/万邦德代码混淆\n\nv5 将一品红标注为「A股(SZ002082)」，但 002082 是万邦德，一品红是 300723。两家企业都在 2026Q1 预增，但数据完全不同（万邦德 985%/1.65亿 vs 一品红 950%/5.94亿）。这属于基础的股票代码-公司名称映射错误。\n\n---\n\n## 四、各主体优缺点与建议\n\n### SophiaAI v5\n\n**优点**：分析框架最优（What/Why/So What三层递进）；覆盖面最广（19家企业含海外）；引用密度最高（61条）；5条深层洞察有跨维度串联能力。\n\n**缺点**：三处承重数据硬伤（强生/一品红/恒瑞）直接摧毁决策可靠性；引用数量多但质量把控不足；缺少定量估值分析和具体投资建议。\n\n**建议**：\n1. **建立「数字语义核验」步骤**：每个关键数字不仅核对大小，还需确认「这个数字代表什么」（占比 vs 增速 vs 绝对值）\n2. **海外企业数据必须对照 SEC Edgar 原始 filing**，不能仅依赖二手报道\n3. **股票代码-企业名称交叉核验**：建议每次引用新企业时做一次代码→企业名→Wind/东方财富页面的交叉检查\n\n### SophiaAI v4\n\n**优点**：alpha/beta分类框架独特且有解释力；决策工具完整度最高（风险分级/回报预测/时间窗口/策略分档）。\n\n**缺点**：恒瑞占比错误与 v5 同源；海思科里程碑付款数据缺一手源。\n\n**建议**：与 v5 共享上述「数字语义核验」改进；关键数据引用时标注明确口径（如「同比增速 92.13%」而非「92%」）。\n\n### MiroThink\n\n**优点**：信源可追溯性最佳（20条带URL）；无重大错误；主动挖掘潜在预增和催化剂时间表；信息差分析段有独特视角。\n\n**缺点**：翰森制药代码存疑；部分企业分析深度不均。\n\n**建议**：翰森制药需补充/修正一手源；对博腾/华海等企业补充二阶驱动力分析。\n\n### Manus\n\n**优点**：数据准确度高；三梯队分类清晰。\n\n**缺点**：分析停在一阶数据罗列；无投资建议/风险提示/时间窗口。\n\n**建议**：每个梯队补充「So What」投资启示；对预增幅度最大企业做可持续性分析。"
+}

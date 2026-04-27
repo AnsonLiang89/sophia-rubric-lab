@@ -85,6 +85,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PROJECT_ROOT = path.resolve(__dirname, "..");
 const OUTBOX_DIR = path.join(PROJECT_ROOT, ".evaluations", "outbox");
+const INBOX_DIR = path.join(PROJECT_ROOT, ".evaluations", "inbox");
 
 const TIER_TO_SCORE = { S: 10, A: 8, B: 6, C: 4, D: 2 };
 const VALID_SCORES = new Set([10, 8, 6, 4, 2]);
@@ -442,8 +443,23 @@ export function validatePayload(file, payload, errors) {
           pushErr(errors, file, `${pref}.winner`, `必须 ∈ {A, B, tie, draw}，实际 ${JSON.stringify(p.winner)}`);
         if (!VALID_SBS_MARGINS_V22.has(p.margin))
           pushErr(errors, file, `${pref}.margin`, `${cv} 必须 ∈ {overwhelming, clear, slight, tie}，实际 ${JSON.stringify(p.margin)}`);
-        if (!p.dimensionDriver || typeof p.dimensionDriver !== "string")
-          pushErr(errors, file, `${pref}.dimensionDriver`, `${cv} 必填非空字符串（拉开差距的主导维度）`);
+        // dimensionDriver：契约允许 string 或 string[]（拉开差距的主导维度，可 1 个或多个 Rx/Xy）
+        {
+          const dd = p.dimensionDriver;
+          const isValidString = typeof dd === "string" && dd.trim().length > 0;
+          const isValidArray =
+            Array.isArray(dd) &&
+            dd.length > 0 &&
+            dd.every((d) => typeof d === "string" && d.trim().length > 0);
+          if (!isValidString && !isValidArray) {
+            pushErr(
+              errors,
+              file,
+              `${pref}.dimensionDriver`,
+              `${cv} 必填：非空字符串或非空字符串数组（拉开差距的主导维度，如 "R1" 或 ["R1","R3"]）`
+            );
+          }
+        }
         if (!p.keyReason || typeof p.keyReason !== "string")
           pushErr(errors, file, `${pref}.keyReason`, "必填非空字符串");
       }
@@ -884,6 +900,142 @@ function listOutboxFiles() {
   return files.sort();
 }
 
+/**
+ * 校验 inbox v2 schema 的单个 task 文件。
+ *
+ * v2 硬约束（2026-04-27 起）：
+ *   - contractVersion === "2.0"（inbox 层的 schema version，与 outbox payload 的 contractVersion 独立）
+ *   - candidates: 非空数组，每项含：
+ *     * candidateId：非空字符串（稳定 id，给 PATCH 定位用）
+ *     * reportVersions：非空数组；每条含 version:number / content:string / contentHash:string
+ *       - version 从 1 递增且无重复
+ *       - contentHash 为 16 位 hex
+ *     * activeReportVersion：正整数，必须命中 reportVersions[].version 中的一条
+ *     * report：v1 消费端镜像字段（非空字符串；必须等于 active 版本的 content）
+ *   - query.id / query.code 非空字符串
+ *   - taskId / createdAt 非空字符串
+ *
+ * 历史 v1 文件不应出现在磁盘上——启动期 runStartup 会自动 migrate。
+ * 这里一旦发现 v1，直接判错，提示跑 `npm run migrate-inbox -- --apply`。
+ */
+export function validateInboxTask(file, task, errors) {
+  if (!task || typeof task !== "object") {
+    pushErr(errors, file, "<root>", "inbox 根必须是对象");
+    return;
+  }
+  if (!isNonEmptyString(task.taskId)) pushErr(errors, file, "taskId", "必填非空字符串");
+  if (!isNonEmptyString(task.createdAt)) pushErr(errors, file, "createdAt", "必填非空字符串");
+  if (task.contractVersion !== "2.0") {
+    pushErr(
+      errors,
+      file,
+      "contractVersion",
+      `inbox schema 必须是 "2.0"，实际 ${JSON.stringify(task.contractVersion ?? null)}。修复：npm run migrate-inbox -- --apply`
+    );
+  }
+  if (!task.query || typeof task.query !== "object") {
+    pushErr(errors, file, "query", "必填对象");
+  } else {
+    if (!isNonEmptyString(task.query.id)) pushErr(errors, file, "query.id", "必填非空字符串");
+    if (!isNonEmptyString(task.query.code)) pushErr(errors, file, "query.code", "必填非空字符串");
+  }
+  if (!Array.isArray(task.candidates) || task.candidates.length === 0) {
+    pushErr(errors, file, "candidates", "必填非空数组");
+    return;
+  }
+  for (const [i, c] of task.candidates.entries()) {
+    const pref = `candidates[${i}]`;
+    if (!c || typeof c !== "object") {
+      pushErr(errors, file, pref, "必须是对象");
+      continue;
+    }
+    if (!isNonEmptyString(c.candidateId)) {
+      pushErr(errors, file, `${pref}.candidateId`, "v2 必填非空字符串");
+    }
+    if (!isNonEmptyString(c.report)) {
+      pushErr(errors, file, `${pref}.report`, "必填非空字符串（v2 冗余镜像，保持 v1 消费端零改动）");
+    }
+    const versions = c.reportVersions;
+    if (!Array.isArray(versions) || versions.length === 0) {
+      pushErr(errors, file, `${pref}.reportVersions`, "v2 必填非空数组");
+      continue;
+    }
+    const seen = new Set();
+    for (const [j, v] of versions.entries()) {
+      const vp = `${pref}.reportVersions[${j}]`;
+      if (!v || typeof v !== "object") {
+        pushErr(errors, file, vp, "必须是对象");
+        continue;
+      }
+      if (!Number.isInteger(v.version) || v.version < 1) {
+        pushErr(errors, file, `${vp}.version`, "必须是正整数");
+      } else if (seen.has(v.version)) {
+        pushErr(errors, file, `${vp}.version`, `版本号重复：${v.version}`);
+      } else {
+        seen.add(v.version);
+      }
+      if (!isNonEmptyString(v.content)) pushErr(errors, file, `${vp}.content`, "必填非空字符串");
+      if (!isNonEmptyString(v.contentHash) || !/^[0-9a-f]{16}$/.test(v.contentHash)) {
+        pushErr(errors, file, `${vp}.contentHash`, "必填 16 位 hex 字符串（sha256 前 8 字节）");
+      }
+    }
+    const active = Number(c.activeReportVersion);
+    if (!Number.isInteger(active) || active < 1) {
+      pushErr(errors, file, `${pref}.activeReportVersion`, "必须是正整数");
+    } else if (!seen.has(active)) {
+      pushErr(
+        errors,
+        file,
+        `${pref}.activeReportVersion`,
+        `activeReportVersion=${active} 未在 reportVersions[].version 中找到`
+      );
+    } else {
+      // report 字段必须镜像到 active 那版的 content
+      const activeHit = versions.find((v) => Number(v?.version) === active);
+      if (
+        activeHit &&
+        isNonEmptyString(activeHit.content) &&
+        isNonEmptyString(c.report) &&
+        activeHit.content !== c.report
+      ) {
+        pushErr(
+          errors,
+          file,
+          `${pref}.report`,
+          `与 reportVersions[version=${active}].content 不一致（v2 要求 report 字段镜像激活版本）`
+        );
+      }
+    }
+  }
+}
+
+/** 扫 .evaluations/inbox/*.json 做 v2 schema 校验 */
+export function lintInbox() {
+  if (!fs.existsSync(INBOX_DIR)) return { ok: true, errors: [], checkedFiles: 0, files: [] };
+  const files = fs
+    .readdirSync(INBOX_DIR)
+    .filter((f) => f.endsWith(".json") && f !== ".gitkeep")
+    .map((f) => path.join(INBOX_DIR, f))
+    .sort();
+  const errors = [];
+  const checked = [];
+  for (const f of files) {
+    const res = readJsonSafe(f);
+    if (!res.ok) {
+      pushErr(errors, f, "<json>", `JSON 解析失败：${res.error}`);
+      continue;
+    }
+    validateInboxTask(f, res.data, errors);
+    checked.push(path_rel(f));
+  }
+  return {
+    ok: errors.length === 0,
+    errors,
+    checkedFiles: checked.length,
+    files: checked,
+  };
+}
+
 /** 主入口：校验所有 outbox 产物 */
 export function lintOutbox() {
   const files = listOutboxFiles();
@@ -917,15 +1069,26 @@ function isMain() {
 
 function main() {
   try {
-    const result = lintOutbox();
-    if (result.ok) {
-      console.log(`✅ lint-outbox OK: checked ${result.checkedFiles} outbox files, no violations`);
+    const outRes = lintOutbox();
+    const inRes = lintInbox();
+    const totalChecked = outRes.checkedFiles + inRes.checkedFiles;
+    const totalErrors = outRes.errors.length + inRes.errors.length;
+    if (outRes.ok && inRes.ok) {
+      console.log(
+        `✅ lint OK: checked ${outRes.checkedFiles} outbox + ${inRes.checkedFiles} inbox files, no violations`
+      );
       process.exit(0);
     }
-    console.error(`❌ lint-outbox FAILED: ${result.errors.length} violations in ${result.checkedFiles} files\n`);
+    console.error(
+      `❌ lint FAILED: ${totalErrors} violations across ${totalChecked} files\n`
+    );
+    const allErrors = [
+      ...outRes.errors.map((e) => ({ ...e, kind: "outbox" })),
+      ...inRes.errors.map((e) => ({ ...e, kind: "inbox" })),
+    ];
     // 按文件分组输出
     const byFile = new Map();
-    for (const e of result.errors) {
+    for (const e of allErrors) {
       if (!byFile.has(e.file)) byFile.set(e.file, []);
       byFile.get(e.file).push(e);
     }
@@ -933,10 +1096,12 @@ function main() {
       console.error(`  📄 ${file}`);
       for (const e of errs) console.error(`     ✗ ${e.path}: ${e.msg}`);
     }
-    console.error("\n修复方式：参照 .evaluations/EVALUATION_CONTRACT.md §3.1 字段硬约束表 + §5.1 自检清单。");
+    console.error(
+      "\n修复方式：outbox 参照 .evaluations/EVALUATION_CONTRACT.md §3.1 字段硬约束表 + §5.1 自检清单；inbox v2 迁移请跑 `npm run migrate-inbox -- --apply`。"
+    );
     process.exit(1);
   } catch (err) {
-    console.error("lint-outbox runtime error:", err);
+    console.error("lint runtime error:", err);
     process.exit(2);
   }
 }

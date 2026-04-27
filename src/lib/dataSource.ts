@@ -130,7 +130,7 @@ export interface DataSource {
   /** 写数据（仅 dev 可用）。method 由调用方指定。 */
   write: <T>(
     busPath: string,
-    method: "POST" | "DELETE",
+    method: "POST" | "DELETE" | "PATCH",
     body?: unknown
   ) => Promise<T | null>;
 }
@@ -148,7 +148,7 @@ export interface DataSource {
  */
 export function makeDataSource(
   rawFetch: <T>(
-    method: "GET" | "POST" | "DELETE",
+    method: "GET" | "POST" | "DELETE" | "PATCH",
     url: string,
     body?: unknown,
     silentErrors?: boolean
@@ -181,7 +181,7 @@ export function makeDataSource(
 
     write: async <T>(
       busPath: string,
-      method: "POST" | "DELETE",
+      method: "POST" | "DELETE" | "PATCH",
       body?: unknown
     ) => {
       if (IS_READONLY || isWriteEndpoint(method, busPath)) {
