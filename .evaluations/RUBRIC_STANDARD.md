@@ -1,17 +1,19 @@
-# Sophia 评测标准 v3.3
+# Sophia 评测标准 v3.5
 
 > 这是 Sophia Rubric Lab 的**评测标准说明书**，面向使用者。
 > 它定义了"我们如何判断一份 AI 产品报告的好坏"。
 > 网站「标准」tab 直接渲染此文件 —— 改它即改标准，刷新即见最新。
 >
-> **版本**：v3.3（2026-04-27 生效）
+> **版本**：v3.5（2026-04-28 生效）
 >
-> **v3.3 相对 v3.2 的核心变化**（打分机制、维度权重、档位制、双轴 tier 表、一票否决、必查 checklist 全部保留不变）：
-> - ⏱️ **取消 45 分钟硬时间盒**：阶段 SOP 的顺序与核心动作保持不变，但不再硬性封顶单次评测时长——**质量优先于速度**，不让时间限制压缩评测深度。
-> - 🔍 **承重 claim 容量扩到 Top 10**：v3.2 原 Top 5 上限改为 Top 10（下限仍 ≥3 条，含 ≥1 条 logic 类），进一步加强事实/数据错误的发现密度。
-> - 📝 **文档精简**：删除了多版本并存的冗余变更历史，历史版本对比合并到文末附录「版本历史摘要」；评测执行层的硬约束全部保持，不变更评测官的动作语义。
+> **v3.5 相对 v3.3 的核心变化**（打分机制、维度权重、档位制、双轴 tier 表、一票否决、必查 checklist 全部保留不变）：
+> - 🧭 **交叉验证前置**：正文第二段（按维度展开）必须包含“维度×产品交叉验证矩阵”，显式标记同一承重点在各候选间的一致/冲突/遗漏。
+> - 🔗 **why 三联证据硬化**：每个高影响判断（降档点、亮点、reveted/inconclusive）都必须同时给出**原文引文 + 外部核验结论 + 推理链**；只给结论直接视为无效。
+> - 📝 **反馈密度升级**：`perReportFeedback` 每产品至少 2 条 strengths + 2 条 weaknesses，禁止“只写一条糊弄过去”。
+> - 📌 **inconclusive 必须收敛**：允许保留，但 evidence 内必须写明“不可核原因 + 下一步核验动作”；不得作为常态终态。
+> - ⚡ **Pass 2 承重分层 + 信源复用**：P0（能直接改档/触发 veto）优先深核，P1/P2 按承重度排队；同一事实允许以 sourceId 串联复用外部证据，减少重复检索。
 >
-> **v3.2 及以前的评测执行原则（继续生效）**：
+> **v3.3 及以前的评测执行原则（继续生效）**：
 > - 🎯 **事实错误 / 逻辑错误是绝对第一优先级**：发现承重问题必须先外部核验，再讨论分数与优点。
 > - 🧭 **「有依据的新意」是硬要求**：非共识观点必须同时有证据、推理链和决策增量，不接受无据的新奇结论。
 > - 📝 **报告正文固定为四段主结构**：评测结论 → 按维度展开 → 额外重点问题 → 各主体优缺点与建议。
@@ -126,18 +128,20 @@
 
 每份报告抽 Top 10（v3.3 起上限从 Top 5 提升为 Top 10；超过 10 条就按承重度排序只留前 10；不足 10 条可以少，但 ≥3 条，且必须有 ≥1 条 logic 类）。所有抽取项记入 `summary.claimInventory`，每条核验结果记入 `summary.claimChecks`。
 
-#### R1 三阶段核验 SOP（顺序固定，质量优先；v3.3 起去时间盒）
+#### R1 三阶段核验 SOP（顺序固定，质量优先 + 承重分层；v3.5 起）
 
 | Pass | 目标 | 做什么 |
 |---|---|---|
-| **Pass 1 快筛** | 定位嫌疑 | 通读全部报告，对照 claimInventory 快速打标签（clean / suspicious / unverifiable-yet） |
-| **Pass 2 深核嫌疑** | 落锤定性 | 对所有 suspicious 项发起外部搜索、算术核算，确认 verified-correct / refuted / inconclusive |
+| **Pass 1 快筛** | 定位嫌疑 | 通读全部报告，对照 claimInventory 快速打标签（clean / suspicious / unverifiable-yet），并为每条 claim 标记承重优先级 P0（能直接改档或触发 veto）/ P1 / P2 |
+| **Pass 2 深核嫌疑** | 落锤定性 | 按 P0 → P1 → P2 顺序对 suspicious 项发起外部搜索、算术核算；同一事实建立 sourceId 供多条 claim 复用，避免重复检索；确认 verified-correct / refuted / inconclusive |
 | **Pass 3 逻辑一致性** | R1b 子项 | 跨段落口径对齐、因果链重建、算术交叉——专门覆盖 R1b |
 
-核验原则（质量优先）：
+核验原则（质量优先 + 效率优化）：
 - **Pass 1 必须全覆盖，不可跳过**
-- Pass 2 按 claim 承重度排序深入核验；发现高风险承重 claim 允许延长时间，**不让时间限制压缩外部查证深度**
+- Pass 2 先清空所有 P0 承重点再处理 P1/P2；发现高风险承重 claim 允许延长时间，**不让时间限制压缩外部查证深度**
+- 同一外部信源可被多条 claim 引用，避免为每条 claim 重复发起相同搜索
 - Pass 3 至少做 2 条跨段落一致性检查
+- `inconclusive` 必须附“不可核原因 + 下一步核验动作”，不得长期挂起
 - 罕见情形下确实无法完成的项，按 `claimChecks[].status` 枚举如实标注（`inconclusive` / `skipped-out-of-scope` / `skipped-time-budget`），在 `verificationBudget` 和正文「事实核验记录」章节说明
 
 #### 🚨 一票否决规则（硬约束；v2.2 判定清单具体化）
@@ -477,24 +481,26 @@ v2 起扩展维度从"可选补丁"升级为**"一等公民"**。
 
 ---
 
-## 七、阶段 SOP（顺序固定，质量优先；v3.3 起去除硬时间盒）
+## 七、阶段 SOP（顺序固定，质量优先 + 效率分层；v3.5）
 
-评测是一条 claim 驱动的流水线。**阶段顺序固定、核心阶段不可跳过**；但 v3.3 起不再硬性封顶单次评测时长——发现承重问题时，允许也鼓励深入核验，**不让时间压缩评测质量**。
+评测是一条 claim 驱动的流水线。**阶段顺序固定、核心阶段不可跳过**；v3.3 起不再硬性封顶单次评测时长；v3.5 起 Pass 2 采用 P0/P1/P2 承重分层与信源复用机制，**在不让时间压缩评测质量的同时提升吞吐**。
 
 | 阶段 | 做什么 | 标志性产物 |
 |---|---|---|
 | ① 读报告 | 通读全部报告，形成整体脑内地图 | 评测官内部笔记 |
-| ② Claim Inventory | 对每份报告抽 Top 10 承重 claim（≥3 条下限，含 ≥1 条 logic 类） | `summary.claimInventory` |
+| ② Claim Inventory | 对每份报告抽 Top 10 承重 claim（≥3 条下限，含 ≥1 条 logic 类），并为每条标注 P0/P1/P2 承重优先级 | `summary.claimInventory` |
 | ③ Pass 1 快筛 | 对所有 claim 打标签：clean / suspicious / unverifiable-yet | `claimChecks` 首版 |
-| ④ Pass 2 深核 | 外部搜索 / 算术核算 suspicious 项，落锤 verified-correct / refuted / inconclusive | `claimChecks` 终版 |
+| ④ Pass 2 深核 | 按 P0→P1→P2 顺序深核 suspicious 项；同源证据建立 sourceId 复用；落锤 verified-correct / refuted / inconclusive | `claimChecks` 终版 |
 | ⑤ Pass 3 逻辑 | 跨段落口径 + 因果链 + 算术交叉，专攻 R1b | R1b 档位 |
-| ⑥ 打分 | 过 5 份 checklist、查双轴表、定 tier、机械映射 score、算 overallScore、定 SBS | `summary.rubric` 等 |
-| ⑦ 反馈+正文 | 写 perReportFeedback + 四段结构 report 正文 | `summary.perReportFeedback` + `report` |
+| ⑥ 打分 | 过 5 份 checklist、查双轴表、定 tier、机械映射 score、算 overallScore、定 SBS、产出“维度×产品交叉验证矩阵”素材 | `summary.rubric` 等 |
+| ⑦ 反馈+正文 | 写 perReportFeedback + 四段结构 report 正文（含交叉矩阵 + why 三联） | `summary.perReportFeedback` + `report` |
 
 **核心阶段不可跳过的硬约束**：
 
 - 阶段 ①~⑥ 必须走完，即使某些 suspicious claim 因外部资料不足无法落锤，也要机械完成 checklist 和打分；未核完的 claim 按状态标 `inconclusive` 或 `skipped-out-of-scope`
 - 阶段 ② 的 Top 10 抽取不是"越多越好"——按"承重度"排序，宁少而精，保留下限 ≥3 条
+- 阶段 ⑦ 正文第二段必须出现“维度×产品交叉验证矩阵”；每个产品在第四段至少 2 条亮点 + 2 条问题点，且高影响判断都要写 why 三联（原文/核验/推理）
+- `inconclusive` 必须给“不可核原因 + 下一步动作”；占比过高（>30%）需在 `verificationBudget.notes` 说明原因
 - 若评测官出于罕见情形（外部断网/时间极度受限等）确需暂存未核项，标 `skipped-time-budget` 并在 `summary.verificationBudget` 和正文"事实核验记录"章节如实说明；**此状态自 v3.3 起不再作为常规兜底，仅用于事故记录**
 
 **`claimChecks[].status` 枚举（含义不变）**：
@@ -525,6 +531,7 @@ v2 起扩展维度从"可选补丁"升级为**"一等公民"**。
 
 | 版本 | 生效时间 | 核心变化 |
 |---|---|---|
+| **v3.5** | 2026-04-28 | 报告详实化 + 核验效率双优化：正文第二段强制“维度×产品交叉验证矩阵”；高影响判断必须含 why 三联（引文/核验/推理）；perReportFeedback 每产品 ≥2 条 strengths 和 weaknesses；inconclusive 需带下一步动作；Pass 2 引入 P0/P1/P2 承重分层与信源复用 |
 | **v3.3** | 2026-04-27 | 去除 45 min 硬时间盒（阶段 SOP 顺序不变，质量优先）；承重 claim 容量 Top 5 → Top 10；文档精简，多版本并存变更历史合并到本附录 |
 | **v3.2** | 2026-04-26 | 页面主阅读路径收敛为「评分总表 + 正文」；正文固定四段主结构；诊断/每份反馈/核验地图并入正文 |
 | **v3.1** | 2026 Q2 | 「先查错再评分」硬化；非共识洞察升级为硬要求（必须有证据 + 推理链 + 决策增量） |

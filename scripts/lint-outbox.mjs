@@ -201,15 +201,15 @@ export function validatePayload(file, payload, errors, expectedTaskId) {
     pushErr(errors, file, "version", "缺失或非 number");
   }
   const cv = payload.contractVersion;
-  if (!["1.0", "2.0", "2.1", "2.2", "3.0", "3.1", "3.2", "3.3", "3.4"].includes(cv)) {
-    pushErr(errors, file, "contractVersion", `必须是 "1.0" / "2.0" / "2.1" / "2.2" / "3.0" / "3.1" / "3.2" / "3.3" / "3.4"，实际：${JSON.stringify(cv)}`);
+  if (!["1.0", "2.0", "2.1", "2.2", "3.0", "3.1", "3.2", "3.3", "3.4", "3.5"].includes(cv)) {
+    pushErr(errors, file, "contractVersion", `必须是 "1.0" / "2.0" / "2.1" / "2.2" / "3.0" / "3.1" / "3.2" / "3.3" / "3.4" / "3.5"，实际：${JSON.stringify(cv)}`);
   }
 
-  // v3.4 扁平化硬约束：
+  // v3.4+ 扁平化硬约束（3.4 与 3.5 共用）：
   //   - taskId 必须匹配 ^[A-Z]+-\d+$（无 suffix，等同 queryCode）
   //   - 若调用方提供 expectedTaskId（来自目录名），必须与 payload.taskId 完全一致
   // 旧版本（1.0 ~ 3.3）不启用此约束——历史 `${queryCode}-${suffix6}` 形态直到写兼容层消化完之前都合法。
-  if (cv === "3.4") {
+  if (cv === "3.4" || cv === "3.5") {
     if (!/^[A-Z]+-\d+$/.test(payload.taskId)) {
       pushErr(
         errors,
