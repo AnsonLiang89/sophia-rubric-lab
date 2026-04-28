@@ -1,0 +1,581 @@
+{
+  "taskId": "EV-0004",
+  "version": 2,
+  "evaluator": "Sophia (GPT-5.3-Codex via WorkBuddy)",
+  "evaluatedAt": "2026-04-28T05:45:00.000Z",
+  "contractVersion": "3.4",
+  "summary": {
+    "overallScores": [
+      {
+        "reportId": "kmX2G8_DWi",
+        "productName": "SophiaAI v5",
+        "score": 5.4,
+        "verdict": "待改进",
+        "vetoTriggered": false,
+        "vetoReason": ""
+      },
+      {
+        "reportId": "zavW0K9pkS",
+        "productName": "Manus",
+        "score": 7.2,
+        "verdict": "优秀",
+        "vetoTriggered": false,
+        "vetoReason": ""
+      },
+      {
+        "reportId": "-0OGybbkAZ",
+        "productName": "MiroThink",
+        "score": 8,
+        "verdict": "优秀",
+        "vetoTriggered": false,
+        "vetoReason": ""
+      },
+      {
+        "reportId": "1vSt4aiN04",
+        "productName": "SophiaAI v4",
+        "score": 4.6,
+        "verdict": "待改进",
+        "vetoTriggered": false,
+        "vetoReason": ""
+      }
+    ],
+    "rubric": [
+      {
+        "dimensionId": "R1",
+        "name": "准确性",
+        "weight": 0.4,
+        "subscores": {
+          "R1a": {
+            "weight": 0.28,
+            "scores": [
+              {
+                "reportId": "kmX2G8_DWi",
+                "score": 4,
+                "tier": "C",
+                "comment": "引用链路里混入大量低可信来源，且出现无法落锤的数据推断，如「企鹅岛员工宿舍分流约20%的单身员工租赁需求」缺乏可复核统计口径。",
+                "confidence": "medium",
+                "issueTags": ["一手源不足", "数据口径不明", "事实错误"]
+              },
+              {
+                "reportId": "zavW0K9pkS",
+                "score": 6,
+                "tier": "B",
+                "comment": "核心事实大体可核，但关键规模口径仍有偏差，如将容量表述为8-10万人，与官方常见口径7.5万人存在冲突。",
+                "confidence": "medium",
+                "issueTags": ["口径混乱", "事实错误"]
+              },
+              {
+                "reportId": "-0OGybbkAZ",
+                "score": 8,
+                "tier": "A",
+                "comment": "关键事实多数有外部印证，且主动提示不确定性，尤其对“搬迁传言”做了反证引用，事实层稳健。",
+                "confidence": "high",
+                "issueTags": ["一手源不足"]
+              },
+              {
+                "reportId": "1vSt4aiN04",
+                "score": 2,
+                "tier": "D",
+                "comment": "存在高密度不可复核精确数值，如「人均年薪超112.8万元」「总外溢需求规模约7.7万套」，且未给出可验证原始统计来源，事实层可信度不足。",
+                "confidence": "medium",
+                "issueTags": ["编造信源", "数字量级错", "一手源不足"]
+              }
+            ]
+          },
+          "R1b": {
+            "weight": 0.12,
+            "scores": [
+              {
+                "reportId": "kmX2G8_DWi",
+                "score": 4,
+                "tier": "C",
+                "comment": "内部推导存在高不确定链条，如「住房供应推算6-7万套=>房价涨8%-12%」未明确约束条件与误差传播。",
+                "confidence": "medium",
+                "issueTags": ["逻辑跳跃", "论据缺失"]
+              },
+              {
+                "reportId": "zavW0K9pkS",
+                "score": 6,
+                "tier": "B",
+                "comment": "逻辑框架完整但依赖历史类比较重，部分“长期穿越周期”结论仍属推断性表达。",
+                "confidence": "medium",
+                "issueTags": ["逻辑跳跃"]
+              },
+              {
+                "reportId": "-0OGybbkAZ",
+                "score": 8,
+                "tier": "A",
+                "comment": "场景分叉、情景树和约束条件表达较完整，关键链路“宿舍覆盖率不足=>外溢需求”算术与推理一致。",
+                "confidence": "high",
+                "issueTags": []
+              },
+              {
+                "reportId": "1vSt4aiN04",
+                "score": 2,
+                "tier": "D",
+                "comment": "出现过度精确模型输出但未公开模型边界，如「变量每变动10%对应涨幅区间」属于不可复现实证，逻辑可解释性不足。",
+                "confidence": "medium",
+                "issueTags": ["逻辑跳跃", "论据缺失", "内部自相矛盾"]
+              }
+            ]
+          }
+        },
+        "scores": [
+          {
+            "reportId": "kmX2G8_DWi",
+            "score": 4,
+            "tier": "C",
+            "comment": "事实面覆盖广，但证据质量层次不齐，且在关键变量上出现不可证伪的估算，如「已婚比例合理范围约45%-55%」与「分流约20%」均非官方统计。",
+            "confidence": "medium",
+            "issueTags": ["一手源不足", "数据口径不明", "逻辑跳跃"]
+          },
+          {
+            "reportId": "zavW0K9pkS",
+            "score": 6,
+            "tier": "B",
+            "comment": "整体可读性强、证据较集中，但存在关键口径偏差（容量8-10万人）与部分来源复用，准确性未达到A档。",
+            "confidence": "medium",
+            "issueTags": ["口径混乱", "一手源不足"]
+          },
+          {
+            "reportId": "-0OGybbkAZ",
+            "score": 8,
+            "tier": "A",
+            "comment": "主动做传言纠偏与情景边界说明，承重事实多可外核；虽有个别“综合来源”条目，但整体准确性领先。",
+            "confidence": "high",
+            "issueTags": ["一手源不足"]
+          },
+          {
+            "reportId": "1vSt4aiN04",
+            "score": 2,
+            "tier": "D",
+            "comment": "大量“高精度数字+高确定结论”缺少权威公开底稿支撑，如「首批员工购租占比8%-12%（误差±3%）」和「总外溢需求约7.7万套」，可核查性不足。",
+            "confidence": "medium",
+            "issueTags": ["编造信源", "数字量级错", "一手源不足"]
+          }
+        ]
+      },
+      {
+        "dimensionId": "R2",
+        "name": "相关性",
+        "weight": 0.15,
+        "scores": [
+          {
+            "reportId": "kmX2G8_DWi",
+            "score": 6,
+            "tier": "B",
+            "comment": "围绕碧海/宝中及时间分段作答，贴题度尚可，但部分篇幅落在泛政策与泛产业叙述。",
+            "confidence": "high",
+            "issueTags": ["锚点缺失"]
+          },
+          {
+            "reportId": "zavW0K9pkS",
+            "score": 8,
+            "tier": "A",
+            "comment": "明确区分两片区承接逻辑与投资策略，紧扣“房价影响+节奏”主问题。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "-0OGybbkAZ",
+            "score": 8,
+            "tier": "A",
+            "comment": "主问题拆解清晰，回答了短中长期影响、风险与可执行策略，相关性高。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "1vSt4aiN04",
+            "score": 6,
+            "tier": "B",
+            "comment": "内容高度围绕主题，但因数据堆砌较多，核心问题的关键因果被稀释。",
+            "confidence": "medium",
+            "issueTags": ["结论空泛"]
+          }
+        ]
+      },
+      {
+        "dimensionId": "R3",
+        "name": "论证深度",
+        "weight": 0.2,
+        "scores": [
+          {
+            "reportId": "kmX2G8_DWi",
+            "score": 6,
+            "tier": "B",
+            "comment": "具备What-Why-SoWhat结构，但分叉推导仍偏假设驱动，关键参数缺少来源置信权重。",
+            "confidence": "medium",
+            "issueTags": ["逻辑跳跃"]
+          },
+          {
+            "reportId": "zavW0K9pkS",
+            "score": 8,
+            "tier": "A",
+            "comment": "通过“历史映射+供需拆分+片区分化”形成完整因果链，具备可解释的二阶分析。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "-0OGybbkAZ",
+            "score": 8,
+            "tier": "A",
+            "comment": "在“预期定价vs真实导入”上给出非共识判断，并用情景框架解释不确定性，论证完整。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "1vSt4aiN04",
+            "score": 6,
+            "tier": "B",
+            "comment": "深度表面较高，但大量精确参数未能溯源，导致推理链可验证性不足。",
+            "confidence": "medium",
+            "issueTags": ["论据缺失", "逻辑跳跃"]
+          }
+        ]
+      },
+      {
+        "dimensionId": "R4",
+        "name": "完备性",
+        "weight": 0.1,
+        "scores": [
+          {
+            "reportId": "kmX2G8_DWi",
+            "score": 8,
+            "tier": "A",
+            "comment": "覆盖项目进度、供需、交通、风险、建议，结构完整。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "zavW0K9pkS",
+            "score": 8,
+            "tier": "A",
+            "comment": "从项目、历史映射、片区对比到投资建议链条完整，章节组织良好。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "-0OGybbkAZ",
+            "score": 8,
+            "tier": "A",
+            "comment": "覆盖范围广且包含风险与情景分叉，完备性较高。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "1vSt4aiN04",
+            "score": 8,
+            "tier": "A",
+            "comment": "维度覆盖非常全面，包含敏感性测试与风险应对，结构上充分。",
+            "confidence": "high",
+            "issueTags": []
+          }
+        ]
+      },
+      {
+        "dimensionId": "R5",
+        "name": "决策价值",
+        "weight": 0.15,
+        "scores": [
+          {
+            "reportId": "kmX2G8_DWi",
+            "score": 6,
+            "tier": "B",
+            "comment": "有分阶段建议，但可执行触发条件不够量化，实际决策可用性中等。",
+            "confidence": "medium",
+            "issueTags": ["缺乏可操作建议"]
+          },
+          {
+            "reportId": "zavW0K9pkS",
+            "score": 8,
+            "tier": "A",
+            "comment": "分客群给出具体选筹策略，决策可落地性较好。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "-0OGybbkAZ",
+            "score": 8,
+            "tier": "A",
+            "comment": "给出三情景与监测变量，便于仓位与时点管理，信息增量明显。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "1vSt4aiN04",
+            "score": 6,
+            "tier": "B",
+            "comment": "建议项较多但依赖未经证实参数，执行时需额外二次核验。",
+            "confidence": "medium",
+            "issueTags": ["风险缺失", "信息零增量"]
+          }
+        ]
+      }
+    ],
+    "extraDimensions": [],
+    "sbs": {
+      "pairs": [
+        {
+          "reportIdA": "kmX2G8_DWi",
+          "reportIdB": "zavW0K9pkS",
+          "winner": "B",
+          "margin": "overwhelming",
+          "dimensionDriver": ["R1", "R3", "R5"],
+          "keyReason": "B在事实可核查性与推理闭环上明显领先，且建议更可执行。"
+        },
+        {
+          "reportIdA": "kmX2G8_DWi",
+          "reportIdB": "-0OGybbkAZ",
+          "winner": "B",
+          "margin": "overwhelming",
+          "dimensionDriver": ["R1", "R3", "R5"],
+          "keyReason": "MiroThink在关键事实纠偏与情景边界控制上显著优于A。"
+        },
+        {
+          "reportIdA": "kmX2G8_DWi",
+          "reportIdB": "1vSt4aiN04",
+          "winner": "A",
+          "margin": "slight",
+          "dimensionDriver": ["R1"],
+          "keyReason": "两者相关性和结构接近，但A在证据严谨度上略优于D。"
+        },
+        {
+          "reportIdA": "zavW0K9pkS",
+          "reportIdB": "-0OGybbkAZ",
+          "winner": "B",
+          "margin": "clear",
+          "dimensionDriver": ["R1", "R3"],
+          "keyReason": "MiroThink在反证与不确定性管理上更稳，准确性与深度略优。"
+        },
+        {
+          "reportIdA": "zavW0K9pkS",
+          "reportIdB": "1vSt4aiN04",
+          "winner": "A",
+          "margin": "overwhelming",
+          "dimensionDriver": ["R1", "R5"],
+          "keyReason": "Manus关键事实口径更稳，且建议更可落地。"
+        },
+        {
+          "reportIdA": "-0OGybbkAZ",
+          "reportIdB": "1vSt4aiN04",
+          "winner": "A",
+          "margin": "overwhelming",
+          "dimensionDriver": ["R1", "R3", "R5"],
+          "keyReason": "MiroThink在证据质量、推理透明度和风险披露方面全面领先。"
+        }
+      ]
+    },
+    "perReportFeedback": [
+      {
+        "reportId": "kmX2G8_DWi",
+        "productName": "SophiaAI v5",
+        "strengths": [
+          "结构化表达清晰，What-Why-SoWhat便于快速阅读。",
+          "对碧海与宝中的分阶段结论有明确拆分。"
+        ],
+        "weaknesses": [
+          "关键量化结论依赖低可信来源，口径可复核性不足。",
+          "对推测类涨幅给出较高确定度但缺少误差边界。"
+        ],
+        "improvements": [
+          "将关键数字限定为“官方可核+统计口径一致”的最小集合。",
+          "对预测区间补充假设前提、触发条件和失效条件。"
+        ]
+      },
+      {
+        "reportId": "zavW0K9pkS",
+        "productName": "Manus",
+        "strengths": [
+          "历史映射+当下供需结合，论证框架完整。",
+          "投资建议按客群分层，具备执行路径。"
+        ],
+        "weaknesses": [
+          "项目容量口径存在与官方不一致的情况。",
+          "部分来源重复或层级偏低，事实锚点需强化。"
+        ],
+        "improvements": [
+          "统一核心容量口径并在文首给出“口径说明表”。",
+          "将关键结论绑定至少一条政府/运营主体原始信息源。"
+        ]
+      },
+      {
+        "reportId": "-0OGybbkAZ",
+        "productName": "MiroThink",
+        "strengths": [
+          "对“传言与事实”的区分到位，风险约束意识强。",
+          "情景框架与监测变量有助于动态决策。"
+        ],
+        "weaknesses": [
+          "个别时间点结论（如15号线2026通车）与公开进展不一致。",
+          "少量“综合来源”条目缺少可回溯原始出处。"
+        ],
+        "improvements": [
+          "将时间节点类事实统一改为“官方最近披露版本+更新时间”。",
+          "删除无法复核的“综合条目”并用一手来源替代。"
+        ]
+      },
+      {
+        "reportId": "1vSt4aiN04",
+        "productName": "SophiaAI v4",
+        "strengths": [
+          "覆盖面广，包含敏感性测试与风险场景。",
+          "对交易层面建议较细，格式化程度高。"
+        ],
+        "weaknesses": [
+          "出现过多不可复核精确数值，削弱整体可信度。",
+          "模型输出感较强，关键参数来源与方法未公开。"
+        ],
+        "improvements": [
+          "将“高精度数字”降级为区间表达并附来源等级。",
+          "对每个关键结论补“证据链接+推导步骤+不确定性”。"
+        ]
+      }
+    ],
+    "claimInventory": [
+      {"claimId": "c1", "reportId": "kmX2G8_DWi", "type": "fact", "claim": "企鹅岛预计可容纳7.5万名办公人员", "supportWeight": "high", "locationHint": "1.1项目规模"},
+      {"claimId": "c2", "reportId": "kmX2G8_DWi", "type": "fact", "claim": "地铁15号线预计2028年6月通车", "supportWeight": "high", "locationHint": "2.1现状"},
+      {"claimId": "c3", "reportId": "kmX2G8_DWi", "type": "number", "claim": "员工宿舍分流约20%单身员工租赁需求", "supportWeight": "high", "locationHint": "2.2短期"},
+      {"claimId": "c4", "reportId": "kmX2G8_DWi", "type": "logic", "claim": "住房供应6-7万套时房价中期涨8%-12%", "supportWeight": "medium", "locationHint": "2.2中期分叉"},
+
+      {"claimId": "c5", "reportId": "zavW0K9pkS", "type": "number", "claim": "企鹅岛总投资约319亿元、建面约200万平", "supportWeight": "high", "locationHint": "1.1"},
+      {"claimId": "c6", "reportId": "zavW0K9pkS", "type": "fact", "claim": "企鹅岛规划容纳8-10万名员工", "supportWeight": "high", "locationHint": "1.1"},
+      {"claimId": "c7", "reportId": "zavW0K9pkS", "type": "fact", "claim": "地铁15号线预计2028年建成通车", "supportWeight": "high", "locationHint": "1.3"},
+      {"claimId": "c8", "reportId": "zavW0K9pkS", "type": "logic", "claim": "中长期宝中弹性大于碧海", "supportWeight": "medium", "locationHint": "4.2"},
+
+      {"claimId": "c9", "reportId": "-0OGybbkAZ", "type": "fact", "claim": "2024年10月腾讯公关总监否认2万员工搬迁传言", "supportWeight": "high", "locationHint": "核心结论"},
+      {"claimId": "c10", "reportId": "-0OGybbkAZ", "type": "fact", "claim": "15号线预计2026年通车", "supportWeight": "high", "locationHint": "四、交通"},
+      {"claimId": "c11", "reportId": "-0OGybbkAZ", "type": "fact", "claim": "2025年9月宝安部分区域不限购套数", "supportWeight": "medium", "locationHint": "五、宏观"},
+      {"claimId": "c12", "reportId": "-0OGybbkAZ", "type": "logic", "claim": "4500套宿舍覆盖不足5%，中期外溢需求将上升", "supportWeight": "medium", "locationHint": "二、催化效应"},
+
+      {"claimId": "c13", "reportId": "1vSt4aiN04", "type": "number", "claim": "首批员工人均年薪超112.8万元", "supportWeight": "high", "locationHint": "二（一）"},
+      {"claimId": "c14", "reportId": "1vSt4aiN04", "type": "number", "claim": "总外溢需求规模约7.7万套", "supportWeight": "high", "locationHint": "二（一）"},
+      {"claimId": "c15", "reportId": "1vSt4aiN04", "type": "fact", "claim": "截至2026年4月宝安区未出台针对企鹅岛员工专项购房补贴", "supportWeight": "medium", "locationHint": "二（一）"},
+      {"claimId": "c16", "reportId": "1vSt4aiN04", "type": "logic", "claim": "员工入驻率每+10%可带来核心物业+4%~+6%涨幅", "supportWeight": "medium", "locationHint": "二（三）敏感性测试"}
+    ],
+    "claimChecks": [
+      {"claimId": "c1", "status": "verified-correct", "evidence": "外部检索命中前海管理局公开信息，存在“预计可以容纳7.5万名办公人员”的官方表述，与原文一致。", "checkedBy": "pass2-external-search"},
+      {"claimId": "c2", "status": "inconclusive", "evidence": "原文写「地铁15号线预计2028年6月通车」。外部可核主流口径多为“预计2028年建成/通车”，但未见统一官方到“6月”的固定节点，因此年份可接受、月份无法落锤。", "checkedBy": "pass2-external-search"},
+      {"claimId": "c3", "status": "refuted", "evidence": "原文称「分流约20%单身员工租赁需求」。外部公开材料可见宿舍套数与租金水平，但未提供可推导“20%分流比例”的官方统计口径，结论属于无公开证据支持的定量断言。", "checkedBy": "pass2-external-search"},
+      {"claimId": "c4", "status": "inconclusive", "evidence": "原文断言「6-7万套供给=>房价涨8%-12%」。该结论依赖行为参数（迁入率、置业率、政策）且未给出模型与样本校准，外部无法验证该区间为唯一合理解。", "checkedBy": "pass3-logic"},
+
+      {"claimId": "c5", "status": "verified-correct", "evidence": "多来源可交叉到“约319亿元投资、约200万平方米建面”的项目口径，事实层基本一致。", "checkedBy": "pass2-external-search"},
+      {"claimId": "c6", "status": "refuted", "evidence": "原文写「规划容纳8-10万名员工」。外部可核的较新官方公开信息出现「预计可容纳7.5万名办公人员」口径，二者不一致；若继续用8-10万，应明确是历史版本或早期宣传口径。", "checkedBy": "pass2-external-search"},
+      {"claimId": "c7", "status": "verified-correct", "evidence": "外部检索关于15号线建设进展的主流信息均指向“预计2028年建成通车”，与原文相符。", "checkedBy": "pass2-external-search"},
+      {"claimId": "c8", "status": "inconclusive", "evidence": "原文称「中长期宝中弹性大于碧海」。该判断具备产业与配套逻辑支撑，但属于情景推断，外部无法在当前时点给出确定性“必然大于”的实证结论。", "checkedBy": "pass3-logic"},
+
+      {"claimId": "c9", "status": "verified-correct", "evidence": "外部新闻可查到2024-10相关回应，腾讯公关侧明确否认“2万员工搬迁宝安滨海数字中心”传言，事实成立。", "checkedBy": "pass2-external-search"},
+      {"claimId": "c10", "status": "refuted", "evidence": "原文写「15号线预计2026年通车」。外部主流进展口径为“预计2028年建成通车”，与2026年明显冲突，属于时间锚点错误。", "checkedBy": "pass2-external-search"},
+      {"claimId": "c11", "status": "inconclusive", "evidence": "原文写「2025年9月宝安（不含新安街道）不限购套数」。检索结果多为二级转述，缺少同轮官方政策原文或权威汇编直链，暂无法完全落锤。", "checkedBy": "pass2-external-search"},
+      {"claimId": "c12", "status": "verified-correct", "evidence": "算术核验：若按8-10万人与约4500套宿舍量级，覆盖比例低于5%-6%量级，逻辑上“覆盖有限、外溢需求存在”成立。", "checkedBy": "pass2-arithmetic"},
+
+      {"claimId": "c13", "status": "refuted", "evidence": "原文写「人均年薪超112.8万元」。该数值精度极高但未给官方披露口径；外部公开通常仅给总薪酬池或人均薪酬区间，不支持该具体数字，判定为不可证实且高风险夸精度。", "checkedBy": "pass2-external-search"},
+      {"claimId": "c14", "status": "refuted", "evidence": "原文写「总外溢需求规模约7.7万套」。该数字将就业人口直接映射到“套数”且未披露户均系数、置业率、居住重叠关系，外部缺少同口径统计，属于推导过度。", "checkedBy": "pass2-arithmetic"},
+      {"claimId": "c15", "status": "inconclusive", "evidence": "原文写「未出台专项购房补贴」。该命题需要完整政策清单逐条排除，当前检索到的信息不足以覆盖全部部门与时间窗口，暂不能给出强否定。", "checkedBy": "pass2-external-search"},
+      {"claimId": "c16", "status": "inconclusive", "evidence": "原文给出「入驻率每+10%=>核心物业+4%~+6%」的边际弹性。该参数来自私有模型且无公开回测样本，外部无法复现实证，故仅能保留为研究假设。", "checkedBy": "pass3-logic"}
+    ],
+    "dimensionChecklists": {
+      "R1": {
+        "items": [
+          {"label": "承重claim抽取达到每份3-10条且含logic", "passedFor": ["kmX2G8_DWi", "zavW0K9pkS", "-0OGybbkAZ", "1vSt4aiN04"]},
+          {"label": "承重claim核验覆盖率≥85%", "passedFor": ["kmX2G8_DWi", "zavW0K9pkS", "-0OGybbkAZ", "1vSt4aiN04"]},
+          {"label": "每份报告3-5条精确承重数字核验", "passedFor": ["kmX2G8_DWi", "zavW0K9pkS", "-0OGybbkAZ", "1vSt4aiN04"]},
+          {"label": "veto候选均经过至少一次外部核验", "passedFor": ["kmX2G8_DWi", "zavW0K9pkS", "-0OGybbkAZ", "1vSt4aiN04"]},
+          {"label": "关键量纲/比例做算术复核", "passedFor": ["zavW0K9pkS", "-0OGybbkAZ", "1vSt4aiN04"]},
+          {"label": "跨段落口径一致性交叉检查", "passedFor": ["zavW0K9pkS", "-0OGybbkAZ"]},
+          {"label": "核验结论可回写正文事实核验段", "passedFor": ["kmX2G8_DWi", "zavW0K9pkS", "-0OGybbkAZ", "1vSt4aiN04"]}
+        ]
+      },
+      "R2": {
+        "items": [
+          {"label": "核心诉求与锚点拆解", "passedFor": ["kmX2G8_DWi", "zavW0K9pkS", "-0OGybbkAZ", "1vSt4aiN04"]},
+          {"label": "核心诉求均有正面回应", "passedFor": ["zavW0K9pkS", "-0OGybbkAZ", "1vSt4aiN04"]},
+          {"label": "时间/地域/主体锚点命中", "passedFor": ["kmX2G8_DWi", "zavW0K9pkS", "-0OGybbkAZ"]},
+          {"label": "潜在诉求识别", "passedFor": ["zavW0K9pkS", "-0OGybbkAZ"]},
+          {"label": "无大篇幅跑题", "passedFor": ["kmX2G8_DWi", "zavW0K9pkS", "-0OGybbkAZ", "1vSt4aiN04"]}
+        ]
+      },
+      "R3": {
+        "items": [
+          {"label": "核心判断可追溯到证据", "passedFor": ["zavW0K9pkS", "-0OGybbkAZ"]},
+          {"label": "至少一处二阶或三阶追问", "passedFor": ["zavW0K9pkS", "-0OGybbkAZ", "1vSt4aiN04"]},
+          {"label": "非共识观点具备证据链", "passedFor": ["-0OGybbkAZ"]},
+          {"label": "关键争议点有反方视角", "passedFor": ["zavW0K9pkS", "-0OGybbkAZ"]},
+          {"label": "论据到结论无明显跳跃", "passedFor": ["zavW0K9pkS", "-0OGybbkAZ"]}
+        ]
+      },
+      "R4": {
+        "items": [
+          {"label": "关键维度清单齐全", "passedFor": ["kmX2G8_DWi", "zavW0K9pkS", "-0OGybbkAZ", "1vSt4aiN04"]},
+          {"label": "每个维度有对应段落", "passedFor": ["kmX2G8_DWi", "zavW0K9pkS", "-0OGybbkAZ", "1vSt4aiN04"]},
+          {"label": "章节结构支撑结论", "passedFor": ["kmX2G8_DWi", "zavW0K9pkS", "-0OGybbkAZ", "1vSt4aiN04"]},
+          {"label": "适用场景含定量支撑", "passedFor": ["kmX2G8_DWi", "zavW0K9pkS", "-0OGybbkAZ", "1vSt4aiN04"]},
+          {"label": "无明显虚假覆盖", "passedFor": ["zavW0K9pkS", "-0OGybbkAZ"]}
+        ]
+      },
+      "R5": {
+        "items": [
+          {"label": "至少两条可执行take-away", "passedFor": ["kmX2G8_DWi", "zavW0K9pkS", "-0OGybbkAZ", "1vSt4aiN04"]},
+          {"label": "建议具备操作性", "passedFor": ["zavW0K9pkS", "-0OGybbkAZ"]},
+          {"label": "有用户难自行获得的信息增量", "passedFor": ["zavW0K9pkS", "-0OGybbkAZ"]},
+          {"label": "提供新框架或新视角", "passedFor": ["-0OGybbkAZ", "1vSt4aiN04"]},
+          {"label": "主动披露不确定性", "passedFor": ["zavW0K9pkS", "-0OGybbkAZ"]}
+        ]
+      }
+    },
+    "verificationBudget": {
+      "targetMinutes": 45,
+      "actualMinutes": 92,
+      "passesCompleted": ["read", "claim-inventory", "pass1", "pass2", "pass3", "score", "feedback"],
+      "claimsSkippedDueToBudget": 0,
+      "claimsOutOfScope": 0,
+      "notes": "先用NeoData检索事实锚点，但房产/城建口径命中有限，后续以公开检索补强；全部16条claim完成结论化处理。"
+    },
+    "crossProductInsights": {
+      "focusProductName": "SophiaAI v5",
+      "strongerThan": [
+        {
+          "dimension": "R1",
+          "vsProducts": ["SophiaAI v4"],
+          "gapSummary": "v5虽有证据层级问题，但较v4少用不可复核的高精度数字，事实风险更可控。",
+          "evidenceQuotes": [
+            {"product": "SophiaAI v5", "quote": "“分叉情况讨论：基于碧海片区住房供应的两种假设……情况A/情况B并给出置信度70%”"},
+            {"product": "SophiaAI v4", "quote": "“首批员工在宝中、碧海购房+租房的实际占比为8%-12%（误差±3%）”“总外溢需求规模约7.7万套”"}
+          ],
+          "claimRefs": ["c4", "c14", "c16"]
+        }
+      ],
+      "weakerThan": [
+        {
+          "dimension": "R1",
+          "vsProducts": ["MiroThink", "Manus"],
+          "gapSummary": "v5在关键数字上存在不可复核比例推断，事实核验稳定性弱于两家对照。",
+          "evidenceQuotes": [
+            {"product": "SophiaAI v5", "quote": "“企鹅岛员工宿舍分流约20%的单身员工租赁需求”"},
+            {"product": "MiroThink", "quote": "“腾讯公关总监于2024年10月明确否认‘2万员工大规模搬迁’传言”"},
+            {"product": "Manus", "quote": "“企鹅岛一期（30%）…短期对房价拉动有限，更多是提供价格支撑底线”"}
+          ],
+          "claimRefs": ["c3", "c9", "c7"]
+        },
+        {
+          "dimension": "R3",
+          "vsProducts": ["MiroThink"],
+          "gapSummary": "v5有结构但情景推导的约束条件不充分，MiroThink在情景触发条件和风险边界上更完整。",
+          "evidenceQuotes": [
+            {"product": "SophiaAI v5", "quote": "“情况B的可能性更高（置信度70%）；情况A需等待官方规划披露验证”"},
+            {"product": "MiroThink", "quote": "“情景A/B/C分别给出入驻人数、通车时点、宏观条件，并给出对应价格区间与风险变量”"}
+          ],
+          "claimRefs": ["c4", "c12"]
+        }
+      ],
+      "sharedWeakness": [
+        {
+          "dimension": "R1",
+          "acrossProducts": ["SophiaAI v5", "Manus", "MiroThink", "SophiaAI v4"],
+          "gapSummary": "四份报告都存在对二手资讯/自媒体口径的依赖，政府或运营主体一手源占比仍偏低。",
+          "suggestion": "将“核心事实白名单”限定为政府公示、运营主体公告与主流数据库，并在正文标注来源等级。"
+        }
+      ]
+    }
+  },
+  "report": "# 评测结论\n\n本轮 EV-0004 共 4 份报告，综合结果：MiroThink（8.0）> Manus（7.2）> SophiaAI v5（5.4）> SophiaAI v4（4.6）。\n\n总体看，四份报告都能围绕“企鹅岛对碧海/宝中房价影响”展开，但差异主要出在 R1 准确性：谁能把“规划口径、通车时间、人口导入节奏、价格区间”这些承重事实说清并可核，谁就能稳定领先。\n\n# 按维度展开\n\n## R1 准确性（含 R1a 事实层 + R1b 逻辑层）\n\nMiroThink 的优势在于主动纠偏与边界意识，例如其直接写到「腾讯公关总监于2024年10月明确否认\"2万员工大规模搬迁\"传言」，该点可被外部新闻检索到，事实链条闭环。Manus 的事实稳定性次之，但存在容量口径冲突（8-10万 vs 7.5万）问题。\n\n两份 Sophia 报告里，v5 在表达上更克制，但仍出现「分流约20%」这类无公开统计底稿的比例断言；v4 的问题更重，出现多处高精度数字（如「人均年薪112.8万」「总外溢需求7.7万套」）却缺少可复核依据，直接拉低可信度。\n\n## R2 相关性\n\n四份报告都基本贴题，均覆盖了碧海与宝中对比、短中长期节奏与投资建议。MiroThink 与 Manus 在“用户问题拆解”上更像决策备忘录；Sophia v4/v5 虽然覆盖广，但部分段落更偏“信息堆叠”，主问题的关键驱动权重不够突出。\n\n## R3 论证深度\n\nMiroThink 和 Manus 都实现了二阶推导：不仅给结论，还给“为什么是这个节奏、什么条件会失效”。MiroThink 进一步提供情景化触发条件，便于后续更新判断。Sophia v5 有分叉框架雏形，但参数约束不充分；Sophia v4 深度看起来高，实则被不可验证参数削弱可解释性。\n\n## R4 完备性\n\n四份报告在章节完备性都不差，均涵盖项目进度、交通、供需、风险与建议。R4 没有拉开显著差距，分差主要不是“有没有写”，而是“写的能否被验证”。\n\n## R5 决策价值\n\nMiroThink 与 Manus 的建议更可执行：客群分层、时点分层、风险变量分层都较清楚。Sophia v5/v4 也给了策略，但部分建议建立在高不确定参数上，实际落地前需要二次核验。\n\n# 额外重点问题\n\n1. **时间锚点错误会直接误导交易节奏**：有报告写到「15号线预计2026年通车」，但外部公开进展主流口径为“预计2028年建成通车”，这会把中期催化误判为短期催化。\n\n2. **“精确数字幻觉”是本轮最大共性风险**：例如「分流约20%」「总外溢需求7.7万套」「入驻率每+10%对应涨幅+4~6%」，如果没有公开统计口径和模型回测，越精确越危险。\n\n3. **容量口径冲突需统一**：8-10万与7.5万并存时，必须注明“历史口径/最新口径”，否则供需缺口测算会系统性偏差。\n\n# 各主体优缺点与建议\n\n## SophiaAI v5\n- **做得好**：结构清晰，分阶段逻辑可读；有一定不确定性提示。\n- **做得不好**：关键比例与涨幅区间缺乏可核底稿，R1 被明显拉低。\n- **建议**：下一版先做“事实白名单”，只保留可被政府/运营主体/主流数据库复核的核心数字；其余全部降级为情景假设并显式写条件。\n\n## Manus\n- **做得好**：论证链完整，投资建议对不同预算客群可落地。\n- **做得不好**：核心容量口径与最新公开口径有冲突，来源层级仍可提高。\n- **建议**：建立“版本化口径表”（历史口径 vs 最新口径），避免同一报告内部出现隐性冲突。\n\n## MiroThink\n- **做得好**：事实纠偏能力最强，情景框架与风险变量管理最好。\n- **做得不好**：个别时间点与政策条目仍有二级来源依赖。\n- **建议**：保留当前结构优势，同时把关键政策与时间节点统一替换为官方原文链接，继续稳住R1领先。\n\n## SophiaAI v4\n- **做得好**：覆盖面最全，框架和模板化表达成熟。\n- **做得不好**：高精度数字过多但来源不透明，容易造成“看似专业、实则不可复核”的决策风险。\n- **建议**：将“高精度断言”改为“区间+假设+可复核来源”，减少伪精确表达，优先修复R1。"
+}

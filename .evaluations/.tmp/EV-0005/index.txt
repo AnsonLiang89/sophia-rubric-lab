@@ -1,0 +1,8 @@
+taskId=EV-0005 candidates=6
+queryCode=EV-0005 title=结合最新的时政新闻，判断，未来越南引入中国高铁的概率有多大？
+1. reportId=3guof2Rksz product=SophiaAI version=v5 chars=6234 file=.evaluations/.tmp/EV-0005/candidate_1_3guof2Rksz.md
+2. reportId=imXMky8VQu product=Gemini version=None chars=9189 file=.evaluations/.tmp/EV-0005/candidate_2_imXMky8VQu.md
+3. reportId=TQx7ZXaoGM product=Kimi version=None chars=43435 file=.evaluations/.tmp/EV-0005/candidate_3_TQx7ZXaoGM.md
+4. reportId=yKzzT3mX-g product=Manus version=None chars=4031 file=.evaluations/.tmp/EV-0005/candidate_4_yKzzT3mX-g.md
+5. reportId=daNcDpqARK product=MiroThink version=None chars=9059 file=.evaluations/.tmp/EV-0005/candidate_5_daNcDpqARK.md
+6. reportId=ZnPjNHpT5X product=SophiaAI version=v4 chars=6656 file=.evaluations/.tmp/EV-0005/candidate_6_ZnPjNHpT5X.md
