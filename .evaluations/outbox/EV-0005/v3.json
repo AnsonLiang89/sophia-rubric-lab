@@ -1,6 +1,6 @@
 {
-  "taskId": "EV-0005-LlSiEs",
-  "version": 1,
+  "taskId": "EV-0005",
+  "version": 3,
   "contractVersion": "2.1",
   "evaluator": "Sophia (Claude-Opus-4.7 via WorkBuddy)",
   "evaluatedAt": "2026-04-24T17:45:00+08:00",

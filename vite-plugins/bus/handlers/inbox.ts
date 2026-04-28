@@ -8,8 +8,13 @@
  *   PATCH  /_bus/inbox/:taskId    替换某 candidate 的激活报告版本（v2 schema 专用）
  *   DELETE /_bus/inbox/:taskId    删除某 inbox 任务
  *
- * 注意：POST 时若同 taskId 已存在，直接返回 409（前端 makeTaskId 有 nano6 几乎不会碰撞，
- * 此处是额外兜底；碰撞时前端需要重新生成 taskId 再试）。
+ * v3.4（2026-04-28）taskId 扁平化后：
+ *   taskId === queryCode（如 `EV-0002`），同一 query 在 inbox 里只有一个 `EV-XXXX.json`。
+ *   POST 时若文件已存在，采用"按 candidateId 合并"语义：
+ *     - 新 candidate → 追加到 candidates[]
+ *     - 已存在 candidateId → 保留磁盘侧的 reportVersions（含历史追加）、productVersion、authorNote 等，
+ *       避免前端重新提交时把服务端 PATCH 过的历史覆盖成 v1
+ *   这样"召唤评测"会把新对比源补进去，又不会把历史版本轧平。
  */
 import fs from "node:fs";
 import crypto from "node:crypto";
@@ -102,12 +107,66 @@ export async function handlePostInbox(
 
   const taskId = taskIdRaw;
   const file = path.join(ctx.inboxDir, `${taskId}.json`);
+
+  // v3.4 扁平化：同 taskId（= queryCode）已存在时，走"按 candidateId 合并"语义。
+  // 保留磁盘侧的 reportVersions / activeReportVersion / productVersion / authorNote，
+  // 只把新出现的 candidate 追加进去。这样前端"召唤评测"增补对比源时不会轧平 PATCH 历史。
   if (fs.existsSync(file)) {
-    return send(res, 409, {
-      error: `inbox/${taskId}.json already exists`,
+    const existing = readJson(file);
+    if (!existing) {
+      return send(res, 500, {
+        error: `inbox/${taskId}.json exists but is corrupt; refuse to overwrite`,
+      });
+    }
+    const existingSchema = readInboxSchemaVersion(existing);
+    if (existingSchema !== "2.0") {
+      return send(res, 400, {
+        error: `existing inbox/${taskId}.json is schema v${existingSchema ?? "1.0"}; run "npm run migrate-inbox" first`,
+      });
+    }
+    const existingCandidates: Array<Record<string, unknown>> = Array.isArray(
+      existing.candidates
+    )
+      ? (existing.candidates as Array<Record<string, unknown>>)
+      : [];
+    const existingById = new Map<string, Record<string, unknown>>();
+    for (const c of existingCandidates) {
+      if (typeof c.candidateId === "string") existingById.set(c.candidateId, c);
+    }
+
+    const mergedCandidates: Array<Record<string, unknown>> = [];
+    let addedCount = 0;
+    let keptCount = 0;
+    for (const incoming of candidatesRaw as Array<Record<string, unknown>>) {
+      const cid = String(incoming.candidateId);
+      const hit = existingById.get(cid);
+      if (hit) {
+        // 保留磁盘侧的权威副本：reportVersions / activeReportVersion / productVersion / authorNote
+        mergedCandidates.push(hit);
+        keptCount += 1;
+      } else {
+        mergedCandidates.push(incoming);
+        addedCount += 1;
+      }
+    }
+
+    // 同步顶层 query 元信息（query.title / description / domain 可能被用户改过）——以新提交为准
+    const merged: Record<string, unknown> = {
+      ...existing,
+      ...payload,
+      candidates: mergedCandidates,
+    };
+    fs.writeFileSync(file, JSON.stringify(merged, null, 2));
+    return send(res, 200, {
+      ok: true,
       taskId,
+      file: path.relative(ctx.root, file),
+      merged: true,
+      addedCandidates: addedCount,
+      keptCandidates: keptCount,
     });
   }
+
   fs.writeFileSync(file, JSON.stringify(payload, null, 2));
   return send(res, 200, {
     ok: true,

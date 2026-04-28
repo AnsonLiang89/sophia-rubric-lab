@@ -1,5 +1,5 @@
 {
-  "taskId": "EV-0002-N3e5zP",
+  "taskId": "EV-0002",
   "version": 1,
   "contractVersion": "2.1",
   "createdAt": "2026-04-24T16:45:00+08:00",
@@ -9,7 +9,7 @@
       {
         "reportId": "6q5vDnqkfk",
         "productName": "MiroThink",
-        "score": 10.0,
+        "score": 10,
         "verdict": "卓越",
         "vetoTriggered": false
       },
@@ -23,7 +23,7 @@
       {
         "reportId": "Qm2DpyIJ-h",
         "productName": "Manus",
-        "score": 8.0,
+        "score": 8,
         "verdict": "优秀",
         "vetoTriggered": false
       },

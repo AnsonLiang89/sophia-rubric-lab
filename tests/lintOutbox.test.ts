@@ -746,6 +746,84 @@ describe("validatePayload · productName 展示一致性", () => {
   });
 });
 
+// ========== v3.4 taskId 扁平化硬约束 ==========
+//
+// 2026-04-28 起，v3.4 contractVersion 产物的 taskId 必须扁平化（`^[A-Z]+-\d+$`，
+// 即 taskId === queryCode，不允许尾部再拼 `-suffix6`）。同时 lintOutbox() 扫全量
+// 产物时还会校验 `payload.taskId === 目录名`。
+//
+// 这一组单测直接构造最小 v3.4 payload——不依赖 goodPayloadV21（后者 contractVersion
+// 固定为 "2.1"，不会触发 v3.4 分支）。因为 v3.4 继承了 v3.3 所有约束，完整合法
+// payload 构造成本太高，这里只挑针对性 case：专门 mutate taskId 看 lint 能否抓到。
+// validatePayload 遇到违规只 push err、不早返回（除非 taskId 根本缺失），所以即便
+// payload 缺失 claim/checklist 等字段，也不影响对 taskId 违规的检测。
+describe("validatePayload · v3.4 taskId 扁平化硬约束", () => {
+  // 只构造到 validatePayload 初段能走到的程度即可——我们只关心 taskId 分支。
+  function makeMinimalV34(taskId: string) {
+    return {
+      taskId,
+      version: 1,
+      contractVersion: "3.4",
+      summary: {
+        overallScores: [
+          { reportId: "sub_1", productName: "ProductA", score: 10, verdict: "卓越", vetoTriggered: false },
+        ],
+        rubric: [],
+      },
+      report: "# 占位报告正文",
+    };
+  }
+
+  it("扁平化 taskId（EV-0001）合法，无 taskId 形态报错", () => {
+    const errors: Array<{ path: string; msg: string }> = [];
+    // 不传 expectedTaskId：只校验格式，不校验目录名一致性
+    validatePayload("virtual", makeMinimalV34("EV-0001"), errors);
+    const bad = errors.filter((e) => e.path === "taskId");
+    expect(bad).toEqual([]);
+  });
+
+  it("历史 suffix 形态（EV-0001-abcDEF）在 v3.4 下报错", () => {
+    const errors: Array<{ path: string; msg: string }> = [];
+    validatePayload("virtual", makeMinimalV34("EV-0001-abcDEF"), errors);
+    const bad = errors.filter((e) => e.path === "taskId");
+    expect(bad.length).toBeGreaterThanOrEqual(1);
+    expect(bad[0].msg).toMatch(/v3\.4 要求扁平化/);
+  });
+
+  it("期望 taskId 与 payload 不一致时报错", () => {
+    const errors: Array<{ path: string; msg: string }> = [];
+    validatePayload("virtual", makeMinimalV34("EV-0001"), errors, "EV-9999");
+    const bad = errors.filter((e) => e.path === "taskId" && /目录名/.test(e.msg));
+    expect(bad.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("期望 taskId 与 payload 一致时不报错", () => {
+    const errors: Array<{ path: string; msg: string }> = [];
+    validatePayload("virtual", makeMinimalV34("EV-0001"), errors, "EV-0001");
+    const bad = errors.filter((e) => e.path === "taskId");
+    expect(bad).toEqual([]);
+  });
+
+  it("v3.3 及以前的 contractVersion 不受扁平化约束影响（读兼容）", () => {
+    // 历史产物：v3.3 + suffix 形态的 taskId，lint 应该继续放行（新约束只对 v3.4 激活）
+    const errors: Array<{ path: string; msg: string }> = [];
+    const p = makeMinimalV34("EV-0001-abcDEF") as any;
+    p.contractVersion = "3.3";
+    validatePayload("virtual", p, errors, "EV-0001-abcDEF");
+    const bad = errors.filter(
+      (e) => e.path === "taskId" && /扁平化|目录名/.test(e.msg)
+    );
+    expect(bad).toEqual([]);
+  });
+
+  it("不传 expectedTaskId（单测兼容路径）不会误报目录名错误", () => {
+    const errors: Array<{ path: string; msg: string }> = [];
+    validatePayload("virtual", makeMinimalV34("EV-0001"), errors);
+    const bad = errors.filter((e) => e.path === "taskId" && /目录名/.test(e.msg));
+    expect(bad).toEqual([]);
+  });
+});
+
 // ========== inbox v2 schema ==========
 
 function goodInboxV2() {

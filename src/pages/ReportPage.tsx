@@ -190,6 +190,58 @@ export default function ReportPage() {
     };
   }, [qCode, refreshTick]);
 
+  // ------------------------------------------------------------
+  // 「待评测」派生：对比"最新评测报告时间" vs "每个 submission 的最新正文变动时间"
+  //
+  // 背景（2026-04-27 晚）：
+  //   旧实现只看 `inboxHistoryMap.has(sub.id)`——"从没进过 inbox 就打未参评"。
+  //   漏洞是：在「编辑对比源 → 替换正文」场景里，reportVersions 会追加一版
+  //   （submittedAt 新、contentHash 新），但 submission.id 早就在 inbox 里
+  //   → hasInbox 为 true → 胶囊不提醒。结果是"正文换了新的但评测还是旧的"用户无感知。
+  //
+  // 新判定（比旧实现更干净）：
+  //   lastContentChangeAt(sub) =
+  //     inbox 里这份 submission 的 reportVersions[last].submittedAt   （有 inbox 记录）
+  //     sub.createdAt                                                  （全新、还没召唤过）
+  //   latestEvalMtime = max(outboxTasks.latestMtime)                   （整条 query 最新评测）
+  //   pending = lastContentChangeAt > latestEvalMtime
+  //
+  // 语义契合点：
+  //   - "改元数据"走 updateSubmission，不会新增 reportVersions 条目 → 不触发提醒（符合直觉）。
+  //   - "替换正文"走 PATCH inbox，追加一条 reportVersions → 自动触发提醒。
+  //   - "全新产品从未召唤" → sub.createdAt > 0 > latestEvalMtime(=0)，也被正确捕获。
+  //   - 没有任何评测产物时 latestEvalMtime = 0 → 所有 submission 都 pending（符合直觉）。
+  //   - 只读/公开模式下 inboxHistoryMap 为空 + IS_READONLY 卫兵 → 徽标整体隐藏（保持现状）。
+  //
+  // NOTE: 这两个 useMemo **必须放在任何 early return 之前**，否则 q 不存在那个分支
+  // 会跳过 hook 调用，触发 react-hooks/rules-of-hooks 报错。
+  // ------------------------------------------------------------
+  const latestEvalMtime = useMemo(
+    () => outboxTasks.reduce((m, t) => Math.max(m, t.latestMtime ?? 0), 0),
+    [outboxTasks]
+  );
+
+  const pendingSubIds = useMemo(() => {
+    const set = new Set<string>();
+    if (IS_READONLY) return set;
+    for (const s of subs) {
+      const hist = inboxHistoryMap.get(s.id);
+      let lastContentChangeAt: number;
+      if (hist && hist.versions.length > 0) {
+        const last = hist.versions[hist.versions.length - 1];
+        // 优先 submittedAt（v1/v2+ 都有），回退到 replacedAt / producedAt，最后兜到 sub.createdAt。
+        const iso = last.submittedAt ?? last.replacedAt ?? last.producedAt ?? s.createdAt;
+        lastContentChangeAt = new Date(iso).getTime();
+      } else {
+        lastContentChangeAt = new Date(s.createdAt).getTime();
+      }
+      if (Number.isFinite(lastContentChangeAt) && lastContentChangeAt > latestEvalMtime) {
+        set.add(s.id);
+      }
+    }
+    return set;
+  }, [subs, inboxHistoryMap, latestEvalMtime]);
+
   if (!q) {
     return (
       <div className="py-16 text-center space-y-3">
@@ -269,6 +321,7 @@ export default function ReportPage() {
         cohort={cohort}
         primaryProductId={primaryId}
         inboxHistoryMap={inboxHistoryMap}
+        pendingSubIds={pendingSubIds}
         onManageSources={() => setManageOpen(true)}
         onRunEval={handleRunEval}
         onDelete={handleDelete}
@@ -432,6 +485,7 @@ function ReportHero({
   cohort,
   primaryProductId,
   inboxHistoryMap,
+  pendingSubIds,
   onManageSources,
   onRunEval,
   onDelete,
@@ -446,6 +500,7 @@ function ReportHero({
   cohort: CohortItem[];
   primaryProductId?: string;
   inboxHistoryMap: Map<string, SubmissionInboxInfo>;
+  pendingSubIds: Set<string>;
   onManageSources: () => void;
   onRunEval: () => void;
   onDelete: () => void;
@@ -490,14 +545,33 @@ function ReportHero({
             onClick={onRunEval}
             disabled={cohort.length === 0}
             className={clsx(
-              "text-xs rounded-lg px-3 py-1.5 transition",
+              "relative text-xs rounded-lg px-3 py-1.5 transition",
               cohort.length === 0
                 ? "bg-paper-200 text-ink-400 cursor-not-allowed"
                 : "bg-ink-900 text-white hover:bg-ink-700"
             )}
-            title="把任务写入 inbox，然后到 WorkBuddy 对话框粘贴口令让 LLM 跑评测"
+            title={
+              pendingSubIds.size > 0
+                ? `有 ${pendingSubIds.size} 个对比源在最新评测之后发生了变动，建议重跑一次评测`
+                : "把任务写入 inbox，然后到 WorkBuddy 对话框粘贴口令让 LLM 跑评测"
+            }
           >
             🤖 召唤评测
+            {pendingSubIds.size > 0 && cohort.length > 0 && (
+              // 设计意图：柔性提醒，不暴露"几个"这种过载信息。
+              // 双层结构：
+              //   - 外层 animate-ping：同色半透明光晕，1s 周期脉冲，营造"呼吸感"
+              //   - 内层实心小圆点：保持稳定在位，不随动画消失
+              // 7px（w-[7px]) + ring-2 ring-white 外描边，既在深色按钮上清晰可见，
+              // 又不会喧宾夺主。语义通过 aria-label + 按钮 tooltip 表达。
+              <span
+                className="absolute -top-0.5 -right-0.5 flex h-[7px] w-[7px]"
+                aria-label={`有 ${pendingSubIds.size} 个对比源待评测`}
+              >
+                <span className="absolute inline-flex h-full w-full rounded-full bg-clay opacity-60 animate-ping" />
+                <span className="relative inline-flex rounded-full h-[7px] w-[7px] bg-clay ring-2 ring-white" />
+              </span>
+            )}
           </button>
           <button
             onClick={onDelete}
@@ -547,11 +621,11 @@ function ReportHero({
             <span className="text-ink-300 normal-case tracking-normal">
               （点击胶囊查看原始报告；如需新增、修改、删除，请使用右上方「📝 编辑对比源」）
             </span>
-            {/* 图例：只有存在"已登记但未参评"的候选时才露出，减少正常情况下的视觉噪音 */}
-            {cohort.some((c) => !inboxHistoryMap.get(c.sub.id)) && !IS_READONLY && (
+            {/* 图例：存在"待评测"候选时才露出，减少正常情况下的视觉噪音 */}
+            {pendingSubIds.size > 0 && !IS_READONLY && (
               <span className="inline-flex items-center gap-1 text-[10px] normal-case tracking-normal text-ink-500">
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-ink-300" />
-                <span>灰点 = 已登记但尚未召唤评测</span>
+                <span>灰点 = 对比源在最新评测之后有更新，建议重跑评测</span>
               </span>
             )}
           </div>
@@ -561,12 +635,17 @@ function ReportHero({
             )}
             {cohort.map(({ sub, product }) => {
               const isPrimary = product.id === primaryProductId;
-              // 是否已经被召唤过评测（即 inbox 里存在对应的 candidate）
-              // 只有 dev 模式下 inboxHistoryMap 才会被填充；prod(IS_READONLY) 下
-              // listInbox 不可用，inboxHistoryMap 为空，此时不强调该差异
-              // （所有胶囊统一作为"已参评"样式渲染，避免误导公开读者）。
-              const hasInbox = inboxHistoryMap.has(sub.id);
-              const showPendingBadge = !IS_READONLY && !hasInbox;
+              // 待评测判定来自 ReportPage 根部的 pendingSubIds（见该集合的注释）。
+              // 两种会被捕获的场景：
+              //   1. 全新对比源：这份 submission 从未进过 inbox，sub.createdAt > latestEvalMtime
+              //   2. 替换正文后未重评：reportVersions 追加了新版本 → submittedAt > latestEvalMtime
+              // dev 以外的只读模式下 pendingSubIds 被强制清空，整体徽标不露。
+              const showPendingBadge = pendingSubIds.has(sub.id);
+              // 细分 tooltip 场景：没 inbox 记录 = 全新没召唤；有 inbox = 正文有更新
+              const hasInboxRecord = inboxHistoryMap.has(sub.id);
+              const pendingReason = hasInboxRecord
+                ? `${displayProductName(product)}：报告正文已更新，但最新评测仍基于旧版本，建议重跑评测`
+                : `${displayProductName(product)}：已登记到本地但尚未召唤评测（inbox 里还没有这份报告）`;
               return (
                 <button
                   key={product.id}
@@ -577,19 +656,19 @@ function ReportHero({
                     isPrimary
                       ? "bg-amber/10 border-amber/40 text-ink-900 hover:bg-amber/20"
                       : "bg-white border-paper-300 text-ink-700 hover:border-ink-400",
-                    // 未参评的胶囊改用虚线边 + 略降饱和，强化"还没真正提交"感
+                    // 待评测的胶囊改用虚线边 + 略降饱和，强化"这版评测还没覆盖它"
                     showPendingBadge && "border-dashed opacity-80"
                   )}
                   title={
                     showPendingBadge
-                      ? `${displayProductName(product)}：已登记到本地但尚未召唤评测（inbox 里还没有这份报告）`
+                      ? pendingReason
                       : `查看 ${displayProductName(product)} 的原始报告`
                   }
                 >
                   <span
                     className="w-2 h-2 rounded-full"
                     style={{
-                      // 未参评时色点也降成灰，避免产品色掩盖"未参评"信号
+                      // 待评测时色点也降成灰，避免产品色掩盖"待评测"信号
                       background: showPendingBadge
                         ? "#B8B09F"
                         : product.color ?? "#8B8272",
@@ -598,7 +677,7 @@ function ReportHero({
                   <span className="font-medium">{displayProductName(product)}</span>
                   {showPendingBadge && (
                     <span className="text-[10px] font-normal px-1 py-0.5 rounded bg-paper-200 text-ink-500 leading-none">
-                      未参评
+                      待评测
                     </span>
                   )}
                   <svg

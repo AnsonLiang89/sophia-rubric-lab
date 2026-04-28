@@ -25,7 +25,10 @@
  * CLI:
  *   node scripts/migrate-inbox.mjs            # dry-run，列出将要变更的文件
  *   node scripts/migrate-inbox.mjs --apply    # 实际就地写回
- *   node scripts/migrate-inbox.mjs --apply --task EV-0005-LlSiEs  # 只处理单个
+ *   node scripts/migrate-inbox.mjs --apply --task EV-0005  # 只处理单个
+ *
+ * 注：--task 传 queryCode（v3.4 起 taskId === queryCode，如 "EV-0005"）。
+ *     历史 v1.0 ~ v3.3 的 "EV-0005-suffix6" 形态也兼容（按原始文件名匹配）。
  *
  * 幂等：已经是新字段名 + v2 的文件自动跳过（不会二次追加 version）。
  */

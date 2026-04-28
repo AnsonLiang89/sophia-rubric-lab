@@ -348,10 +348,21 @@ function collectQueries(busRoot: string): QueryLike[] {
   );
 }
 
-/** 按 `<code>-<suffix>` 解析 inbox/outbox 的前缀 code */
+/**
+ * 解析 inbox/outbox 的前缀 code。
+ *
+ * 兼容两种形态：
+ *   - v3.4 扁平化（2026-04-28 起）：名字就是 code 本身（如 `EV-0002` 或 `EV-0002.json`）
+ *   - 历史（v1.0 ~ v3.3）：`${code}-${suffix}` 或 `${code}-${suffix}.json`（如 `EV-0002-o13pwo`）
+ */
 function parsePrefixCode(name: string, prefix: string): string | null {
-  const m = new RegExp(`^(${prefix}-\\d+)-[^.]+`).exec(name);
-  return m ? m[1] : null;
+  const base = name.replace(/\.json$/, "");
+  // 先试历史格式
+  const mHist = new RegExp(`^(${prefix}-\\d+)-[^.]+$`).exec(base);
+  if (mHist) return mHist[1];
+  // 再试扁平化格式：整体就是 code
+  const mFlat = new RegExp(`^(${prefix}-\\d+)$`).exec(base);
+  return mFlat ? mFlat[1] : null;
 }
 
 /**
@@ -403,7 +414,11 @@ function extractSuffix(name: string): string | null {
 
 /**
  * 对文件/目录做"前缀替换"式重命名。
- * `${oldCode}-xxxxxx(.json)?` → `${newCode}-xxxxxx(.json)?`
+ *
+ * 兼容两种形态：
+ *   - 历史 `${oldCode}-xxxxxx` / `${oldCode}-xxxxxx.json` → `${newCode}-xxxxxx(.json)?`
+ *   - v3.4 扁平化 `${oldCode}` / `${oldCode}.json` → `${newCode}(.json)?`
+ *
  * 如果目标已存在则跳过并在日志里记为冲突。
  */
 function renamePrefix(
@@ -413,8 +428,19 @@ function renamePrefix(
   newCode: string,
   log: (msg: string) => void
 ): { from: string; to: string } | null {
-  if (!entryName.startsWith(`${oldCode}-`)) return null;
-  const newName = newCode + entryName.slice(oldCode.length);
+  let newName: string | null = null;
+  if (entryName.startsWith(`${oldCode}-`)) {
+    // 历史带 suffix 形式
+    newName = newCode + entryName.slice(oldCode.length);
+  } else if (entryName === oldCode) {
+    // 扁平化目录（outbox/EV-XXXX）
+    newName = newCode;
+  } else if (entryName === `${oldCode}.json`) {
+    // 扁平化文件（inbox/EV-XXXX.json）
+    newName = `${newCode}.json`;
+  } else {
+    return null;
+  }
   const from = path.join(parent, entryName);
   const to = path.join(parent, newName);
   if (fs.existsSync(to)) {

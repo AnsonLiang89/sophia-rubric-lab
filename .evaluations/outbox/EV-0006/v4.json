@@ -1,6 +1,6 @@
 {
-  "taskId": "EV-0006-rTE63b",
-  "version": 1,
+  "taskId": "EV-0006",
+  "version": 4,
   "evaluator": "Sophia (Claude-Opus-4.7 via WorkBuddy)",
   "evaluatedAt": "2026-04-27T09:30:00.000Z",
   "contractVersion": "3.2",

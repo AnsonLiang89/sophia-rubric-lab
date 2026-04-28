@@ -8,17 +8,20 @@
  *
  *   # 从文件读新内容
  *   node scripts/replace-report.mjs \
- *     --task EV-0007-QeLgZE \
+ *     --task EV-0007 \
  *     --candidate subm-abc \
  *     --content ./new-sophia-v5.md \
  *     --reason "原提交遗漏了 Q1 最新数据，以官网发布版为准"
  *
  *   # 直接传 literal（适合短报告）
- *   node scripts/replace-report.mjs --task xxx --candidate yyy --content-inline "..."
+ *   node scripts/replace-report.mjs --task EV-0007 --candidate yyy --content-inline "..."
  *
  *   # 同时更新元数据
- *   node scripts/replace-report.mjs --task ... --candidate ... --content ./x.md \
+ *   node scripts/replace-report.mjs --task EV-0007 --candidate ... --content ./x.md \
  *     --product-version v5.1 --produced-at 2026-04-27T12:00:00Z
+ *
+ * 注：--task 传 queryCode（v3.4 起 taskId === queryCode，如 "EV-0007"）。
+ *     历史 v1.0 ~ v3.3 的 "EV-0007-suffix6" 形态也兼容（直接按文件名匹配）。
  *
  * 行为：
  *   - 原地修改 .evaluations/inbox/{taskId}.json

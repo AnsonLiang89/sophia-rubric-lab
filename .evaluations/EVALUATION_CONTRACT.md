@@ -1,4 +1,4 @@
-# Sophia Rubric Lab · 评测契约 v3.3
+# Sophia Rubric Lab · 评测契约 v3.4
 
 > 这是一份给 **LLM 评测官（Sophia）** 和 **Sophia Rubric Lab 网站** 共同遵守的工作契约。
 >
@@ -13,6 +13,14 @@
 > - 完整 outbox 示例（参考骨架）：`./EVALUATION_CONTRACT_EXAMPLE.json`
 > - 工程侧沉淀与历史踩坑：项目根 `.workbuddy/memory/MEMORY.md`
 
+> 🆕 **契约版本 3.4（2026-04-28 生效）** —— **taskId 扁平化**（结构性修复，非评测规则变更）：
+>
+> - 🗂️ **taskId 语义变更**：`taskId` 从 `{queryCode}-{nanoid6}` 简化为 **直接等于 `queryCode`**（如 `"EV-0001"`）。同一 query 的多轮评测不再生成新目录，而是累积写入 `outbox/EV-0001/v{N+1}.json`。inbox 同步改为每个 query 一个 `EV-0001.json`（POST 已存在时按 `candidateId` 合并 candidates）。
+> - 🎯 **修复目标**：v3.3 及以前同一 query 被多次"召唤评测"时会生成碎片化目录（`EV-0001-abc/`、`EV-0001-xyz/` …），前端 `pickLatestTaskByQueryCode` 只展示最新那个，历史评测被"埋了"。v3.4 后所有版本都被 `flattenTaskVersions` 按 mtime 统一编号，ReportPage 下拉可完整切换。
+> - 🔄 **历史目录迁移**：通过 `scripts/migrate-consolidate-outbox.mjs` 一次性把 `outbox/EV-XXXX-suffix/vN.json` 按 mtime 合并成 `outbox/EV-XXXX/v1..vN.json`；inbox 多文件合并成 `inbox/EV-XXXX.json`。迁移过程中 `contractVersion` 保留原值（历史 v1.0 ~ v3.3 产物不被刷新）。
+> - ✅ **评测规则零变更**：所有评分、veto、四段正文、claim 核验、verificationBudget 硬约束完全沿用 v3.3；本次升级仅是文件组织层的工程整理。
+> - 📐 **兼容性**：`parseQueryCode` / `makeTaskId` / `codeRegistry.reconcile` / `renamePrefix` 同时兼容扁平化形式和历史带 suffix 形式，任何 v1.0 ~ v3.3 产物继续正常渲染。
+>
 > 🆕 **契约版本 3.3（2026-04-27 生效）** —— 评测质量优先、事实核验加强：
 >
 > - ⏱️ **取消 45 分钟硬时间盒**：不再要求"45 分钟内交付"，评测质量优先，按需展开核验。`verificationBudget.actualMinutes` 保留为观测指标；`targetMinutes` 仅作节奏参考（默认仍可填 45，不再当硬约束）。
@@ -63,18 +71,20 @@
 ├── EVALUATION_CONTRACT.md   # 本文件（方法论单一事实源）
 ├── RUBRIC_STANDARD.md       # 打分标准（单一事实源）
 ├── PRODUCTS.json            # 评测主体清单
-├── inbox/                   # 网站写入的待评测任务
-│   └── {taskId}.json
-└── outbox/                  # LLM 写回的评测产物（按 taskId 分文件夹）
-    └── {taskId}/
+├── inbox/                   # 网站写入的待评测任务（v3.4 起每 query 一个文件）
+│   └── {taskId}.json        # taskId === queryCode，如 EV-0001.json
+└── outbox/                  # LLM 写回的评测产物（v3.4 起目录 = queryCode）
+    └── {taskId}/            # taskId === queryCode，如 EV-0001/
         ├── v1.json
         ├── v2.json          # 多轮迭代的历史版本
         └── vN.json
 ```
 
-### 2.1 taskId 约定
+### 2.1 taskId 约定（v3.4 起变更）
 
-`{queryCode}-{nanoid6}`，例如 `EV-0001-dlqvY6`。由网站生成，LLM 不要改。
+**v3.4（2026-04-28 起）**：`taskId === queryCode`，直接就是 `"EV-0001"` / `"EV-0002"` 这种形态。同一 query 的多轮评测全部写进同一个目录 `outbox/EV-0001/v{N+1}.json`，inbox 每个 query 只有一个 `inbox/EV-0001.json`（POST 已存在会按 `candidateId` 合并 candidates）。
+
+**历史（v1.0 ~ v3.3）**：`taskId = {queryCode}-{nanoid6}`，例如 `"EV-0001-dlqvY6"`。此类历史产物保留原路径不迁移；前端 `parseQueryCode` 同时认这两种形式。
 
 ### 2.2 inbox 文件
 
@@ -82,7 +92,7 @@
 
 ```json
 {
-  "taskId": "EV-0001-dlqvY6",
+  "taskId": "EV-0001",
   "createdAt": "2026-04-19T13:00:00.000Z",
   "query": {
     "code": "EV-0001",
@@ -152,7 +162,7 @@
 
 | 字段 | 约束 |
 |---|---|
-| `contractVersion` | 必须为 `"3.3"`（本契约版本）；历史产物可保留 `"3.2"` / `"3.1"` / `"3.0"` / `"2.2"` / `"2.1"` / `"2.0"` / `"1.0"` |
+| `contractVersion` | 必须为 `"3.3"`（评测规则版本，v3.4 结构变更未改评测语义，新产物仍可写 `"3.3"`，也允许写 `"3.4"` 显式标注按扁平化目录写入）；历史产物可保留 `"3.2"` / `"3.1"` / `"3.0"` / `"2.2"` / `"2.1"` / `"2.0"` / `"1.0"` |
 | `summary.overallScores[].score` | [0, 10]，**必须等于** `Σ(Ri.score × Ri.weight)`；触发一票否决时**封顶 6.9** |
 | `summary.overallScores[].verdict` | 枚举：`卓越` / `优秀` / `合格` / `待改进` / `不合格`，按 `RUBRIC_STANDARD.md §三` 的评级档位 |
 | `summary.overallScores[].vetoTriggered` | 布尔值，必填 |
@@ -533,7 +543,7 @@ tier 和 score **必须严格一一对应**（`tier="A", score=7` 非法）。**
 
 ## 5. 工作流（LLM 端，v3.3：阶段 SOP，评测质量优先，不再设时间盒）
 
-用户在 WorkBuddy 对话框说 "**评测 EV-0001-dlqvY6**" 时：
+用户在 WorkBuddy 对话框说 "**评测 EV-0001**" 时（v3.4 起 taskId 就是 queryCode；历史 `EV-0001-dlqvY6` 形式仍可识别）：
 
 ### 5.0 准备
 
@@ -582,7 +592,7 @@ tier 和 score **必须严格一一对应**（`tier="A", score=7` 非法）。**
 
 **契约版本 & 结构：**
 
-- [ ] `contractVersion` = `"3.3"`（或历史已定稿版本的对应值）
+- [ ] `contractVersion` = `"3.3"` 或 `"3.4"`（或历史已定稿版本的对应值）
 - [ ] `summary.rubric` 覆盖 R1~R5，id/name/weight 与 RUBRIC_STANDARD.md §二 一致；激活 X 后权重已等比缩减并写回
 - [ ] 维度内层数组字段名是 `scores`（不是 `reports`；历史踩坑点）
 - [ ] `overallScores[].productName` 非空、无括号版本号、同 payload 内唯一
@@ -660,7 +670,7 @@ tier 和 score **必须严格一一对应**（`tier="A", score=7` 非法）。**
 
 ### 6.2 向后兼容
 
-- 契约版本升级后，历史 v1.0 / v2.0 / v2.1 / v2.2 / v3.0 / v3.1 / v3.2 outbox 文件**保留不动**。
+- 契约版本升级后，历史 v1.0 / v2.0 / v2.1 / v2.2 / v3.0 / v3.1 / v3.2 / v3.3 outbox 文件**保留不动**。
 - 网站按 `contractVersion` 字段分别渲染，不做迁移。
 
 | 历史版本 | 正文结构 | 典型可选字段缺失情况 |
@@ -672,7 +682,8 @@ tier 和 score **必须严格一一对应**（`tier="A", score=7` 非法）。**
 | v3.0 | 三稳定锚点 + 自由生成层 | claimInventory Top 5 |
 | v3.1 | 四段正文锚点（早期） | claimInventory Top 5 |
 | v3.2 | 四段正文 + 两步阅读路径 | claimInventory Top 5；45min 三阶段 SOP |
-| **v3.3**（当前） | 四段正文 + 两步阅读路径 | claimInventory Top 10；取消 45min 时间盒 |
+| v3.3 | 四段正文 + 两步阅读路径 | claimInventory Top 10；取消 45min 时间盒 |
+| **v3.4**（当前） | 同 v3.3（评测规则零变更） | 仅目录语义变化：`outbox/{queryCode}/vN.json`；历史 suffix 目录已迁移合并 |
 
 - 网站对缺失字段**容错展示**（缺的字段整块不渲染，而非报错）。
 
@@ -684,14 +695,16 @@ tier 和 score **必须严格一一对应**（`tier="A", score=7` 非法）。**
 - **低分证据高亮**：tier C/D 的 comment 若含「」或引号原文片段，前端自动高亮；claimChecks refuted / inconclusive 的 evidence 自动展开显示
 - **focusProductName=none 时**：仍允许结构化字段写入 `"none"`，但页面不再为此单独占据主阅读区
 - **v3.3 渲染兼容**：v3.3 与 v3.2 在前端阅读路径上完全一致（claim Top 10、去时间盒属于评测侧规则调整，前端渲染无需差异化处理）
+- **v3.4 渲染兼容**：v3.4 仅改目录组织与 taskId 语义，前端 `flattenTaskVersions` 对历史 suffix 目录与扁平化目录统一按 (taskId, version) mtime 排序重编号；阅读路径、评分表、SBS、claim 展示全部沿用 v3.3 行为。
 
 ---
 
 ## 7. 版本
 
-- **契约版本：3.3**
-- 生效日期：2026-04-27
+- **契约版本：3.4**
+- 生效日期：2026-04-28
 - 历史版本：
+  - 3.3（2026-04-27）—— 质量优先：取消 45min 时间盒；claim Top 5 → Top 10；文档精简
   - 3.2（2026-04-26）—— 页面主阅读路径收敛为"评分总表 + 正文"；四段正文规则落地；crossProductInsights 等结构化字段回归正文展开
   - 3.1（2026-04-25 深夜）—— 先查错再评分、四段正文锚点、非共识观点要求
   - 3.0（2026-04-25 晚）—— 聚焦 Sophia、三稳定锚点 + 自由生成层、crossProductInsights、证据密度硬约束
@@ -699,6 +712,13 @@ tier 和 score **必须严格一一对应**（`tier="A", score=7` 非法）。**
   - 2.1（2026-04-22）—— 外部核验硬约束、perReportFeedback、报告六大章节
   - 2.0（2026-04-21）—— 维度重构、档位制、一票否决、扩展维度
   - 1.0（2026-04-19）—— 初版
+- **v3.4 vs v3.3 的落地变化**（结构性工程整理，评测规则零变更）：
+  - **taskId 语义扁平化**：`taskId === queryCode`，不再拼 `-${nanoid6}` 后缀
+  - **outbox 目录**：`outbox/{queryCode}/v{N}.json`，同 query 多轮评测累积写入同目录
+  - **inbox 文件**：每 query 一个 `inbox/{queryCode}.json`；POST 已存在按 `candidateId` 合并 candidates（新 candidate 追加，已有 candidate 保留磁盘权威副本以避免轧平 PATCH 历史）
+  - **兼容层**：`parseQueryCode` / `codeRegistry.reconcile` / `renamePrefix` / `flattenTaskVersions` 同时认扁平化与历史带 suffix 两种形式
+  - **历史目录迁移**：`scripts/migrate-consolidate-outbox.mjs` 按 mtime 合并 `EV-XXXX-suffix/vN` → `EV-XXXX/vN`；迁移不动任何 payload 评测内容，只改 taskId 字段与目录名
+  - **lint / 测试 / 类型 / eslint 全绿**，dev server 冷启 `codeRegistry` reconcile no-op
 - **v3.3 vs v3.2 的落地变化**：
   - 取消 45 分钟硬时间盒（评测质量优先；`targetMinutes` 仅作节奏参考）
   - claimInventory 容量上限 Top 5 → Top 10（加强事实核验密度）

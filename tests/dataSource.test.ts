@@ -47,13 +47,28 @@ describe("toStaticUrl — outbox 三种形态", () => {
     );
   });
 
-  it("outbox bundle：/_bus/outbox/:taskId → /outbox/:taskId/bundle.json", () => {
+  // v3.4（2026-04-28）起 taskId === queryCode（扁平化），历史 v1.0~v3.3 的
+  // `${queryCode}-${suffix6}` 形态仍然存在于 outbox 目录里作为只读历史。
+  // 这里两种形态都要覆盖，确保 toStaticUrl 不会因为路径段命名漂移而失效。
+  it("outbox bundle（v3.4 扁平化）：/_bus/outbox/EV-0002 → /outbox/EV-0002/bundle.json", () => {
+    expect(toStaticUrl("/_bus/outbox/EV-0002", PROD_PREFIX)).toBe(
+      "/sophia-rubric-lab/data/outbox/EV-0002/bundle.json"
+    );
+  });
+
+  it("outbox bundle（v3.3 及以前历史 suffix 形态）：/_bus/outbox/:taskId → /outbox/:taskId/bundle.json", () => {
     expect(toStaticUrl("/_bus/outbox/EV-0002-N3e5zP", PROD_PREFIX)).toBe(
       "/sophia-rubric-lab/data/outbox/EV-0002-N3e5zP/bundle.json"
     );
   });
 
-  it("outbox 具体版本：/_bus/outbox/:taskId/v/:n → /outbox/:taskId/v{n}.json", () => {
+  it("outbox 具体版本（v3.4 扁平化）：/_bus/outbox/EV-0005/v/3 → /outbox/EV-0005/v3.json", () => {
+    expect(toStaticUrl("/_bus/outbox/EV-0005/v/3", PROD_PREFIX)).toBe(
+      "/sophia-rubric-lab/data/outbox/EV-0005/v3.json"
+    );
+  });
+
+  it("outbox 具体版本（历史 suffix 形态）：/_bus/outbox/:taskId/v/:n → /outbox/:taskId/v{n}.json", () => {
     expect(toStaticUrl("/_bus/outbox/EV-0005-LlSiEs/v/3", PROD_PREFIX)).toBe(
       "/sophia-rubric-lab/data/outbox/EV-0005-LlSiEs/v3.json"
     );
@@ -62,6 +77,10 @@ describe("toStaticUrl — outbox 三种形态", () => {
   it("版本号是多位数（v10、v42）时仍正确", () => {
     expect(toStaticUrl("/_bus/outbox/EV-0001-seedAB/v/42", DEV_PREFIX)).toBe(
       "/outbox/EV-0001-seedAB/v42.json"
+    );
+    // 扁平化形态下多位版本号也要能映射
+    expect(toStaticUrl("/_bus/outbox/EV-0001/v/12", DEV_PREFIX)).toBe(
+      "/outbox/EV-0001/v12.json"
     );
   });
 

@@ -1,0 +1,345 @@
+{
+  "taskId": "EV-0002",
+  "version": 5,
+  "evaluator": "Sophia (Claude-Opus-4.7 via WorkBuddy)",
+  "evaluatedAt": "2026-04-28T03:40:00.000Z",
+  "contractVersion": "3.4",
+  "summary": {
+    "overallScores": [
+      { "reportId": "6q5vDnqkfk", "productName": "MiroThink", "score": 8.0, "verdict": "优秀", "vetoTriggered": false },
+      { "reportId": "SgBQUeWuiQ", "productName": "SophiaAI v5", "score": 6.8, "verdict": "合格", "vetoTriggered": false },
+      { "reportId": "Qm2DpyIJ-h", "productName": "Manus", "score": 6.3, "verdict": "合格", "vetoTriggered": false },
+      { "reportId": "F6BEti3wFm", "productName": "SophiaAI v4", "score": 5.4, "verdict": "待改进", "vetoTriggered": false },
+      { "reportId": "AhuI4bVzZS", "productName": "Gemini", "score": 5.0, "verdict": "待改进", "vetoTriggered": false }
+    ],
+    "rubric": [
+      {
+        "dimensionId": "R1", "name": "准确性", "weight": 0.4,
+        "subscores": {
+          "R1a": { "score": 8, "tier": "A", "weight": 0.28, "comment": "以 MiroThink R1a=A 为主轴说明：46 条脚注全部带 URL（Reuters、J.P. Morgan 季度 PDF、医药魔方、Skadden、特拉华法院判决），关键承重数字可逐条回溯；主动披露中国口径分歧（70 亿 vs 81 亿美元同期不同截止日）这是其他 4 份都没做到的元层级坦诚。其余 4 份的 R1a 在 scores[] 各自展开。" },
+          "R1b": { "score": 8, "tier": "A", "weight": 0.12, "comment": "以 MiroThink R1b=A 为主轴：三档风险敞口公式『历史终止率 × 存量首付款 × 争议转化率』主动标为量级估算；场景 A/B/C 无自相矛盾；跨段落首付款数字（2024 年 41 亿、2025 年 70 亿、比例 7.9%→5.2%）口径一致。Sophia v5 / Manus 的 R1b 在 scores[].comment 各自分开说明。" }
+        },
+        "scores": [
+          { "reportId": "6q5vDnqkfk", "score": 8, "tier": "A", "comment": "见 subscores：R1a=A(8), R1b=A(8) → R1 合成 A(8)。46 条一手源脚注 + 内部推导闭环；主动披露中国口径分歧（70 亿 vs 81 亿美元同期不同截止日），这是本轮唯一做到元层级坦诚的候选。", "confidence": "high", "issueTags": [] },
+          { "reportId": "SgBQUeWuiQ", "score": 6, "tier": "B", "comment": "SophiaAI v5 的 29 条引用全部是二手研报/门户文章（eastmoney、xueqiu、phirda、10jqka、qq.com），几乎无穿透到一手付费源或 MNC 财报原文。关键数字「2024 首付 41 亿 / 2025 首付 70.3 亿 / 比例 7.9%→5.2%」与一手口径对得上（verified-correct），但信源层级偏浅。算式「1356.55×94.8%×(1-22%)≈1000 亿美元」中的 22% 达成率与 94.8% 里程碑占比相乘，存在『里程碑占比口径』与『整体达成率口径』交叉的嫌疑。", "confidence": "high", "issueTags": ["一手源不足", "口径混乱"] },
+          { "reportId": "Qm2DpyIJ-h", "score": 6, "tier": "B", "comment": "Manus 的 22 条参考文献均为中文概括性引用（『医药魔方 2025 年度报告』『FierceBiotech 2026』），无可点击 URL。承重数字绝大多数可核（礼新 LM-299「5.88/32.88=17.9%」算术正确；Instil Bio「15 个月入组 3 例」有媒体支持；SKB315「全球 4 款同靶点 ADC 进入 III 期」与公开新闻基本对齐）。但「2022-2024 交易总额约 1000 亿美元 × 20%-40% 退货率 → 200-400 亿美元」这条推导的口径没说清（总额 vs 首付款基数差一个数量级），放大到纸面远超实际风险暴露。", "confidence": "high", "issueTags": ["一手源不足", "口径混乱"] },
+          { "reportId": "F6BEti3wFm", "score": 4, "tier": "C", "comment": "SophiaAI v4 信源层级最差：70+ 数据点无一条给出可点击链接、具体页码或文件名，所有来源打包成『医药魔方／西南证券／交银国际／浦银国际 2025 年研报』这种概括短语。大量小数点级分层数据被标注「基于付费数据推导，误差±5%~±10%」——这种精度一手渠道都未必给得出。Pass 2 锁定一条 refuted：原文「2024 年首付款同比-16.2%」与主流一手口径（2023 license-out upfront ≈ 31.6 亿→2024 ≈ 41 亿，同比 +30%）增长方向反向，属事实错误。该错误未触发 V1 量级错 veto（数字量级 41 亿同主流口径一致、仅方向反），故 R1a 落 C 档、不触发 veto。", "confidence": "high", "issueTags": ["未标注信源", "事实错误", "一手源不足"] },
+          { "reportId": "AhuI4bVzZS", "score": 4, "tier": "C", "comment": "Gemini 信源层级最差：全文零可点击链接、零脚注编号，所有数字靠句末一个空格字符承担引用责任。原文开头长段「中国医药跨境授权交易（License-out）质量演变与争议风险深度研究报告：2024-2026年价值重估与法律博弈分析」连续数段无一条链接。外部核验显示「2026 年至 2 月中旬 490 亿美元、平均交易 13 亿美元」（医药魔方/163 口径）核心承重数字真实，但一份严肃 BD 研究把所有证据链全部留白，承重 claim 几乎全部对读者不可核——即便部分经评测官额外核验为真，这种呈现方式在 R1a『信源可核查』子项上直接落 C。未触发 V1~V5 veto。", "confidence": "high", "issueTags": ["未标注信源", "一手源不足"] }
+        ]
+      },
+      {
+        "dimensionId": "R2", "name": "相关性", "weight": 0.15,
+        "scores": [
+          { "reportId": "6q5vDnqkfk", "score": 8, "tier": "A", "comment": "对 query 的四个锚点（双重指标/MNC 商业化能力/管线优先级/纠纷规模）均正面回应，且主动挖出「媒体按总额、MNC 按里程碑——对交易成功的定义从一开始就分歧」这条潜在诉求。", "confidence": "high", "issueTags": [] },
+          { "reportId": "SgBQUeWuiQ", "score": 8, "tier": "A", "comment": "query 的四个锚点全部正面回应，What/Why/So What 三段式对每条锚点都做了诉求闭环。", "confidence": "high", "issueTags": [] },
+          { "reportId": "Qm2DpyIJ-h", "score": 8, "tier": "A", "comment": "章节『基于双重指标』『MNC 商业化能力与管线优先级核查』『争议纠纷趋势与潜在规模』分别正面对应 query 三大子问题，锚点命中且内容贴题。", "confidence": "high", "issueTags": [] },
+          { "reportId": "F6BEti3wFm", "score": 6, "tier": "B", "comment": "锚点基本命中（首付款/比例/MNC/纠纷），但对 query 显式要求的「关注一手数据」回应不足——正文反复用「基于付费数据推导，误差±X%」遮蔽，实质是『不给一手数据』的语义。", "confidence": "high", "issueTags": [] },
+          { "reportId": "AhuI4bVzZS", "score": 6, "tier": "B", "comment": "双重指标和 MNC 管线核查部分回应清晰；但 query 明确要求「关注一手数据」，Gemini 全文零链接、零脚注，对『一手』这一诉求完全规避。", "confidence": "medium", "issueTags": [] }
+        ]
+      },
+      {
+        "dimensionId": "R3", "name": "论证深度", "weight": 0.2,
+        "scores": [
+          { "reportId": "6q5vDnqkfk", "score": 8, "tier": "A", "comment": "洞察密度本轮最高：三条深层洞察都是反直觉且成立——① 媒体按总额/MNC 按里程碑口径分歧；② 平均首付翻倍要分层看（Phase I 峰值回落、Phase II 连年下降，头重脚轻被均值掩盖）；③ NewCo 模式结构上约束 MNC 买而不推行为。", "confidence": "high", "issueTags": [] },
+          { "reportId": "SgBQUeWuiQ", "score": 8, "tier": "A", "comment": "What/Why/So What 三段式让每条观点都走完事实→原因→决策含义的推理链；「MNC 专利悬崖驱动低首付+高里程碑」「中国后期管线研发成本 30%-40%」两条关键因果给了较完整论据。二阶追问到位，但三阶『双方对成功定义分歧』的结构洞察缺位。", "confidence": "high", "issueTags": [] },
+          { "reportId": "Qm2DpyIJ-h", "score": 6, "tier": "B", "comment": "案例密度高（BMS MORAb-202、SKB315、宜明昂科/Instil Bio、三叶草/GAVI、恒瑞万春），一阶『发生了什么』讲得清楚，但二阶『为什么行业系统性出现这种现象』追问偏弱，多数结论停在「MNC 管线优先级调整」「临床数据落差」这类单因素归因。", "confidence": "high", "issueTags": ["结论空泛"] },
+          { "reportId": "F6BEti3wFm", "score": 6, "tier": "B", "comment": "『分批次暴露窗口』（按签约年份倒推纠纷高发期）是少见的时间维度推演，有洞察价值。但多数『核心驱动因素权重分配』『风险规避最佳实践』停留在常识；论据→结论链条常跳跃，如「2024-2025 首付款增长 70% 来自四类因素的正向驱动」但权重怎么拆的没说明。", "confidence": "high", "issueTags": ["逻辑跳跃"] },
+          { "reportId": "AhuI4bVzZS", "score": 6, "tier": "B", "comment": "『捡漏→价值重估→溢价定价』三阶段叙事视角有差异化；MNC 管线协同映射（阿斯利康 CVRM/艾伯维肿瘤免疫/默克心血管/GSK 呼吸）做了合理的战略对位。但因零信源支撑，很多推论只是『说得合理』而非『有据支撑』，论证闭环度被信源问题拉低。", "confidence": "medium", "issueTags": ["论据缺失"] }
+        ]
+      },
+      {
+        "dimensionId": "R4", "name": "完备性", "weight": 0.1,
+        "scores": [
+          { "reportId": "6q5vDnqkfk", "score": 8, "tier": "A", "comment": "九段式骨架结构清晰，定量表格齐全；高/中/潜在三档风险敞口做了分层估算。", "confidence": "high", "issueTags": [] },
+          { "reportId": "SgBQUeWuiQ", "score": 6, "tier": "B", "comment": "结构清晰但定量偏弱：有首付款绝对值/比例分年表、退货率 40% 等关键数字，但缺 MiroThink 那种跨阶段/跨赛道分层对比矩阵，分阶段首付款中位数也没做。", "confidence": "high", "issueTags": ["定量缺失"] },
+          { "reportId": "Qm2DpyIJ-h", "score": 6, "tier": "B", "comment": "五张图表使结构较饱满，但定量深度不足——首付比例图只给区间，退货率估算用大数 200-400 亿美元口径不清。", "confidence": "high", "issueTags": ["定量缺失"] },
+          { "reportId": "F6BEti3wFm", "score": 8, "tier": "A", "comment": "六章骨架、每章多级分项；分阶段定价表（临床前/I/II/III × 肿瘤/自免/罕见病）、分层占比、四类外部因素权重表、三种情景损失测算（7.8/45.3/149.2 亿美元）、分批次暴露窗口——定量颗粒度是本轮最细的。虽然被 R1 信源问题严重拖累，但维度覆盖层面最完整。", "confidence": "high", "issueTags": [] },
+          { "reportId": "AhuI4bVzZS", "score": 4, "tier": "C", "comment": "整份报告没有 markdown heading 层级支撑，呈现上接近 wall of text：「中国医药跨境授权交易（License-out）质量演变与争议风险深度研究报告：2024-2026年价值重估与法律博弈分析全球医药价值链重构下的中国资产定位自2024年以来」——段落切分靠大段中文无标点连写，读者很难回溯某个子论点在哪一段；定量上也偏弱（只有一张三行的『年份-平均首付-增幅』小表）。", "confidence": "high", "issueTags": ["定量缺失"] }
+        ]
+      },
+      {
+        "dimensionId": "R5", "name": "决策价值", "weight": 0.15,
+        "scores": [
+          { "reportId": "6q5vDnqkfk", "score": 8, "tier": "A", "comment": "立即行动/短期/长期三层建议清晰可执行：『首付款<5% 视为管线优先级低信号』『合同中明确商业化里程碑定义、设销售阈值/患者数等可执行条款』『推动 BD 合同标准化条款库（类比 ISDA）』。风险披露坦诚：『所有数字均为量级估算，非精确预测』『保密 ADR 使公开案例仅为冰山一角』——元层级 caveat 是其他几份都缺的。", "confidence": "high", "issueTags": [] },
+          { "reportId": "SgBQUeWuiQ", "score": 6, "tier": "B", "comment": "每节 So What 给了启示性结论，但建议偏宏观（『加强尽职调查』『设置灵活里程碑条款』『引入第三方机构评估』），可执行颗粒度低于 MiroThink。caveat 几乎缺失——「潜在未兑现金额超 1800 亿美元」这种关键敏感测算，没配套置信区间或情景分析。", "confidence": "high", "issueTags": ["启发性不足", "风险缺失"] },
+          { "reportId": "Qm2DpyIJ-h", "score": 6, "tier": "B", "comment": "四条建议（核查商业化能力、明确里程碑时间表、防恶意雪藏、数据披露合规）具体性尚可，但缺 take-away 级可直接落笔的条款模板。对 200-400 亿美元退货规模只给数字没给置信区间。", "confidence": "high", "issueTags": ["风险缺失"] },
+          { "reportId": "F6BEti3wFm", "score": 6, "tier": "B", "comment": "末章『风险规避最佳实践』有四个具体条款模板（商业合理努力表述、里程碑跳过保护、提前终止赔偿、RC148 范本）、风险排查清单、纠纷应对三段式——本来可以打 A，但因数据基础不可靠被打折；对自身数据可靠性只做了附录式『数据局限说明』，未在主文 caveat。", "confidence": "high", "issueTags": ["风险缺失"] },
+          { "reportId": "AhuI4bVzZS", "score": 6, "tier": "B", "comment": "结论部分点出「CMC 技术转移/FTO 分析/Biosecure 合规/HGRAC 数据监管」四个新型路障——这几条对决策者有增量；建议『在授权协议中设资产回收触发点和数据完整性担保』也具体可操作。但整体偏叙事性结论，没有立即/短期/长期的可执行分层。", "confidence": "medium", "issueTags": [] }
+        ]
+      }
+    ],
+    "sbs": {
+      "pairs": [
+        { "reportIdA": "6q5vDnqkfk", "reportIdB": "SgBQUeWuiQ", "winner": "A", "margin": "clear", "dimensionDriver": ["R1", "R4", "R5"], "keyReason": "MiroThink 在 R1（46 条一手源 URL vs Sophia v5 的 29 条二手研报）、R4（分层矩阵齐全）、R5（ISDA 式条款库更可执行）明显领先；总分差 1.2。" },
+        { "reportIdA": "6q5vDnqkfk", "reportIdB": "Qm2DpyIJ-h", "winner": "A", "margin": "clear", "dimensionDriver": ["R1", "R3"], "keyReason": "MiroThink R1 URL 脚注密度和 R3 三层深度洞察明显强于 Manus 的单因素归因；总分差 1.7。" },
+        { "reportIdA": "6q5vDnqkfk", "reportIdB": "F6BEti3wFm", "winner": "A", "margin": "overwhelming", "dimensionDriver": ["R1", "R3", "R5"], "keyReason": "MiroThink 与 SophiaAI v4 在 R1 两档差距（A vs C，核心是 URL 脚注 vs 未标信源+1 条 refuted 事实错误）+ R3/R5 多处一档差距；总分差 2.6。" },
+        { "reportIdA": "6q5vDnqkfk", "reportIdB": "AhuI4bVzZS", "winner": "A", "margin": "overwhelming", "dimensionDriver": ["R1", "R4"], "keyReason": "MiroThink 多维度两档碾压 Gemini：R1（A vs C，URL 脚注 vs 全文零链接）、R4（A vs C，结构分明 vs wall of text）；总分差 3.0。" },
+        { "reportIdA": "SgBQUeWuiQ", "reportIdB": "Qm2DpyIJ-h", "winner": "A", "margin": "slight", "dimensionDriver": ["R3"], "keyReason": "两份在 R1/R2/R4/R5 档位一致；Sophia v5 的 What/Why/So What 二阶追问略强于 Manus 单因素归因；总分差 0.5。" },
+        { "reportIdA": "SgBQUeWuiQ", "reportIdB": "F6BEti3wFm", "winner": "A", "margin": "clear", "dimensionDriver": ["R1", "R3"], "keyReason": "Sophia v5 的 R1 一档优势（B vs C，核心是 v4 存在 1 条 refuted『2024 首付-16.2%』事实错误）+ R3 一档优势；v4 的 R4=A 更强但被 R1 的 weight 0.4 对冲；总分差 1.4。" },
+        { "reportIdA": "SgBQUeWuiQ", "reportIdB": "AhuI4bVzZS", "winner": "A", "margin": "clear", "dimensionDriver": ["R1", "R4"], "keyReason": "Sophia v5 在 R1（B vs C）和 R4（B vs C，结构 vs wall of text）一档领先，其余维度打平；总分差 1.8。" },
+        { "reportIdA": "Qm2DpyIJ-h", "reportIdB": "F6BEti3wFm", "winner": "A", "margin": "clear", "dimensionDriver": ["R1"], "keyReason": "Manus 虽无 URL 脚注但至少有文献标题可溯源，R1a 优于 v4 的无源+1 条 refuted 事实错误；v4 的 R4=A 单维度差距不足以翻盘；总分差 0.9。" },
+        { "reportIdA": "Qm2DpyIJ-h", "reportIdB": "AhuI4bVzZS", "winner": "A", "margin": "clear", "dimensionDriver": ["R1", "R4"], "keyReason": "Manus 的 22 条文献+5 张定量图表明显强于 Gemini 的零链接 wall of text；R1/R4 各领先一档；总分差 1.3。" },
+        { "reportIdA": "F6BEti3wFm", "reportIdB": "AhuI4bVzZS", "winner": "A", "margin": "slight", "dimensionDriver": ["R4"], "keyReason": "两份都被 R1 的 C 档严重拖累；v4 的 R4（A vs C，六章结构+分阶段定价表 vs wall of text）显著领先，其他维度基本打平；总分差 0.4。" }
+      ]
+    },
+    "perReportFeedback": [
+      {
+        "reportId": "6q5vDnqkfk", "productName": "MiroThink",
+        "strengths": [
+          "R1 一手源密度行业级：46 条脚注全部带 URL（Reuters / J.P. Morgan 季度 PDF / 医药魔方 / Skadden / 特拉华法院判决），任一承重 claim 都可让读者自行回溯。",
+          "R3 三层深度洞察成立：媒体/MNC 口径分歧、头重脚轻被均值掩盖、NewCo 模式结构上约束 MNC 买而不推。",
+          "R5 元层级 caveat：主动披露『所有数字均为量级估算』『保密 ADR 使公开案例仅为冰山一角』，对决策者校准期望值极有帮助。"
+        ],
+        "weaknesses": [
+          "Alexion 3.1 亿/Fortis 近 10 亿等数字在同段内组合，读者需自行对口径。",
+          "分阶段首付款中位数全表没做（这点 SophiaAI v4 反而更细）。"
+        ],
+        "improvements": [
+          "在首付款分层表中增加 Phase Ia/Ib/II/III 中位数列，补齐 v4 那种定量颗粒度。",
+          "把 Skadden、J.P. Morgan 等英文 PDF 的页码在脚注中标出，进一步降低读者核验成本。"
+        ]
+      },
+      {
+        "reportId": "SgBQUeWuiQ", "productName": "SophiaAI v5",
+        "strengths": [
+          "R2/R3：What/Why/So What 结构对每条锚点做了完整诉求闭环；二阶追问（专利悬崖驱动低首付、中国后期管线性价比）到位。",
+          "R4：首付款绝对值/比例分年表、退货率 40% 等关键数字齐全，且 29 条引用覆盖了 2024~2026Q1 全时段事件。",
+          "R1 对 v4 的代际修正：换用主流一手口径（41 亿/70.3 亿/+71.5%），撤销了 v4 的 refuted 事实错误。"
+        ],
+        "weaknesses": [
+          "R1 信源层级偏浅：29 条引用全部是二手研报/门户文章，几乎无穿透到医药魔方/DealForma 等付费一手源或 MNC 财报原文，难以与 MiroThink 的 46 条 URL 脚注竞争。",
+          "R1b 算式「1356.55×94.8%×(1-22%)≈1000 亿美元」存在『里程碑占比』与『整体达成率』两种口径交叉相乘的嫌疑，建议明确基数。",
+          "R5 caveat 缺失：「潜在未兑现金额超 1800 亿美元」这种敏感测算没有置信区间或情景分析。"
+        ],
+        "improvements": [
+          "把引用列表按『一手源 / 准一手 / 二手评论』三档分色排布，暴露一手源缺口；在关键数字旁注明页码或日期锚点。",
+          "在 1000 亿美元未兑现估算附近加高/中/低三个情景（参考 MiroThink 的 A/B/C 场景），给决策者置信区间。",
+          "R3 再推一阶：借鉴 MiroThink 的『媒体按总额 vs MNC 按里程碑——双方对成功的定义从签约那一刻就分歧』这种结构性观察。"
+        ]
+      },
+      {
+        "reportId": "Qm2DpyIJ-h", "productName": "Manus",
+        "strengths": [
+          "R2/R3：案例密度最高的一份——BMS MORAb-202、SKB315、宜明昂科/Instil Bio、三叶草/GAVI、恒瑞万春等关键纠纷案例都给出了金额和阶段。",
+          "R4：5 张图表（交易规模、首付比例、MNC 矩阵、终止原因、纠纷趋势）结构饱满，视觉化做得不错。",
+          "R1：礼新 LM-299『5.88/32.88=17.9%』算术核验正确，关键承重数字基本可核。"
+        ],
+        "weaknesses": [
+          "R1：22 条参考文献全部是中文概括性引用，无 URL、无日期锚点，读者难以回溯。",
+          "R3：多数结论停在『MNC 管线优先级调整』『临床数据落差』这类单因素归因，缺二阶结构性分析。",
+          "R1b：「2022-2024 交易总额约 1000 亿美元 × 20%-40% 退货率 → 200-400 亿美元」口径放大——总额不是暴露基数，应以首付款或里程碑累计为基数。"
+        ],
+        "improvements": [
+          "把参考文献补全 URL 或 DOI，至少补上日期；对 FierceBiotech / 医药魔方等关键源加具体文章标题。",
+          "退货规模估算改用首付款基数（而非总披露额），或显式声明正在用总披露额作为『潜在风险天花板』。",
+          "对 SKB315、MORAb-202 等案例多推一阶『为什么赛道拥挤会系统性触发退货』的机制分析。"
+        ]
+      },
+      {
+        "reportId": "F6BEti3wFm", "productName": "SophiaAI v4",
+        "strengths": [
+          "R4：六章骨架 + 分阶段定价表 + 三种情景损失测算（7.8/45.3/149.2 亿美元）+ 分批次暴露窗口，定量颗粒度本轮最细。",
+          "R5：四个具体条款模板（商业合理努力、里程碑跳过保护、提前终止赔偿、RC148 范本）、一张风险排查清单、三段式纠纷应对指引——实操性本来极强。"
+        ],
+        "weaknesses": [
+          "R1 硬伤：70+ 数据点无一条可点击链接，所有信源打包成概括短语；大量分层数据标注「基于付费数据推导，误差±5%~±10%」——这种精度一手渠道都给不出，疑似模型生成。",
+          "R1a 事实错误（refuted）：原文「2024 年首付款同比-16.2%」与主流口径（2023 年 license-out 首付 ≈ 31.6 亿→2024 ≈ 41 亿，同比 +30%）增长方向反向；未触发 V1 仅因数字量级没错。",
+          "R5 风险披露偏弱：对自身数据可靠性只在附录做『数据局限说明』，未在主文 caveat。"
+        ],
+        "improvements": [
+          "把所有『推导数据』要么补一手源要么下调精度（从『±5%』改成『估算量级』），禁止给出无法核查的小数点级分层数字。",
+          "2024 年首付款增长方向需更正为『同比显著增长』，并在报告开头加一条『我们对 2024 年首付款同比方向的自校正』。",
+          "把定量颗粒度和 MiroThink 的 URL 信源密度做融合——保持 v4 的结构颗粒度、替换掉信源层。"
+        ]
+      },
+      {
+        "reportId": "AhuI4bVzZS", "productName": "Gemini",
+        "strengths": [
+          "R3：『捡漏→价值重估→溢价定价』三阶段叙事视角有差异化；MNC 管线协同映射（阿斯利康 CVRM、艾伯维肿瘤免疫、默克心血管、GSK 呼吸）做得具体。",
+          "R5：结论部分点出「CMC 技术转移 / FTO 分析 / Biosecure 合规 / HGRAC 数据监管」四个新型路障，对决策者有增量。"
+        ],
+        "weaknesses": [
+          "R1 硬伤：全文零可点击链接、零脚注编号，所有数字靠句末一个空格字符承担引用责任；query 明确要求「关注一手数据」，这份反而最彻底地规避了。",
+          "R4：整份报告没有 markdown heading 层级，段落靠大段中文无标点连写，读者难以回溯子论点位置。",
+          "R5：没有『立即/短期/长期』的可执行分层，结论偏叙事性。"
+        ],
+        "improvements": [
+          "补齐脚注编号与 URL；即便无链接，至少标明引用日期与来源机构。",
+          "用 markdown heading 层级（## / ###）重组报告结构，避免 wall of text。",
+          "增加『立即行动 / 短期 / 长期』的分层建议与具体条款示例，承接 MiroThink 的 R5 框架。"
+        ]
+      }
+    ],
+    "claimInventory": [
+      { "claimId": "c1", "reportId": "SgBQUeWuiQ", "type": "number", "claim": "2024 年首付款 41 亿美元、2025 年 70.3 亿美元（同比 +71.5%），2026Q1 首付款超 33 亿美元（平均 1.84 亿美元）", "supportWeight": "high", "locationHint": "BD 质量分析第一节 What" },
+      { "claimId": "c2", "reportId": "SgBQUeWuiQ", "type": "number", "claim": "首付款占总金额比例：2024 年 7.9%、2025 年 5.2%、2026Q1 降至 2%-5% 区间", "supportWeight": "high", "locationHint": "BD 质量分析第一节 What" },
+      { "claimId": "c3", "reportId": "SgBQUeWuiQ", "type": "logic", "claim": "潜在未兑现里程碑金额推导：1356.55×94.8%×(1-22%)≈1000 亿美元（2025 年口径），加 2024 和 2026Q1 合计 >1800 亿美元", "supportWeight": "high", "locationHint": "纠纷规模第二节 So What" },
+      { "claimId": "c4", "reportId": "SgBQUeWuiQ", "type": "fact", "claim": "2020 年完成的 62 笔 license-out 交易，截至 2025 年 4 月累计退货 25 起，退货率达 40%", "supportWeight": "high", "locationHint": "纠纷趋势第一节 What" },
+      { "claimId": "c5", "reportId": "SgBQUeWuiQ", "type": "fact", "claim": "荣昌生物与艾伯维 6.5 亿美元首付款交易（RC148 PD-1/VEGF 双抗）", "supportWeight": "high", "locationHint": "合作方维度第一节 What" },
+      { "claimId": "c6", "reportId": "SgBQUeWuiQ", "type": "number", "claim": "全球 Top10 BD 交易中 8 项来自中国（2025 年口径）", "supportWeight": "medium", "locationHint": "综合趋势第一节" },
+      { "claimId": "c7", "reportId": "6q5vDnqkfk", "type": "number", "claim": "2024 年中国创新药 license-out 总额 519 亿美元，首付款 41 亿美元", "supportWeight": "high", "locationHint": "趋势数据段" },
+      { "claimId": "c8", "reportId": "6q5vDnqkfk", "type": "fact", "claim": "亨利医药/诺和诺德案索赔 8.3 亿美元，诺和诺德向新加坡国际商事法庭申请全球资产冻结令", "supportWeight": "high", "locationHint": "纠纷时间线段" },
+      { "claimId": "c9", "reportId": "6q5vDnqkfk", "type": "logic", "claim": "三档风险敞口估算：『历史终止率 × 存量首付款 × 争议转化率』——主动标为量级估算", "supportWeight": "high", "locationHint": "规模估算段" },
+      { "claimId": "c10", "reportId": "6q5vDnqkfk", "type": "source", "claim": "J.P. Morgan 季度 PDF、Reuters、Skadden 律所报告、特拉华法院判决书均带 URL 脚注", "supportWeight": "high", "locationHint": "全文脚注" },
+      { "claimId": "c11", "reportId": "Qm2DpyIJ-h", "type": "number", "claim": "礼新 LM-299 授权默沙东：5.88 亿 / 32.88 亿 首付款比例 = 17.9%", "supportWeight": "high", "locationHint": "首付款比例段" },
+      { "claimId": "c12", "reportId": "Qm2DpyIJ-h", "type": "fact", "claim": "Instil Bio 引进宜明昂科 IMM2510 后 15 个月仅入组 3 例患者，宜明昂科终止合作保留 3500 万美元首付款", "supportWeight": "high", "locationHint": "管线优先级段" },
+      { "claimId": "c13", "reportId": "Qm2DpyIJ-h", "type": "logic", "claim": "退货规模估算：2022-2024 交易总额 1000 亿美元 × 20%-40% 退货率 → 200-400 亿美元", "supportWeight": "high", "locationHint": "潜在规模段" },
+      { "claimId": "c14", "reportId": "Qm2DpyIJ-h", "type": "fact", "claim": "BMS 2024 年 7 月退回卫材 FRα ADC（MORAb-202），理由为内部产品组合优先级调整", "supportWeight": "medium", "locationHint": "管线优先级段" },
+      { "claimId": "c15", "reportId": "F6BEti3wFm", "type": "number", "claim": "2024 年首付款同比-16.2%（即 2024 年首付款较 2023 年下降 16.2%）", "supportWeight": "high", "locationHint": "首付款趋势段" },
+      { "claimId": "c16", "reportId": "F6BEti3wFm", "type": "number", "claim": "三种情景损失测算：低/中/高 = 7.8 / 45.3 / 149.2 亿美元", "supportWeight": "high", "locationHint": "纠纷规模测算段" },
+      { "claimId": "c17", "reportId": "F6BEti3wFm", "type": "logic", "claim": "分批次暴露窗口：2023/2024/2025 签约批次分别对应 2026/2027/2028 纠纷爆发期", "supportWeight": "medium", "locationHint": "时间维度推演段" },
+      { "claimId": "c18", "reportId": "F6BEti3wFm", "type": "source", "claim": "大量分层数据标注『公开交叉推导、误差±5%~±10%』——无具体一手源", "supportWeight": "high", "locationHint": "分层占比段" },
+      { "claimId": "c19", "reportId": "AhuI4bVzZS", "type": "number", "claim": "2026 年开年至 2 月中旬交易额接近 490 亿美元，平均交易规模 13 亿美元（较 2025 年 +76%）", "supportWeight": "high", "locationHint": "宏观定位段" },
+      { "claimId": "c20", "reportId": "AhuI4bVzZS", "type": "number", "claim": "2025 年跨境授权交易额 1,377 亿美元（较 2021 年的 139 亿美元约为十倍）", "supportWeight": "high", "locationHint": "宏观定位段" },
+      { "claimId": "c21", "reportId": "AhuI4bVzZS", "type": "logic", "claim": "纠纷规模估算：1,377 亿美元 × 1.5% 纠纷率 → 20 亿美元以上潜在争议", "supportWeight": "medium", "locationHint": "纠纷规模量化段" },
+      { "claimId": "c22", "reportId": "AhuI4bVzZS", "type": "source", "claim": "全文零可点击链接、零脚注编号，所有数字靠句末『 』空格承担引用责任", "supportWeight": "high", "locationHint": "全文" }
+    ],
+    "claimChecks": [
+      { "claimId": "c1", "status": "verified-correct", "evidence": "西南证券 2025 年药品 BD 出海总结、phirda 2025 盘点等主流渠道均给出 2024 年首付款 41 亿、2025 年 70.3 亿的口径（license-out 范畴），2026Q1 首付款超 33 亿也有人民日报财经频道背书。", "checkedBy": "pass2-external-search" },
+      { "claimId": "c2", "status": "verified-correct", "evidence": "phirda、东方财富、新浪财经 2025 年盘点普遍给出『2024 年首付款占比 7.9%』『2025 年降至 5.2%』口径；2026Q1 区间低至 2%-5% 与人民日报报道口径一致。", "checkedBy": "pass2-external-search" },
+      { "claimId": "c3", "status": "inconclusive", "evidence": "原文「1356.55×94.8%×(1-22%)≈1000 亿美元」把『里程碑占交易总额 94.8%』和『里程碑整体达成率 22%』两个不同口径的比例相乘。外部核验：里程碑整体达成率 22% 的口径来自全球 BD 数据，非仅针对 2025 年中国 license-out；严格口径下不能直接乘。数字本身作为量级估算接近真实未兑现风险，但推导链存在口径交叉问题，不触发 V1 但拉低 R1b 置信度。", "checkedBy": "pass3-logic" },
+      { "claimId": "c4", "status": "verified-correct", "evidence": "新浪财经 2025-04-29《40%退货率，卖到海外的国产创新药遭遇分手危机？》直接给出『2020 年 62 笔 license-out 截至 2025-04 累计退货 25 起、退货率 40%』；动脉网等多源交叉确认。", "checkedBy": "pass2-external-search" },
+      { "claimId": "c5", "status": "verified-correct", "evidence": "证券时报 2024-11 报道『荣昌生物拿下 56 亿美元大单』，艾伯维-荣昌 RC148 交易首付款 6.5 亿美元与后续多家媒体口径一致。", "checkedBy": "pass2-external-search" },
+      { "claimId": "c6", "status": "verified-correct", "evidence": "西南证券 2025 BD 出海总结、xueqiu 7621012416/372169014 均给出『2025 年全球 Top10 BD 交易中 8 项来自中国』。", "checkedBy": "pass2-external-search" },
+      { "claimId": "c7", "status": "verified-correct", "evidence": "医药魔方、10jqka、phirda 多源一致：2024 年中国创新药 license-out 总额 519-523 亿美元区间、首付款 41 亿美元。MiroThink 取值 519 亿在主流口径内。", "checkedBy": "pass2-external-search" },
+      { "claimId": "c8", "status": "verified-correct", "evidence": "phirda《60 亿索赔惊魂记！诺和诺德怒告 KBP》、网易 163 等多源确认诺和诺德指控 KBP/亨利医药临床数据欺诈、索赔 8.3 亿美元、申请全球资产冻结令，细节与报告一致。", "checkedBy": "pass2-external-search" },
+      { "claimId": "c9", "status": "verified-correct", "evidence": "属方法论诚实性——报告主动声明为量级估算而非精确预测，跨段落数字（退货率、首付款存量、争议转化率）口径一致，算式可重建，无量纲错误。", "checkedBy": "pass3-logic" },
+      { "claimId": "c10", "status": "verified-correct", "evidence": "抽样复核 Reuters/J.P. Morgan/医药魔方三条脚注：URL 指向文章或 PDF 文件，内容与引用一致；不存在编造源。", "checkedBy": "pass2-external-search" },
+      { "claimId": "c11", "status": "verified-correct", "evidence": "算术核验：5.88 / 32.88 = 0.17883 ≈ 17.9%，通过。礼新-默沙东 LM-299 的 5.88 亿首付款与 32.88 亿总额在多家媒体（phirda、医药魔方）报道中一致。", "checkedBy": "pass2-arithmetic" },
+      { "claimId": "c12", "status": "verified-correct", "evidence": "sfccn.com 2026-01-07《抗癌新药全球合作遭遇闪离》、新浪财经等报道宜明昂科与 Instil Bio 合作细节：IMM2510 签约 15 个月仅入组 3 例、宜明昂科终止合作并保留 3500 万美元首付款，细节与报告一致。", "checkedBy": "pass2-external-search" },
+      { "claimId": "c13", "status": "inconclusive", "evidence": "原文「2022-2024 交易总额约 1000 亿美元 × 20%-40% 退货率 → 200-400 亿美元」。外部核验：退货率 20%-40% 的统计基数是『交易数量』，不是『交易总金额』；用数量口径的退货率乘金额基数会系统性放大风险暴露。退货率数值本身与动脉网『2020 批次 40%』可对齐，但口径交叉使推导结论（200-400 亿美元）不可信。不触发 V1 仅因量级仍在可能范围。", "checkedBy": "pass3-logic" },
+      { "claimId": "c14", "status": "verified-correct", "evidence": "动脉网 2025《医药 BD 交易终止案例法律启示》直接列举 BMS 2024-07 退回卫材 FRα ADC MORAb-202，理由『内部管线优先级调整』，与报告一致。", "checkedBy": "pass2-external-search" },
+      { "claimId": "c15", "status": "refuted", "evidence": "SophiaAI v4 原文「2024 年首付款同比-16.2%」经外部核验明显反向：主流一手口径（医药魔方、phirda、xueqiu 等）2023 年 license-out 首付款约 31.6 亿美元、2024 年 41 亿美元，同比 +30% 左右；SophiaAI v5 自己也给的是 41 亿美元。该错误属事实错误，但数字量级 41 亿本身同主流口径一致、仅增长方向反，故不触发 V1 量级错 veto，R1a 直接落 C 档。", "checkedBy": "pass2-external-search" },
+      { "claimId": "c16", "status": "inconclusive", "evidence": "情景测算『7.8 / 45.3 / 149.2 亿美元』本身做成了三档情景是合理框架，但三档所依赖的前提参数（不同阶段退货率、首付款乘数、时间窗口）来自原文「基于付费数据推导，误差±5%~±10%」却无一条可核一手源，导致情景区间本身无法落锤——不能被证伪也无法被证实。", "checkedBy": "pass2-external-search" },
+      { "claimId": "c17", "status": "verified-correct", "evidence": "逻辑上成立：license-out 交易签约后典型 2-3 年进入临床关键节点，这就让早期签约批次在后期集中暴露纠纷；跨段落口径自洽。属量级估算而非精确预测，R1b 可通过。", "checkedBy": "pass3-logic" },
+      { "claimId": "c18", "status": "refuted", "evidence": "SophiaAI v4 原文多次出现「基于付费数据推导，误差±5%~±10%」但未给出任何付费源名称、查询日期或可追溯标识，更没给出一手源的任一页码。所谓『付费数据库缺失所以公开交叉推导』是明显的挡箭牌话术——实际上小数点级分层数据（如『<3%占比约18%、3%-6%约37%、>6%约45%』）公开渠道根本给不出这种精度，属实质上的未标注信源。不触发 V5 编造源（未编造具体文献名），但按 R1a 信源可核查性直接计入扣档。", "checkedBy": "pass2-external-search" },
+      { "claimId": "c19", "status": "verified-correct", "evidence": "医药魔方相关盘点（被 163.com 等多源转载）：『截至 2026-02-15，中国医药 license-out 交易已达 39 起、总金额超 490 亿美元』；Gemini 取值 490 亿与主流口径一致。平均交易 13 亿美元（490/39≈12.6 亿，在口径容差内）。", "checkedBy": "pass2-external-search" },
+      { "claimId": "c20", "status": "verified-correct", "evidence": "2025 年 license-out 全口径：phirda 给出 1,356.55 亿美元；Gemini 的 1,377 亿美元与之存在约 1.5% 的轻微口径差异（估计是跨境全部 BD 含 license-in vs 仅 license-out 的差异）——未达到 refuted 程度，记为 verified-correct 但提示口径差异。", "checkedBy": "pass2-external-search" },
+      { "claimId": "c21", "status": "inconclusive", "evidence": "Gemini 原文「按 1.5% 的纠纷率（行业常见纠纷水平）计算」——『1.5% 行业常见纠纷率』这个数字本身全文无出处，外部核验未找到权威来源对应这个具体比例；且用仲裁标的比例去乘 BD 总额估算潜在争议，口径与 Manus 的『按退货率乘总额』同类偏移。不触发 V1 仅因数字量级在合理区间。", "checkedBy": "pass3-logic" },
+      { "claimId": "c22", "status": "refuted", "evidence": "对照原文确认：「中国医药跨境授权交易（License-out）质量演变与争议风险深度研究报告…全球医药价值链重构下的中国资产定位自2024年以来，中国生物医药产业的对外授权交易（License-out）进入了从量变到质变的深水区。在全球医药行业面临巨大专利壁垒挑战——预计2026年至2030年间，全球制药年度收入将因专利到期面临高达2,000亿美元损失的背景下」——整份报告通读无一条可点击 URL、无一条脚注编号，所有数据后只跟一个空格字符代替引用。query 显式要求「关注一手数据」，这份是本轮最彻底的规避。R1a『信源可核查』子项直接落 C 档。", "checkedBy": "pass1-skim" }
+    ],
+    "dimensionChecklists": {
+      "R1": {
+        "items": [
+          { "label": "抽取了承重 claim 清单？Top 10 封顶、下限 ≥3、含 ≥1 条 logic 类", "passedFor": ["SgBQUeWuiQ", "6q5vDnqkfk", "Qm2DpyIJ-h", "F6BEti3wFm", "AhuI4bVzZS"] },
+          { "label": "承重 claim 核验覆盖率 ≥85%（verified+refuted+inconclusive / 非 skipped）", "passedFor": ["SgBQUeWuiQ", "6q5vDnqkfk", "Qm2DpyIJ-h", "F6BEti3wFm", "AhuI4bVzZS"] },
+          { "label": "每份报告对 3~5 条精确承重数字做了一手源对照", "passedFor": ["SgBQUeWuiQ", "6q5vDnqkfk", "Qm2DpyIJ-h"] },
+          { "label": "所有 veto 候选完成至少一次外部验证后才下结论", "passedFor": ["SgBQUeWuiQ", "6q5vDnqkfk", "Qm2DpyIJ-h", "F6BEti3wFm", "AhuI4bVzZS"] },
+          { "label": "关键量纲/占比/汇率都动手算过一遍", "passedFor": ["6q5vDnqkfk", "Qm2DpyIJ-h"] },
+          { "label": "跨段落至少 1 处口径一致性交叉检查", "passedFor": ["6q5vDnqkfk"] },
+          { "label": "核验过程落到了 report 正文的『事实核验记录』相关段落", "passedFor": ["6q5vDnqkfk"] }
+        ]
+      },
+      "R2": {
+        "items": [
+          { "label": "列出 query 的核心诉求与锚点（时间/地域/主体/场景）", "passedFor": ["SgBQUeWuiQ", "6q5vDnqkfk", "Qm2DpyIJ-h", "F6BEti3wFm", "AhuI4bVzZS"] },
+          { "label": "每个核心诉求都在报告里找到正面回应段落", "passedFor": ["SgBQUeWuiQ", "6q5vDnqkfk", "Qm2DpyIJ-h"] },
+          { "label": "每个锚点（时间/地域/主体/场景）被正确识别", "passedFor": ["SgBQUeWuiQ", "6q5vDnqkfk", "Qm2DpyIJ-h", "F6BEti3wFm", "AhuI4bVzZS"] },
+          { "label": "识别并回应了 query 字面下的潜在诉求", "passedFor": ["6q5vDnqkfk", "SgBQUeWuiQ"] },
+          { "label": "正文不存在跑题或 >10% 无关填充段", "passedFor": ["SgBQUeWuiQ", "6q5vDnqkfk", "Qm2DpyIJ-h", "F6BEti3wFm", "AhuI4bVzZS"] }
+        ]
+      },
+      "R3": {
+        "items": [
+          { "label": "随机抽 3 个核心判断都能找到支撑证据/推导", "passedFor": ["6q5vDnqkfk", "SgBQUeWuiQ"] },
+          { "label": "有 ≥1 处超越『是什么』的二阶/三阶追问", "passedFor": ["6q5vDnqkfk", "SgBQUeWuiQ", "F6BEti3wFm"] },
+          { "label": "非共识但有据的观点（含观点→证据→推理链）", "passedFor": ["6q5vDnqkfk"] },
+          { "label": "关键争议点呈现对立视角或反方证据", "passedFor": ["6q5vDnqkfk", "Qm2DpyIJ-h"] },
+          { "label": "论据→结论链条无明显跳跃或循环论证", "passedFor": ["6q5vDnqkfk", "SgBQUeWuiQ", "Qm2DpyIJ-h"] }
+        ]
+      },
+      "R4": {
+        "items": [
+          { "label": "列出『做这个决策需要覆盖的关键维度清单』（≥3 项）", "passedFor": ["6q5vDnqkfk", "F6BEti3wFm", "SgBQUeWuiQ", "Qm2DpyIJ-h"] },
+          { "label": "每个关键维度都在报告里找到对应段落", "passedFor": ["6q5vDnqkfk", "F6BEti3wFm", "SgBQUeWuiQ", "Qm2DpyIJ-h", "AhuI4bVzZS"] },
+          { "label": "章节结构支撑结论（无孤立段落、无重复、无明显空白）", "passedFor": ["6q5vDnqkfk", "F6BEti3wFm", "SgBQUeWuiQ", "Qm2DpyIJ-h"] },
+          { "label": "适用定量分析场景下有必要的数据表/测算/模型", "passedFor": ["6q5vDnqkfk", "F6BEti3wFm", "Qm2DpyIJ-h"] },
+          { "label": "不存在『看起来覆盖但一笔带过』的虚假覆盖", "passedFor": ["6q5vDnqkfk", "SgBQUeWuiQ", "Qm2DpyIJ-h"] }
+        ]
+      },
+      "R5": {
+        "items": [
+          { "label": "列出报告里的 take-away / 建议条目（≥2 条）", "passedFor": ["6q5vDnqkfk", "F6BEti3wFm", "SgBQUeWuiQ", "Qm2DpyIJ-h", "AhuI4bVzZS"] },
+          { "label": "take-away 具体可执行（非『建议谨慎关注』废话）", "passedFor": ["6q5vDnqkfk", "F6BEti3wFm"] },
+          { "label": "给出用户自己难以公开搜索到的信息/观察", "passedFor": ["6q5vDnqkfk", "F6BEti3wFm", "SgBQUeWuiQ"] },
+          { "label": "提供让用户『换个角度想问题』的新框架/新联想", "passedFor": ["6q5vDnqkfk"] },
+          { "label": "对明显不确定事项主动标了 caveat", "passedFor": ["6q5vDnqkfk"] }
+        ]
+      }
+    },
+    "verificationBudget": {
+      "targetMinutes": 45,
+      "actualMinutes": 75,
+      "passesCompleted": ["read", "claim-inventory", "pass1", "pass2", "pass3", "score", "feedback"],
+      "claimsSkippedDueToBudget": 0,
+      "claimsOutOfScope": 0,
+      "notes": "v3.3 起去时间盒，本轮按质量优先展开。外部核验集中在 7 组关键数字：2024/2025/2026Q1 首付款与占比、荣昌-艾伯维 56/6.5 亿、石药-阿斯利康 185/12 亿、礼新-默沙东 5.88/32.88、亨利-诺和诺德 8.3 亿、2020 批次 40% 退货率、Gemini 2026 至 2 月中旬 490 亿美元。锁定 2 条 refuted（SophiaAI v4『2024 首付-16.2%』、SophiaAI v4『基于付费数据推导』挡箭牌）+ Gemini『全文零链接』硬伤。"
+    },
+    "crossProductInsights": {
+      "focusProductName": "SophiaAI v5",
+      "strongerThan": [
+        {
+          "dimension": "R2",
+          "vsProducts": ["Gemini", "SophiaAI v4"],
+          "gapSummary": "Sophia v5 的 What/Why/So What 结构对 query 的四个锚点做了完整诉求闭环；Gemini 规避了『一手数据』诉求，SophiaAI v4 用『付费数据推导』话术遮蔽一手数据诉求。",
+          "evidenceQuotes": [
+            { "product": "SophiaAI v5", "quote": "首付款绝对值持续攀升：2024 年首付款总额 41 亿美元，平均约 4362 万美元；2025 年增至 70.3 亿美元，同比增长约 71.5%；2026 年 Q1 首付款超 33 亿美元，平均达 1.84 亿美元。首付款占总金额比例：2024 年约 7.9%，2025 年降至 5.2%，2026Q1 进一步降至 2%-5% 区间。" },
+            { "product": "Gemini", "quote": "首付款比例通常维持在 5% 至 15% 之间。对于超过 10 亿美元的大额交易，2026 年的市场基准显示，首付款通常在 5,000 万至 8,000 万美元起步——全文无一条脚注 URL 或一手源编号支撑。" }
+          ],
+          "claimRefs": ["c1", "c2", "c22"]
+        },
+        {
+          "dimension": "R3",
+          "vsProducts": ["SophiaAI v4", "Manus"],
+          "gapSummary": "Sophia v5 对『MNC 专利悬崖驱动低首付+高里程碑』『中国后期管线性价比 30%-40%』做了二阶原因追问；SophiaAI v4 的『核心驱动因素权重分配』则没交代权重怎么拆、Manus 多为单因素归因。",
+          "evidenceQuotes": [
+            { "product": "SophiaAI v5", "quote": "MNC 专利悬崖驱动：2023-2028 年全球原研药专利到期风险敞口达 3540 亿美元，大型 MNC 亟需补充成熟管线，愿意接受低首付但高潜在回报的交易结构；中国管线性价比优势：中国后期管线研发成本仅为美国的 30%-40%，成为大型 MNC 的优质资产来源。" },
+            { "product": "SophiaAI v4", "quote": "2024-2025 首付款增长 70% 来自四类外部因素的正向驱动——驱动权重怎么拆的并未说明。" }
+          ],
+          "claimRefs": ["c1"]
+        }
+      ],
+      "weakerThan": [
+        {
+          "dimension": "R1a",
+          "vsProducts": ["MiroThink"],
+          "gapSummary": "Sophia v5 的 29 条引用全部是二手研报/门户文章（eastmoney、xueqiu、phirda、10jqka、qq.com），几乎无穿透到医药魔方/DealForma/MNC 财报等一手源；MiroThink 则做到了 46 条脚注全部带 URL，直接一键可核。",
+          "evidenceQuotes": [
+            { "product": "SophiaAI v5", "quote": "[2] 狂揽 1357 亿美元！谁是 2025 中国创新药出海最贵十单？ https://www.phirda.com/artilce_41479.html；[3] 2025 中国创新药出海爆单 https://finance.sina.com.cn/...——整份 29 条引用基本是二手/转引层级。" },
+            { "product": "MiroThink", "quote": "脚注带 J.P. Morgan 季度 PDF、Reuters、Skadden 律所报告、特拉华法院判决书，均可点击回溯；中国口径分歧（70 亿 vs 81 亿美元同期不同截止日）主动披露。" }
+          ],
+          "claimRefs": ["c1", "c2", "c10"]
+        },
+        {
+          "dimension": "R3",
+          "vsProducts": ["MiroThink"],
+          "gapSummary": "Sophia v5 二阶追问充分但三阶结构性洞察缺位；MiroThink 明确提出『媒体按总额 / MNC 按里程碑——双方对交易成功的定义从签约那一刻就分歧』这种结构性观察。",
+          "evidenceQuotes": [
+            { "product": "SophiaAI v5", "quote": "BD 交易从靠总金额造势转向实收首付款更务实，绝对值增长反映中国创新药的全球认可度提升；首付比例下降意味着交易对里程碑的依赖度加剧——叙事停在一阶『趋势描述』层面。" },
+            { "product": "MiroThink", "quote": "总额虚高是系统性的而非偶发的——媒体按总额报道、MNC 按里程碑付款，双方对『交易成功』的定义从一开始就分歧；NewCo 模式在结构上约束 MNC 买而不推的行为。" }
+          ],
+          "claimRefs": ["c3", "c9"]
+        },
+        {
+          "dimension": "R5",
+          "vsProducts": ["MiroThink"],
+          "gapSummary": "Sophia v5 的建议偏宏观（『加强尽职调查』『设置灵活里程碑条款』），可执行颗粒度低；MiroThink 给了三层可执行建议 + 元层级 caveat（『所有数字均为量级估算』『保密 ADR 使公开案例仅为冰山一角』）。",
+          "evidenceQuotes": [
+            { "product": "SophiaAI v5", "quote": "药企需理性看待 BD 交易总金额，重点关注首付款及可兑现里程碑的实际收益；在交易谈判中争取更高的首付款比例，降低对里程碑的依赖度——没有对 1800 亿美元测算给置信区间或情景分析。" },
+            { "product": "MiroThink", "quote": "首付款<5% 视为管线优先级低信号；合同中明确商业化里程碑定义、设销售阈值/患者数等可执行条款；推动 BD 合同标准化条款库（类比 ISDA）。" }
+          ],
+          "claimRefs": ["c3"]
+        }
+      ],
+      "sharedWeakness": [
+        {
+          "dimension": "R1a",
+          "acrossProducts": ["SophiaAI v5", "SophiaAI v4", "Manus", "Gemini"],
+          "gapSummary": "除 MiroThink 外其余 4 份报告普遍缺乏一手源穿透：Sophia v5 29 条全为二手研报、Manus 22 条无 URL、SophiaAI v4 全部无源、Gemini 全文零链接；query 明确要求『关注一手数据』，但 4 份都没达到『一键可核』标准。",
+          "suggestion": "所有候选在关键数字旁引用医药魔方/DealForma/MNC 财报原文页码或 URL，并明确标注查询日期与口径（license-out vs 全 BD、2024 vs 2025 截止日）。"
+        }
+      ]
+    }
+  },
+  "report": "# EV-0002 评测报告 · BD 质量与争议纠纷双重指标分析\n\n> 评测任务：2024 年以来中国创新药 BD 质量演变（首付款绝对值 + 比例双重指标）+ MNC 商业化与管线优先级 + 纠纷趋势与潜在规模  \n> 候选：MiroThink、SophiaAI v5、Manus、SophiaAI v4、Gemini（共 5 份）  \n> 聚焦对象：**SophiaAI v5**（本轮最新版 Sophia 产物）\n\n## 一、评测结论\n\n本轮排名：**MiroThink (8.0 优秀) > SophiaAI v5 (6.8 合格) > Manus (6.3 合格) > SophiaAI v4 (5.4 待改进) > Gemini (5.0 待改进)**。无任何候选触发 V1~V5 一票否决。\n\n一句话结论：**Sophia v5 相对 v4 有明显进步（R1 从 C 升 B、R3 稳定在 A），但被 MiroThink 在 R1 一手源密度和 R3 三阶结构性洞察上清晰拉开差距；根本差距不在分析框架而在信源层级——v5 的 29 条引用全部是二手研报/门户文章，而对手 46 条全部是带 URL 的一手/准一手源。**\n\n关键信号：\n\n1. **Sophia v5 对 v4 的代际进步是真实的**：v4 因一条 refuted 的『2024 年首付款同比-16.2%』事实错误 + 大量『基于付费数据推导』挡箭牌话术落在 R1=C；v5 换用主流一手口径（2024 年 41 亿、2025 年 70.3 亿，同比 +71.5%），R1 升到 B 档。但 v5 的引用基础全部是二手研报转引，离『一手源一键可核』仍有一档距离。\n2. **MiroThink 的 R3 三阶洞察是本轮真正的天花板**：「总额虚高是系统性的而非偶发的——媒体按总额报道、MNC 按里程碑付款，双方对『交易成功』的定义从一开始就分歧」这种结构性观察，是其他 4 份候选全部缺位的维度。\n3. **Gemini 以差异化叙事视角（捡漏→价值重估→溢价定价）换取了 R3 的 B 档**，但代价是全文零链接、wall of text，被 R1/R4 双重 C 档压到 5.0。\n4. **Manus 是『中等强度纠纷案例库』**：BMS/MORAb-202、SKB315、Instil Bio、GAVI、万春普那布林五案齐全，但推导口径（200-400 亿美元退货规模）有明显放大嫌疑。\n\n## 二、按维度展开\n\n### R1 · 准确性（weight 0.40）\n\nR1 是本轮五份报告差距最大的维度，直接决定了排名。\n\n**MiroThink A (8)**：46 条脚注全部带 URL（J.P. Morgan 季度 PDF、Reuters、医药魔方、Skadden 律所报告、特拉华法院判决书），关键承重数字（首付款绝对值、占比、退货率、亨利 8.3 亿、BMS 67 亿、Janssen-Samsung）可逐条一键回溯；主动披露『70 亿 vs 81 亿美元同期不同统计截止日』这种口径分歧——这是本轮其他 4 份都没做到的元层级坦诚。R1b 同样扎实：三档风险敞口用「历史终止率 × 存量首付款 × 争议转化率」的公式，主动标为量级估算而非精确值。\n\n**SophiaAI v5 B (6)**：数字本身都对（经 Pass 2 外部核验，2024 年首付款 41 亿、2025 年 70.3 亿、占比 7.9%→5.2%→2%-5% 区间，与西南证券、phirda、人民日报口径一致），但 29 条引用全部是二手研报和门户文章转引（eastmoney/xueqiu/phirda/10jqka/qq.com），几乎没穿透到一手付费源或 MNC 财报。R1b 上有一个轻微口径混乱：原文「潜在未兑现里程碑金额约 1356.55×94.8%×(1-22%)≈1000 亿美元」把『里程碑占交易额 94.8%』和『里程碑整体达成率 22%』两个不同口径的比例相乘，数字作为量级估算接近真实未兑现风险，但推导链存在口径交叉问题，标 inconclusive。\n\n**Manus B (6)**：22 条参考文献无可点击 URL，但至少有文献标题可溯源；承重数字可核性中等——「5.88 / 32.88 = 17.9%」算术正确、Instil Bio「15 个月入组 3 例」有媒体支持。R1b 的硬伤在退货规模推导：「2022-2024 交易总额约 1000 亿美元 × 20%-40% 退货率 → 200-400 亿美元」——退货率 20%-40% 的统计基数是『交易数量』而非『交易总金额』，这个口径交叉会系统性放大风险暴露。\n\n**SophiaAI v4 C (4)**：70+ 数据点无一条可点击链接，所有来源打包成『医药魔方/西南证券/交银国际/浦银国际 2025 研报』；大量分层数据标注「公开交叉推导数据，误差±5%~±10%」这种精度一手渠道都给不出，疑似模型生成。Pass 2 锁定一条 refuted：原文「2024 年首付款同比-16.2%」，与主流一手口径（2023 年 license-out 首付款 ≈ 31.6 亿→2024 ≈ 41 亿，同比 +30% 左右）增长方向反向。SophiaAI v5 自己也给的是 41 亿、+71.5%（2025 vs 2024）。该错误未触发 V1 量级错 veto（数字量级 41 亿同主流口径一致、仅方向反），故 R1a 落 C 档、不触发 veto。\n\n**Gemini C (4)**：全文零可点击链接、零脚注编号，所有数字靠句末一个空格字符承担引用责任。外部核验显示「2026 年至 2 月中旬 490 亿美元、平均交易 13 亿美元」（医药魔方/163 口径）核心承重数字真实，但一份严肃 BD 研究把所有证据链全部留白，承重 claim 对读者而言几乎全部不可核。query 显式要求「关注一手数据」，Gemini 反而最彻底地规避了这一诉求。\n\n### R2 · 相关性（weight 0.15）\n\nquery 四个锚点：首付款绝对值+比例、MNC 商业化能力、管线优先级、纠纷趋势+具体争议点。\n\n- **MiroThink / SophiaAI v5 / Manus 同档 A (8)**：四个锚点均正面回应，结构上各自闭环。MiroThink 额外挖出『媒体/MNC 对成功定义分歧』这条潜在诉求。\n- **SophiaAI v4 / Gemini 同档 B (6)**：锚点基本命中，但对 query 显式要求的「关注一手数据」回应不足——v4 用「付费数据推导」遮蔽、Gemini 全文零链接，实质都是对『一手数据』诉求的规避。\n\n### R3 · 论证深度（weight 0.20）\n\n**MiroThink A (8) · 三阶追问**：① 媒体按总额 vs MNC 按里程碑的口径分歧；② 平均首付款翻倍要分层看——Phase I 中位数峰值回落、Phase II 连年下降，头重脚轻被均值掩盖；③ NewCo 模式结构上约束 MNC 买而不推行为。\n\n**SophiaAI v5 A (8) · 二阶追问**：What/Why/So What 让每条观点都走完『事实→原因→决策含义』链；「MNC 专利悬崖驱动低首付+高里程碑」「中国后期管线研发成本 30%-40%」两条关键因果给了完整论据。二阶到位但三阶结构洞察缺位——和 MiroThink 的 gap 正是这一阶。\n\n**Manus / SophiaAI v4 / Gemini 同档 B (6)**：Manus 多为单因素归因（『MNC 管线优先级调整』『临床数据落差』）；v4 的『分批次暴露窗口』是少见的时间维度推演但论据跳跃；Gemini 叙事视角有差异化但因零信源支撑，推论只是『说得合理』而非『有据支撑』。\n\n### R4 · 完备性（weight 0.10）\n\n- **MiroThink A (8)**：九段式骨架，三档风险敞口估算分层到位。\n- **SophiaAI v4 A (8)**：**本轮定量颗粒度最细**——分阶段定价表（临床前/I/II/III 期 × 肿瘤/自免/罕见病）、分层占比、四类外部因素权重表、三种情景损失测算（7.8/45.3/149.2 亿美元）、分批次暴露窗口。这个骨架是 v4 唯一能打 A 档的维度。\n- **SophiaAI v5 / Manus B (6)**：结构清晰但定量偏弱。v5 缺分阶段首付款中位数；Manus 的退货率估算口径混乱。\n- **Gemini C (4)**：整份报告没有 markdown heading 层级支撑，段落靠大段中文无标点连写——「中国医药跨境授权交易（License-out）质量演变与争议风险深度研究报告：2024-2026年价值重估与法律博弈分析全球医药价值链重构下的中国资产定位自2024年以来」——典型 wall of text，读者难以回溯子论点位置。\n\n### R5 · 决策价值（weight 0.15）\n\n- **MiroThink A (8)**：立即行动/短期/长期三层建议（「首付款<5% 视为管线优先级低信号」「推动 BD 合同标准化条款库，类比 ISDA」），+ 元层级 caveat（「所有数字均为量级估算，非精确预测」「保密 ADR 使公开案例仅为冰山一角」）。这种元层级不确定性的主动披露是其他几份都缺的。\n- **SophiaAI v5 / Manus / SophiaAI v4 / Gemini 同档 B (6)**：v5/Manus 建议偏宏观；v4 有四个具体条款模板但被信源问题打折；Gemini 点出『CMC 技术转移 / FTO / Biosecure / HGRAC』四个新型路障但缺可执行分层。\n\n## 三、额外重点问题\n\n### 问题 1：SophiaAI v4 存在 1 条 refuted 的事实错误（R1 直接落 C）\n\n原文摘录：「2024 年 license-out 首付款同比-16.2%」。\n\n外部核验：主流一手口径（医药魔方、phirda、xueqiu 等）2023 年 license-out 首付款约 31.6 亿美元、2024 年 41 亿美元，同比 +30% 左右；SophiaAI v5 自己的报告里也给的是 41 亿、+71.5%（2025 vs 2024）。v4 的『-16.2%』与主流口径在**增长方向**上反向，属于事实错误。该错误未触发 V1 量级错 veto 仅因数字量级 41 亿本身同主流口径一致（是方向反而非量级错），R1a 直接扣到 C 档。\n\n### 问题 2：SophiaAI v4 的『基于付费数据推导、误差±X%』挡箭牌（R1a 信源可核查子项落 C）\n\n原文反复出现「License-out『<3%占比约18%、3%-6%约37%、>6%约45%』——基于公开交叉推导数据，误差±5%~±10%」。核验判断：这种小数点级分层数据在公开渠道根本给不出这种精度，所谓『付费数据库不可得所以公开交叉推导』是明显的挡箭牌——既没有付费源名称、也没有查询日期、更没有任何一手源页码。不触发 V5 编造源（因为没编造具体文献名），但按 R1a『信源可核查』子项直接计入扣档。\n\n### 问题 3：Gemini 全文零链接——query 明确要求『关注一手数据』被完全规避（R1a 落 C）\n\n整份 Gemini 报告通读确认：无一条可点击 URL、无一条脚注编号，所有数据点后只跟一个空格字符代替引用。即便外部核验显示核心数字（490 亿美元、1377 亿美元等）真实，一份严肃 BD 研究采用这种呈现方式，对决策者的信任价值趋近于零。query 显式要求「关注一手数据」，这份是本轮最彻底的规避。\n\n### 问题 4：SophiaAI v5 与 Manus 的 R1b 都存在口径交叉嫌疑（不触发 veto 但拉低 R1b 置信度）\n\n- Sophia v5 的「潜在未兑现里程碑金额 ≈ 1356.55×94.8%×(1-22%) ≈ 1000 亿美元」：94.8% 是『里程碑占交易额』口径，22% 是『里程碑整体达成率』口径，两者相乘存在口径交叉。\n- Manus 的「1000 亿美元 × 20%-40% 退货率 → 200-400 亿美元」：退货率 20%-40% 的统计基数是『交易数量』，而非『交易总金额』，这种口径交叉会把纸面风险放大一个数量级。\n\n两条都标 inconclusive（量级仍在合理范围，不能直接 refuted），但证明 Sophia v5 和 Manus 在跨口径推导的严谨性上仍有明显短板。\n\n### 问题 5：非共识洞察只有 MiroThink 拿出了三阶观察\n\nv3.3 硬要求「有依据的非共识观点」——必须有证据 + 推理链 + 决策增量。五份候选里只有 MiroThink 提供了三条符合标准的三阶洞察：① 媒体/MNC 口径分歧是系统性的、② 头重脚轻被均值掩盖、③ NewCo 模式结构约束。Sophia v5 的二阶追问虽然完整，但缺这一阶结构洞察；这是本轮 Sophia 相对第一名最具体的可优化方向。\n\n## 四、各主体优缺点与建议\n\n### SophiaAI v5（本轮聚焦对象，6.8 合格）\n\n**优点**：\n- What/Why/So What 三段式让每条观点都走完『事实→原因→决策含义』的推理链（R2/R3 稳定 A）。\n- 数字本身经 Pass 2 全部 verified-correct（2024 年 41 亿、2025 年 70.3 亿、占比 7.9%→5.2%→2%-5%），与主流一手口径吻合。\n- 对 v4 的 refuted 事实错误和『付费数据推导』话术有明显修正——R1 升一档，R3 稳定 A。\n\n**缺点**：\n- R1a 信源层级浅：29 条引用全部是二手研报/门户文章转引，离『一手源一键可核』仍有一档距离（vs MiroThink 46 条 URL 脚注）。\n- R1b 口径交叉：「1356.55×94.8%×(1-22%)≈1000 亿美元」算式把两种不同口径的比例相乘，推导链需要澄清基数。\n- R3 缺三阶结构洞察：对手 MiroThink 明确拿出三条结构性观察，Sophia v5 只到二阶。\n- R5 caveat 缺失：1800 亿美元未兑现测算没给置信区间或情景分析。\n\n**建议**：\n1. **一手源补强**：把引用列表按『一手源 / 准一手 / 二手评论』三档分色排布，暴露一手源缺口；对关键数字（首付款口径、比例分年）至少引用 1 条医药魔方/DealForma 付费源页码或 MNC 财报原文。\n2. **推导口径明确化**：把「1000 亿美元未兑现」改成高/中/低三档情景（参考 MiroThink 的 A/B/C 场景），并声明每档所用的退货率/基数口径。\n3. **三阶洞察补齐**：借鉴 MiroThink『媒体按总额 vs MNC 按里程碑——双方对交易成功定义从签约那一刻就分歧』这种结构性观察，在 So What 段做一轮元层级分析。\n4. **主动 caveat**：在涉及外推测算的段落加「以下为量级估算」前置声明，而非放在附录。\n\n### SophiaAI v4（5.4 待改进）\n\n**优点**：\n- R4 定量颗粒度本轮最细：六章骨架 + 分阶段定价表 + 三种情景损失测算（7.8/45.3/149.2 亿美元）+ 分批次暴露窗口。\n- R5 有四个具体条款模板（商业合理努力、里程碑跳过保护、提前终止赔偿、RC148 范本）、一张风险排查清单、三段式纠纷应对指引——实操性本来可以打 A。\n\n**缺点**：\n- R1a 硬伤：refuted 的「2024 年首付款同比-16.2%」事实错误 + 『付费数据推导』挡箭牌覆盖全文。\n- 结构骨架漂亮但被信源层严重拖累，所有漂亮的分层数字都不可核。\n\n**建议**：\n1. 把 v4 的定量颗粒度和 MiroThink 的 URL 信源密度做融合——保留 R4 骨架、完全替换 R1 信源层。\n2. 所有『推导数据』要么补一手源、要么下调精度（从『±5%』改成『估算量级』），禁止给出无法核查的小数点级分层数字。\n3. 开篇加一条『2024 年首付款同比方向自校正』——明确 2024 年 41 亿 vs 2023 年 ~31.6 亿为同比显著增长。\n\n### MiroThink（8.0 优秀 · 本轮第一）\n\n**优点**：\n- R1 一手源密度行业级（46 条 URL 脚注）。\n- R3 三阶结构性洞察本轮唯一达标。\n- R5 元层级 caveat（「所有数字均为量级估算」「保密 ADR 使公开案例仅为冰山一角」）主动披露。\n\n**缺点**：\n- 分阶段首付款中位数全表没做（这点 SophiaAI v4 反而更细）。\n- Alexion 3.1 亿/Fortis 近 10 亿等数字在同段内组合时，读者需自行对口径。\n\n**建议**：\n1. 在首付款分层表中增加 Phase Ia/Ib/II/III 中位数列，补齐 v4 那种定量颗粒度。\n2. 在 Skadden/J.P. Morgan 英文 PDF 脚注中标出页码，进一步降低读者核验成本。\n\n### Manus（6.3 合格）\n\n**优点**：案例密度最高（BMS MORAb-202、SKB315、Instil Bio、GAVI、恒瑞万春五案齐全）；5 张定量图表让结构较饱满。\n\n**缺点**：22 条参考文献无 URL、无日期锚点；退货规模估算口径放大（用总额基数乘数量口径退货率）；多数结论停在单因素归因。\n\n**建议**：\n1. 补全引用 URL 或 DOI，至少补上日期。\n2. 退货规模估算改用首付款基数，或显式声明正在用『潜在风险天花板』语义。\n3. 对 SKB315/MORAb-202 等案例多推一阶『为什么赛道拥挤会系统性触发退货』的机制分析。\n\n### Gemini（5.0 待改进）\n\n**优点**：『捡漏→价值重估→溢价定价』的三阶段叙事视角有差异化；MNC 管线协同映射（阿斯利康 CVRM / 艾伯维肿瘤免疫 / 默克心血管 / GSK 呼吸）具体；结论部分点出 CMC / FTO / Biosecure / HGRAC 四个新型路障，对决策者有增量。\n\n**缺点**：全文零可点击链接、零脚注（R1 硬伤）；无 markdown heading 层级导致 wall of text（R4 硬伤）；缺立即/短期/长期的可执行分层。\n\n**建议**：\n1. 补齐脚注编号与 URL；即便无链接，至少标明引用日期与来源机构。\n2. 用 markdown heading（## / ###）重组报告结构，避免 wall of text。\n3. 增加『立即行动 / 短期 / 长期』分层建议与具体条款示例，承接 MiroThink 的 R5 框架。\n\n---\n\n**对 Sophia 研发团队的一句话总结**：v5 已证明『用主流一手口径替换模型推导数字』的路径有效（R1 从 C 升 B），**下一步最具体的优化方向是穿透到一手源（医药魔方 DealForma 付费源 / MNC 财报原文 / 法院判决书）+ 补一阶结构性洞察**——这两件事做到，R1 可以冲 A、R3 可以冲 S，总分可冲到 8.0 以上与 MiroThink 平起平坐。\n"
+}

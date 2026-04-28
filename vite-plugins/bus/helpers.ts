@@ -94,9 +94,17 @@ export function listVersions(outboxDir: string, taskId: string) {
     .sort((a, b) => a.v - b.v);
 }
 
-/** 从 taskId 前缀解析 queryCode（如 "EV-0001-xxxxxx" → "EV-0001"） */
+/**
+ * 从 taskId 解析 queryCode。
+ *
+ * 兼容两种形态：
+ *   - v3.4 扁平化后：taskId === queryCode，如 "EV-0001" → "EV-0001"
+ *   - 历史（v1.0 ~ v3.3）：taskId === `${queryCode}-${suffix6}`，如 "EV-0001-xxxxxx" → "EV-0001"
+ *
+ * 实现：`^([A-Z]+-\d+)(?:-|$)` —— 前缀后面要么跟 `-`（历史带 suffix）要么就是字符串末尾（扁平化）。
+ */
 export function parseQueryCode(taskId: string): string | undefined {
-  const m = taskId.match(/^([A-Z]+-\d+)-/);
+  const m = taskId.match(/^([A-Z]+-\d+)(?:-|$)/);
   return m ? m[1] : undefined;
 }
 

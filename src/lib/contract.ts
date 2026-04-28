@@ -512,11 +512,15 @@ export interface EvaluationOutboxPayload {
    * - `"3.1"`：2026-04-25 深夜起使用的契约（先查错再评分；report 收敛为总-分-总四段锚点）
    * - `"3.2"`：2026-04-26 起使用的契约（评分总表之外的核验/反馈/聚焦诊断全部回归正文；页面主阅读路径收敛为“评分总表 + 正文”）
    * - `"3.3"`：2026-04-27 起使用的契约（取消 45min 硬时间盒；承重 claim 容量 Top 5 → Top 10；文档精简）
+   * - `"3.4"`：2026-04-28 起使用的契约（**taskId 扁平化**：taskId === queryCode，outbox 目录直接是 `EV-XXXX/`；
+   *           同一 query 的多轮评测累积写入 `EV-XXXX/vN.json`；不再按 suffix 生成新目录。
+   *           inbox 同步改为每个 query 一个 `EV-XXXX.json`，POST 支持"已存在即合并 candidates"语义。
+   *           历史 suffix 目录由迁移脚本按 mtime 顺序合并成 `EV-XXXX/v1..vN.json`。）
    *
    * 前端渲染时按此字段分支兼容——历史版本保留原样展示，新版本启用新 UI 能力
    * （档位标签、veto 徽章、激活的扩展维度纳入总分展示、正文四段锚点校验、低分证据高亮等）。
    */
-  contractVersion: "1.0" | "2.0" | "2.1" | "2.2" | "3.0" | "3.1" | "3.2" | "3.3";
+  contractVersion: "1.0" | "2.0" | "2.1" | "2.2" | "3.0" | "3.1" | "3.2" | "3.3" | "3.4";
   /**
    * 冗余写入的 query 永久 id（2026-04-21 方案 D 新增）。
    * - 由 bus / bake 统一注入，payload 原作者（LLM）不需要填
@@ -569,21 +573,22 @@ export interface OutboxBundle {
 // taskId 生成
 // ------------------------------------------------------------
 
-const TASK_ID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-function nano6(): string {
-  let s = "";
-  const arr = new Uint8Array(6);
-  if (typeof crypto !== "undefined" && crypto.getRandomValues) {
-    crypto.getRandomValues(arr);
-  } else {
-    for (let i = 0; i < 6; i++) arr[i] = Math.floor(Math.random() * 256);
-  }
-  for (let i = 0; i < 6; i++) s += TASK_ID_CHARS[arr[i] % TASK_ID_CHARS.length];
-  return s;
-}
-
+/**
+ * 2026-04-28 契约 v3.4：taskId 扁平化。
+ *
+ * 历史（v1.0 ~ v3.3）：taskId = `${queryCode}-${nano6()}`，每次召唤评测生成独立目录。
+ * 结果：同一 query 被多次评测时，outbox 目录碎片化（`EV-0002-N3e5zP/`、`EV-0002-XDwwz7/` …），
+ * 前端 `pickLatestTaskByQueryCode` 只能展示最新那份，其余"看不见"。
+ *
+ * 新语义（v3.4+）：taskId 直接等于 queryCode。同一 query 的所有评测版本累积写入
+ * `outbox/{queryCode}/vN.json`，inbox 为 `inbox/{queryCode}.json`（支持合并 candidates）。
+ * queryId 仍然是 reconcile 主键；suffix 作为身份锚的设计由 queryId 本体承担。
+ *
+ * 旧目录（`EV-XXXX-suffix`）由 `scripts/migrate-consolidate-outbox.mjs` 一次性合并。
+ * 目录名规则变化不需要动 isSafeTaskId —— `EV-XXXX` 仍满足 `^[A-Za-z0-9._-]{1,128}$`。
+ */
 export function makeTaskId(queryCode: string): string {
-  return `${queryCode}-${nano6()}`;
+  return queryCode;
 }
 
 /**

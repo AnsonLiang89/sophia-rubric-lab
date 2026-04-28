@@ -53,6 +53,7 @@ const DEFAULT_RUBRIC_NAMES: Record<ContractVersion, Record<string, string>> = {
   "3.1": NAMES_V2_PLUS,
   "3.2": NAMES_V2_PLUS,
   "3.3": NAMES_V2_PLUS,
+  "3.4": NAMES_V2_PLUS,
 };
 
 /**

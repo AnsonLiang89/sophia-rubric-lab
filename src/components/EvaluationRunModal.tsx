@@ -45,11 +45,14 @@ export default function EvaluationRunModal({
    *
    * 旧实现（`submittedRef = boolean` + 关闭时重置）的 bug：
    * 用户在 submitting 期间快速关闭会把 ref 清零；若再打开同一个 spec，
-   * 会触发第二次 submitInbox（同一 taskId 写两次，或者 nano6 重新生成新
-   * taskId 导致磁盘残留孤儿）。用 Set<spec> 代替布尔后，同一 spec 最多
-   * 提交一次；切换到新 spec 才会再提交。
+   * 会触发第二次 submitInbox，产生冗余写入。用 Set<spec> 代替布尔后，
+   * 同一 spec 最多提交一次；切换到新 spec 才会再提交。
    *
-   * 注：WeakSet 让 spec 被 GC 后自动清出，不会常驻内存。
+   * 注 1：v3.4（2026-04-28）扁平化后 taskId === queryCode，重复 POST 走
+   *       后端合并语义（按 candidateId 合并 candidates，磁盘权威优先），
+   *       不会再产生"suffix 漂移出的孤儿目录"。但仍然要避免无谓的重复 POST
+   *       （有 I/O、有日志、对用户是噪音），所以 WeakSet 去重依然必要。
+   * 注 2：WeakSet 让 spec 被 GC 后自动清出，不会常驻内存。
    */
   const submittedSpecs = useRef<WeakSet<EvaluationTaskSpec>>(new WeakSet());
 

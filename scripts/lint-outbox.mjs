@@ -67,6 +67,14 @@
  *   - summary.crossProductInsights 在 candidates ≥ 2 时必填；focusProductName / 三组 insight 结构合法
  *   - report 必须含 3 个稳定锚点 heading，且顺序固定：总评 → 评分总表 → SBS 结论
  *
+ * v3.4 额外（2026-04-28 起，taskId 扁平化硬约束）：
+ *   - payload.taskId 必须匹配 `^[A-Z]+-\d+$`（无 suffix，等同 queryCode）
+ *   - 当 lintOutbox() 扫全量产物时，payload.taskId 必须与 outbox 目录名完全一致
+ *     （防止手写 payload 时意外回退到旧的 `${queryCode}-${suffix6}` 形态，
+ *      或者 payload.taskId 与目录名漂移）
+ *   - 作为模块 import 给 validatePayload 传入 `file="virtual"` 的单测调用不受此约束影响
+ *     （单测关心的是 schema 语义，不关心目录结构）
+ *
  * 退出码：
  *   0 = 所有 outbox 产物合法
  *   1 = 至少一项违规（详情在 stderr）
@@ -175,8 +183,15 @@ function path_rel(abs) {
 /** 校验单个 outbox payload；把错误累积到 errors 数组。
  *
  * 也作为模块导出供单测调用（传入虚拟 file 名即可）。
+ *
+ * @param {string} file            文件路径（或单测用虚拟名）
+ * @param {unknown} payload        JSON 解析后的 payload 对象
+ * @param {Array} errors           错误累积数组（入参+出参）
+ * @param {string} [expectedTaskId] 可选：期望 taskId（来自 outbox 目录名）。
+ *                                  v3.4+ 产物会校验 `payload.taskId === expectedTaskId`。
+ *                                  单测 / 模块调用不传即跳过目录名一致性校验。
  */
-export function validatePayload(file, payload, errors) {
+export function validatePayload(file, payload, errors, expectedTaskId) {
   // 通用顶层
   if (typeof payload.taskId !== "string" || !payload.taskId) {
     pushErr(errors, file, "taskId", "缺失或非字符串");
@@ -186,8 +201,35 @@ export function validatePayload(file, payload, errors) {
     pushErr(errors, file, "version", "缺失或非 number");
   }
   const cv = payload.contractVersion;
-  if (!["1.0", "2.0", "2.1", "2.2", "3.0", "3.1", "3.2", "3.3"].includes(cv)) {
-    pushErr(errors, file, "contractVersion", `必须是 "1.0" / "2.0" / "2.1" / "2.2" / "3.0" / "3.1" / "3.2" / "3.3"，实际：${JSON.stringify(cv)}`);
+  if (!["1.0", "2.0", "2.1", "2.2", "3.0", "3.1", "3.2", "3.3", "3.4"].includes(cv)) {
+    pushErr(errors, file, "contractVersion", `必须是 "1.0" / "2.0" / "2.1" / "2.2" / "3.0" / "3.1" / "3.2" / "3.3" / "3.4"，实际：${JSON.stringify(cv)}`);
+  }
+
+  // v3.4 扁平化硬约束：
+  //   - taskId 必须匹配 ^[A-Z]+-\d+$（无 suffix，等同 queryCode）
+  //   - 若调用方提供 expectedTaskId（来自目录名），必须与 payload.taskId 完全一致
+  // 旧版本（1.0 ~ 3.3）不启用此约束——历史 `${queryCode}-${suffix6}` 形态直到写兼容层消化完之前都合法。
+  if (cv === "3.4") {
+    if (!/^[A-Z]+-\d+$/.test(payload.taskId)) {
+      pushErr(
+        errors,
+        file,
+        "taskId",
+        `v3.4 要求扁平化 taskId（格式 ^[A-Z]+-\\d+$，等同 queryCode），实际 ${JSON.stringify(payload.taskId)}。修复：移除尾部 "-suffix6" 或重新生成产物`
+      );
+    }
+    if (
+      typeof expectedTaskId === "string" &&
+      expectedTaskId.length > 0 &&
+      payload.taskId !== expectedTaskId
+    ) {
+      pushErr(
+        errors,
+        file,
+        "taskId",
+        `v3.4 要求 payload.taskId 必须等于 outbox 目录名。目录 "${expectedTaskId}" vs payload "${payload.taskId}"。修复：任选一侧改齐`
+      );
+    }
   }
   // v2.0+ 共享档位制/veto 校验；v2.2+ 共享 claim/checklist/budget/SBS/R1 子档；v3.x 额外有焦点诊断与证据密度校验；
   // v3.3 在 v3.2 基础上：claim Top 上限 5→10、verificationBudget.targetMinutes 不再硬锁 45
@@ -1086,7 +1128,10 @@ export function lintOutbox() {
       pushErr(errors, f, "<json>", `JSON 解析失败：${res.error}`);
       continue;
     }
-    validatePayload(f, res.data, errors);
+    // outbox 产物路径约定：.evaluations/outbox/{taskId}/v{n}.json
+    // → path.dirname(f) 的 basename 就是目录名（= 期望的 taskId，v3.4 起 === queryCode）
+    const expectedTaskId = path.basename(path.dirname(f));
+    validatePayload(f, res.data, errors, expectedTaskId);
     checked.push(path_rel(f));
   }
   return {

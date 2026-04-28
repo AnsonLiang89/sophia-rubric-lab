@@ -1,5 +1,5 @@
 {
-  "taskId": "EV-0007-gEOXkZ",
+  "taskId": "EV-0007",
   "version": 1,
   "evaluator": "Sophia (AI via WorkBuddy)",
   "evaluatedAt": "2026-04-27T21:30:00.000Z",
@@ -9,14 +9,14 @@
       {
         "reportId": "CK04t2JWdh",
         "productName": "SophiaAI v5",
-        "score": 8.0,
+        "score": 8,
         "verdict": "优秀",
         "vetoTriggered": false
       },
       {
         "reportId": "J2u_zqRzsC",
         "productName": "Gemini",
-        "score": 6.0,
+        "score": 6,
         "verdict": "合格",
         "vetoTriggered": false
       },

@@ -1,6 +1,6 @@
 {
-  "taskId": "EV-0002-XDwwz7",
-  "version": 1,
+  "taskId": "EV-0002",
+  "version": 2,
   "evaluator": "Sophia (Claude-Opus-4.7 via WorkBuddy)",
   "evaluatedAt": "2026-04-20T02:28:00.000Z",
   "contractVersion": "1.0",
