@@ -957,8 +957,9 @@ function listOutboxFiles() {
  * 校验 inbox v2 schema 的单个 task 文件。
  *
  * v2 硬约束（2026-04-27 起）：
- *   - inboxSchemaVersion === "2.0"（inbox 层的 schema version，
+ *   - inboxSchemaVersion ∈ {"2.0", "2.1"}（inbox 层的 schema version，
  *     与 outbox payload 的 contractVersion 独立，2026-04-27 前此字段名为 contractVersion）
+ *   - 当 inboxSchemaVersion === "2.1" 时，顶层 nextVersion 必须是正整数
  *   - candidates: 非空数组，每项含：
  *     * candidateId：非空字符串（稳定 id，给 PATCH 定位用）
  *     * reportVersions：非空数组；每条含 version:number / content:string / contentHash:string
@@ -996,14 +997,14 @@ export function validateInboxTask(file, task, errors) {
       errors,
       file,
       "inboxSchemaVersion",
-      `必填字符串 "2.0"，实际 ${JSON.stringify(task.inboxSchemaVersion ?? null)}。修复：npm run migrate-inbox -- --apply`
+      `必填字符串 "2.0" 或 "2.1"，实际 ${JSON.stringify(task.inboxSchemaVersion ?? null)}。修复：npm run migrate-inbox -- --apply`
     );
-  } else if (task.inboxSchemaVersion !== "2.0") {
+  } else if (task.inboxSchemaVersion !== "2.0" && task.inboxSchemaVersion !== "2.1") {
     pushErr(
       errors,
       file,
       "inboxSchemaVersion",
-      `inbox schema 必须是 "2.0"，实际 ${JSON.stringify(task.inboxSchemaVersion)}。修复：npm run migrate-inbox -- --apply`
+      `inbox schema 必须是 "2.0" 或 "2.1"，实际 ${JSON.stringify(task.inboxSchemaVersion)}。修复：npm run migrate-inbox -- --apply`
     );
   } else if (hasOld) {
     // 新旧字段并存（inboxSchemaVersion 已对，但 contractVersion 也还在）
@@ -1013,6 +1014,11 @@ export function validateInboxTask(file, task, errors) {
       "contractVersion",
       `inbox 顶层已迁移到 inboxSchemaVersion，残留的旧字段 contractVersion 必须删除。修复：npm run migrate-inbox -- --apply`
     );
+  }
+  if (task.inboxSchemaVersion === "2.1") {
+    if (!Number.isInteger(task.nextVersion) || task.nextVersion < 1) {
+      pushErr(errors, file, "nextVersion", `v2.1 必填正整数，实际 ${JSON.stringify(task.nextVersion ?? null)}`);
+    }
   }
   if (!task.query || typeof task.query !== "object") {
     pushErr(errors, file, "query", "必填对象");

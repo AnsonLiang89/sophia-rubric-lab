@@ -12,14 +12,19 @@
 - 用户偏好的报告结构是**总-分-总**落地为四段：1）评测结论；2）按维度展开结论、详情与论据；3）额外重点问题；4）Sophia 及其他评测对象做得好的和不好的地方，以及建议。
 - **质量优先于速度**：v3.3 起取消 45min 硬时间盒，发现承重问题时允许也鼓励评测官深入核验，不让时间限制压缩评测深度。
 - **文档偏好精简**：在严格保证内涵和细节要求不变的前提下，尽量去除冗余叙述、合并多版本并存的变更历史、把大型 JSON 示例下沉到独立文件，以提升作业效率。
-- **UI 偏好**：代码逻辑清晰准确、不出篓子；UI 合理、清晰、优雅、直观。破坏性动作必须有 confirm，长文本编辑走抽屉而非整屏 Modal。
+- **UI 偏好**：代码逻辑清晰准确、不出篓子；UI 合理、清晰、优雅、直观。破坏性动作必须有 confirm，长文本编辑走抽屉而非整屏 Modal。新增/编辑表单的时间字段优先默认填“当前本地时间（分钟级）”，减少重复录入。
 - **观测偏好**：任何"写入类"入口都要有结构化 console log（tag + stage + payload），让用户在 DevTools 里能立刻自查"我点的这下到底落哪儿了"。拒绝黑箱。
 
 ## 项目约定
 
+- **评测官工作方法论（2026-04-28 EV-0002 复盘沉淀）**：
+  - **读顺序强约束**：`.evaluations/EVALUATION_CONTRACT.md` → `.evaluations/RUBRIC_STANDARD.md` → `.evaluations/inbox/{taskId}.json` 全量 → `.evaluations/outbox/{taskId}/` 仅查版本号。**不要先翻历史 outbox 找样式参考**——历史产物可能是旧 contractVersion，按历史样式抄会违反当前契约（本次 EV-0002 v5 就栽在这儿，误扫了 v4 contractVersion=1.0 的简版）。
+  - **长 JSON 产物落盘策略**：预估超 500 行或评测产物（含 5 份 perReportFeedback + claimChecks evidence + 四段正文）的 JSON，**禁止单次 write_to_file 试探**（单次输出 token 上限约 24000，中文内容几乎必然截断）。标准流程：① `write_to_file` 写一个最小骨架（含 `"__PLACEHOLDER__": true` 占位符）；② 多次 `replace_in_file` 把 rubric / SBS+feedback / claims / checklists+budget+crossInsights / report 字段依次替换上去；③ 最后 `python3 -c "import json; json.load(open(...))"` 验 JSON 合法 + `npm run lint:outbox` 过硬约束。EV-0002 v5 已验证该流程一次通过。
+  - **inconclusive 不留尾**：pass2/pass3 核验中标记为 inconclusive 的 claim，必须再推一层——要么查清实际口径下结论是 verified-correct 还是 refuted，要么说清"为什么不可核"（例如：付费源不可得、上下文不足），不要停在"疑似口径交叉"这种第一反应结论。评测官的价值就在于把"疑似"变成"确认 / 排除"。
+  - **召唤口令升级**（见 `src/lib/contract.ts::buildSummonPrompt`）：从 5 行软性引导升级为"强制读顺序 + 落盘方式提示 + 核验深度约束 + 10 条交付前自检清单"，减少评测官"凭手感判"的不稳定性。自检清单每一条都对应 `scripts/lint-outbox.mjs` 的一条硬约束，打完钩基本一次过 lint。
 - 项目已落地 **v3.3**（2026-04-27）：文档、契约、lint、前端全链路已对齐"评分总表 + 正文"阅读路径；去除 45min 硬时间盒；承重 claim 容量 Top 5 → Top 10。动作语义完全向后兼容 v1.0 ~ v3.2 所有历史产物。
 - `crossProductInsights`、`perReportFeedback`、`claimInventory/claimChecks`、`dimensionChecklists`、`verificationBudget` 等结构化字段继续保留用于校验与聚合，但单份报告页面默认不再拆成独立主阅读模块。
-- **版本号双轨制**：outbox `contractVersion`（当前 v3.3）与 inbox `inboxSchemaVersion`（当前 v2.0）语义完全独立；任何字段语义变更必须升对应版本号，并在契约 §7 记录；旧产物保留原版本兼容渲染。
+- **版本号双轨制**：outbox `contractVersion`（当前 v3.4）与 inbox `inboxSchemaVersion`（当前 v2.1）语义完全独立；任何字段语义变更必须升对应版本号，并在契约 §7 记录；旧产物保留原版本兼容渲染。v2.1 新增顶层 `nextVersion`（服务端按 outbox 目录回填），用于召唤口令直接给出应提交的 `vN.json`，减少人工扫目录和版本漂移。
 - **契约完整示例**下沉到 `.evaluations/EVALUATION_CONTRACT_EXAMPLE.json` 独立文件；契约正文只保留骨架示意 + 引用。
 - **产品观**：Sophia v3/v4/v5 在评测维度上与 MiroThink、Kimi、Gemini 等完全平级，各自是**独立 AI 产品**。同一评测任务里同一 AI 产品只能有 1 份原始报告；v3/v4/v5 的注册是 Products 页职责，不在 ReportPage 的对比源面板里引入"多版本并存"语义。
 - **ReportPage 对比源管理**（2026-04-27 晚升级）：由单一入口 `ManageSourcesModal`（"📝 编辑对比源"）承担新增 / 改元数据 / 替换正文 / 删除四类动作。删除 submission 不联动 inbox（选项 A，留 orphan 给 cleanup 脚本）。替换正文必填 replacedReason ≥ 6 字 + contentHash 前端预检。新增默认不召唤评测，提供 checkbox 可选。

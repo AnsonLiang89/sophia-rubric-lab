@@ -85,12 +85,18 @@ export interface InboxTask {
    * inbox schema 版本：
    * - "1.0"：2026-04 ~ 2026-04-27 使用，candidate 只承载单版本 report
    * - "2.0"：2026-04-27 起使用，candidate.reportVersions[] + activeReportVersion
+   * - "2.1"：2026-04-28 起新增顶层 `nextVersion`，用于召唤口令直接给出下一版 outbox 号
    *
    * 注意：这是 **inbox schema 版本**，与 outbox payload 的 contractVersion（rubric 契约版本）
    * 完全独立。2026-04-27 起字段名从 `contractVersion` 迁移为 `inboxSchemaVersion`，避免命名混淆；
    * 磁盘上的旧文件仍可能写着 `contractVersion`，读取端要兼容两者（见 readInboxSchemaVersion）。
    */
-  inboxSchemaVersion: "1.0" | "2.0";
+  inboxSchemaVersion: "1.0" | "2.0" | "2.1";
+  /**
+   * 下一版 outbox 版本号（例如 5 表示应写 v5.json）。
+   * v2.1 新增；缺省时调用方可回退为 1 或自行扫描目录。
+   */
+  nextVersion?: number;
   query: {
     id: string;
     code: string;
@@ -641,8 +647,9 @@ export function readInboxSchemaVersion(
 }
 
 /**
- * 构造 v2 schema 的 InboxTask 骨架：
- * - inboxSchemaVersion = "2.0"
+ * 构造 v2.1 schema 的 InboxTask 骨架：
+ * - inboxSchemaVersion = "2.1"
+ * - 顶层 nextVersion = 1（后端 POST 时会按 outbox 目录回填真实值）
  * - 每个 candidate 带 candidateId、activeReportVersion=1、reportVersions=[{version:1,...,contentHash:""}]
  * - contentHash 字段占位为空，调用方负责提交前调 `fillInboxContentHashes` 填好
  *
@@ -682,7 +689,8 @@ export function buildInboxTask(input: {
   return {
     taskId,
     createdAt: nowIso,
-    inboxSchemaVersion: "2.0",
+    inboxSchemaVersion: "2.1",
+    nextVersion: 1,
     query: {
       id: input.query.id,
       code: input.query.code,
@@ -1009,7 +1017,7 @@ export const contractBus = {
     return busFetch("GET", "/_bus/registry");
   },
 
-  submitInbox(task: InboxTask): Promise<{ ok: true; taskId: string; file: string } | null> {
+  submitInbox(task: InboxTask): Promise<{ ok: true; taskId: string; file: string; merged?: boolean; nextVersion?: number } | null> {
     return busFetch("POST", "/_bus/inbox", task);
   },
 
@@ -1241,12 +1249,57 @@ export function groupScoresByReport(payload: EvaluationOutboxPayload): Map<
   return map;
 }
 
-/** 召唤口令：展示给用户，让他粘贴到 WorkBuddy 对话框 */
-export function buildSummonPrompt(taskId: string): string {
-  return `请扮演 Sophia 评测官，按 .evaluations/EVALUATION_CONTRACT.md 的契约处理评测任务 ${taskId}：
-1. 先完整读一遍 .evaluations/EVALUATION_CONTRACT.md（如果尚未读过）
-2. 读 .evaluations/inbox/${taskId}.json
-3. 按契约完成评分 + 自由 markdown 正文
-4. 写入 .evaluations/outbox/${taskId}/v{n}.json（版本号自己扫目录递增）
-5. 完成后告诉我路径与版本号，我回网站刷新查看`;
+/**
+ * 召唤口令：展示给用户，让他粘贴到 WorkBuddy 对话框。
+ *
+ * 2026-04-28 升级点：
+ * - 强制读顺序（契约 → rubric → inbox 全量 → outbox 仅查版本）
+ * - 明确 nextVersion，避免先翻历史产物找样式
+ * - 内置长 JSON 分段落盘策略（占位骨架 + replace）
+ * - 增加 pass1/pass2/pass3 与 10 条交付前自检清单
+ */
+export function buildSummonPrompt(taskId: string, nextVersion?: number): string {
+  const outboxVersion = Number.isFinite(nextVersion) && (nextVersion as number) >= 1
+    ? Math.floor(nextVersion as number)
+    : 1;
+  return `请扮演 Sophia 评测官，按契约处理评测任务 ${taskId}。
+
+## 读顺序（强约束，不得跳步）
+1. .evaluations/EVALUATION_CONTRACT.md —— 通读（不是扫一眼）
+2. .evaluations/RUBRIC_STANDARD.md —— 通读
+3. .evaluations/inbox/${taskId}.json —— 读全部 candidates 正文
+4. .evaluations/outbox/${taskId}/ —— 仅查版本号，不参考历史样式
+
+⚠️ 不要先翻历史 outbox 找样式参考——历史产物可能是旧 contractVersion，按历史样式抄会违反当前契约。以当前契约为唯一事实源。
+
+## 产物格式
+- 写入 .evaluations/outbox/${taskId}/v${outboxVersion}.json（本次应提交版本）
+- contractVersion 建议 3.4（兼容 3.3 语义）
+- 若单次写入被 token 上限截断，改用“占位骨架 + 分段 replace”策略，不要反复整文件重写
+
+## 核验深度要求
+- 所有 claimInventory 必须走完 pass1 / pass2 / pass3
+- refuted / inconclusive 的 evidence 至少 30 字，并包含原文引用片段「」与外部核验结论
+- inconclusive 必须再推一层：要么查清应归 verified-correct / refuted，要么说明为什么当前不可核，不要停在“疑似口径交叉”
+
+## 交付前自检（全部满足才算完成）
+- [ ] contractVersion / taskId / version 正确
+- [ ] 5 份报告 × R1~R5 都有 tier+score+comment+confidence，且 tier 与 score 严格对应
+- [ ] R1 subscores 含 R1a(0.28)/R1b(0.12)，R1 合成一致
+- [ ] C/D 档 comment 含至少 15 字原文引用「」
+- [ ] claimInventory 每份 3~10 条，且含至少 1 条 logic
+- [ ] claimChecks 覆盖率至少 85%
+- [ ] refuted/inconclusive evidence 满足 30 字+引用+外部核验
+- [ ] SBS 对数 = C(n,2)，margin 取值合法
+- [ ] crossProductInsights 的 focusProductName 正确
+- [ ] 四段正文完整：评测结论 / 按维度展开 / 额外重点问题 / 各主体优缺点与建议
+- [ ] 运行 npm run lint:outbox 并通过
+
+## 核心硬约束提醒
+- 事实错误 / 逻辑错误优先；发现承重问题先外部核验再定档
+- 非共识观点必须同时有证据、推理链、决策增量
+- 禁止反向凑分，tier 先定 score 再映射
+- 一票否决 V1~V5 触发时总分封顶 6.9
+
+完成后告诉我产物路径与版本号，我会回网站刷新查看。`;
 }

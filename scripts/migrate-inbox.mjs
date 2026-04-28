@@ -73,11 +73,11 @@ export function migrateTask(task) {
   }
   const version = readInboxSchemaVersion(task);
 
-  // 场景 B：已是 v2 schema，但可能字段名还是旧的 `contractVersion`
-  if (version === "2.0") {
+  // 场景 B：已是 v2/v2.1 schema，但可能字段名还是旧的 `contractVersion`
+  if (version === "2.0" || version === "2.1") {
     if ("contractVersion" in task && !("inboxSchemaVersion" in task)) {
       // 旧字段名 → 新字段名，保持字段顺序尽量稳定
-      const renamed = { ...task, inboxSchemaVersion: "2.0" };
+      const renamed = { ...task, inboxSchemaVersion: version };
       delete renamed.contractVersion;
       return { changed: true, task: renamed };
     }
@@ -86,7 +86,7 @@ export function migrateTask(task) {
 
   if (version !== "1.0" && version !== undefined) {
     throw new Error(
-      `unsupported inbox schema version: ${version} (expected "1.0" or "2.0")`
+      `unsupported inbox schema version: ${version} (expected "1.0" / "2.0" / "2.1")`
     );
   }
 

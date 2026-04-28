@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLab } from "../store";
 import { formatDate } from "../lib/score";
@@ -27,6 +27,24 @@ interface ReportDraft {
 
 type TypeFilter = QueryTypeId | "all";
 type SortBy = "newest" | "oldest" | "score-desc" | "score-asc";
+
+function nowAsLocalDatetimeLocal(): string {
+  const d = new Date();
+  d.setSeconds(0, 0);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mm = String(d.getMinutes()).padStart(2, "0");
+  return `${y}-${m}-${day}T${hh}:${mm}`;
+}
+
+function localDatetimeLocalToIso(value: string): string | null {
+  if (!value) return null;
+  const d = new Date(value);
+  if (!Number.isFinite(d.getTime())) return null;
+  return d.toISOString();
+}
 
 export default function QueriesPage() {
   const nav = useNavigate();
@@ -59,7 +77,8 @@ export default function QueriesPage() {
   const [queryText, setQueryText] = useState("");
   const [domain, setDomain] = useState("");
   const [typeId, setTypeId] = useState<QueryTypeId | "">("");
-  const [reportDate, setReportDate] = useState("");
+  const [reportDate, setReportDate] = useState(nowAsLocalDatetimeLocal);
+  const queryTextRef = useRef<HTMLTextAreaElement | null>(null);
   const [reports, setReports] = useState<ReportDraft[]>([
     { key: "r-0", productId: "", productVersion: "", content: "", sourceUrl: "" },
   ]);
@@ -71,7 +90,7 @@ export default function QueriesPage() {
     setQueryText("");
     setDomain("");
     setTypeId("");
-    setReportDate("");
+    setReportDate(nowAsLocalDatetimeLocal());
     setReports([{ key: "r-0", productId: "", productVersion: "", content: "", sourceUrl: "" }]);
     setErrorMsg(null);
     setProgress(null);
@@ -81,6 +100,7 @@ export default function QueriesPage() {
     if (!showForm) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    queryTextRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape" && !submitting) {
         resetForm();
@@ -125,6 +145,9 @@ export default function QueriesPage() {
     if (validReports.length === 0)
       return setErrorMsg("至少需要输入 1 份 AI 报告（含产品选择和正文）");
 
+    const reportDateIso = localDatetimeLocalToIso(reportDate);
+    if (!reportDateIso) return setErrorMsg("报告生成时间格式无效，请重新选择");
+
     setSubmitting(true);
     try {
       setProgress("创建评测记录...");
@@ -133,11 +156,11 @@ export default function QueriesPage() {
         title: queryText.trim(),
         domain: domain.trim() || undefined,
         typeId: typeId as QueryTypeId,
-        reportDate: new Date(reportDate).toISOString(),
+        reportDate: reportDateIso,
       } as Omit<Query, "id" | "createdAt" | "updatedAt">);
 
       setProgress(`落存 ${validReports.length} 份 AI 报告...`);
-      const submittedAtIso = new Date(reportDate).toISOString();
+      const submittedAtIso = reportDateIso;
       const createdSubs: Submission[] = [];
       for (const r of validReports) {
         const s = await createSubmission({
@@ -305,7 +328,10 @@ export default function QueriesPage() {
           </p>
         </div>
         <button
-          onClick={() => setShowForm(true)}
+          onClick={() => {
+            resetForm();
+            setShowForm(true);
+          }}
           className={clsx(
             "bg-amber text-white px-4 py-2 rounded-lg hover:bg-amber-dark transition shadow-soft",
             IS_READONLY && "hidden"
@@ -468,6 +494,7 @@ export default function QueriesPage() {
                     原样记录用户输入的 Query，不做总结
                   </p>
                   <textarea
+                    ref={queryTextRef}
                     value={queryText}
                     onChange={(e) => setQueryText(e.target.value)}
                     rows={3}
@@ -501,14 +528,25 @@ export default function QueriesPage() {
                     </div>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-ink-700">
-                      报告生成时间 <span className="text-clay">*</span>
-                    </label>
+                    <div className="flex items-center justify-between gap-2">
+                      <label className="text-sm font-medium text-ink-700">
+                        报告生成时间 <span className="text-clay">*</span>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setReportDate(nowAsLocalDatetimeLocal())}
+                        className="text-[11px] text-ink-500 hover:text-amber-dark hover:underline"
+                        title="重置为当前时间"
+                      >
+                        使用当前时间
+                      </button>
+                    </div>
                     <p className="text-[11px] text-ink-400 mt-0.5 mb-1">
-                      AI 产出这批报告的日期
+                      默认填当前时间，可按需微调（精确到分钟）
                     </p>
                     <input
-                      type="date"
+                      type="datetime-local"
+                      step={60}
                       value={reportDate}
                       onChange={(e) => setReportDate(e.target.value)}
                       className="w-full px-3 py-2 border border-paper-300 rounded-lg focus:outline-none focus:border-amber bg-paper-50 text-sm"

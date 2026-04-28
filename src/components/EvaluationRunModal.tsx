@@ -75,9 +75,9 @@ export default function EvaluationRunModal({
         // buildInboxTask 只占位为 ""，必须在 POST 前异步算好——否则后端虽然当前不强校验，
         // 后续 lint:outbox / migrate 消费端都会报不一致。
         await fillInboxContentHashes(task);
-        await contractBus.submitInbox(task);
+        const submitRes = await contractBus.submitInbox(task);
         setTaskId(task.taskId);
-        setPrompt(buildSummonPrompt(task.taskId));
+        setPrompt(buildSummonPrompt(task.taskId, submitRes?.nextVersion));
         setPhase("submitted");
       } catch (err) {
         setErrorMsg((err as Error).message || "提交失败");

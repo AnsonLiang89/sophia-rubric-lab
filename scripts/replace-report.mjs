@@ -121,7 +121,7 @@ function main() {
       : typeof task.contractVersion === "string"
         ? task.contractVersion
         : undefined;
-  if (inboxSchemaVersion !== "2.0") {
+  if (inboxSchemaVersion !== "2.0" && inboxSchemaVersion !== "2.1") {
     die(
       `task is schema v${inboxSchemaVersion ?? "1.0"}; run "npm run migrate-inbox -- --apply" first`,
       1

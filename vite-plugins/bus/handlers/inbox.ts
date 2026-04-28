@@ -36,6 +36,20 @@ function computeContentHashNode(content: string): string {
   return hash.subarray(0, 8).toString("hex");
 }
 
+/** 读取 outbox/{taskId} 下现有 v{n}.json，计算下一版版本号。 */
+function computeNextOutboxVersion(outboxDir: string, taskId: string): number {
+  const taskDir = path.join(outboxDir, taskId);
+  if (!fs.existsSync(taskDir) || !fs.statSync(taskDir).isDirectory()) return 1;
+  let max = 0;
+  for (const name of fs.readdirSync(taskDir)) {
+    const m = /^v(\d+)\.json$/.exec(name);
+    if (!m) continue;
+    const n = Number(m[1]);
+    if (Number.isFinite(n) && n > max) max = n;
+  }
+  return max + 1;
+}
+
 /** POST /_bus/inbox */
 export async function handlePostInbox(
   req: BusReq,
@@ -69,9 +83,9 @@ export async function handlePostInbox(
   // 这里 inboxSchemaVersion 指的是 **inbox schema 版本**，不是 outbox payload.contractVersion。
   // 兼容读：优先 inboxSchemaVersion，回退 contractVersion（2026-04-27 前的旧字段名）。
   const inboxSchemaVersion = readInboxSchemaVersion(payload);
-  if (inboxSchemaVersion !== "2.0") {
+  if (inboxSchemaVersion !== "2.0" && inboxSchemaVersion !== "2.1") {
     return send(res, 400, {
-      error: `inbox schema version must be "2.0"; got ${JSON.stringify(inboxSchemaVersion ?? null)}. 前端请用 buildInboxTask + fillInboxContentHashes 构造 v2 payload（字段名 inboxSchemaVersion）`,
+      error: `inbox schema version must be "2.0" or "2.1"; got ${JSON.stringify(inboxSchemaVersion ?? null)}. 前端请用 buildInboxTask + fillInboxContentHashes 构造 v2 payload（字段名 inboxSchemaVersion）`,
     });
   }
   // v2 结构最基本的一致性校验：candidates[].reportVersions[activeReportVersion] 必须存在
@@ -107,6 +121,7 @@ export async function handlePostInbox(
 
   const taskId = taskIdRaw;
   const file = path.join(ctx.inboxDir, `${taskId}.json`);
+  const nextVersion = computeNextOutboxVersion(ctx.outboxDir, taskId);
 
   // v3.4 扁平化：同 taskId（= queryCode）已存在时，走"按 candidateId 合并"语义。
   // 保留磁盘侧的 reportVersions / activeReportVersion / productVersion / authorNote，
@@ -119,7 +134,7 @@ export async function handlePostInbox(
       });
     }
     const existingSchema = readInboxSchemaVersion(existing);
-    if (existingSchema !== "2.0") {
+    if (existingSchema !== "2.0" && existingSchema !== "2.1") {
       return send(res, 400, {
         error: `existing inbox/${taskId}.json is schema v${existingSchema ?? "1.0"}; run "npm run migrate-inbox" first`,
       });
@@ -154,6 +169,8 @@ export async function handlePostInbox(
     const merged: Record<string, unknown> = {
       ...existing,
       ...payload,
+      inboxSchemaVersion: "2.1",
+      nextVersion,
       candidates: mergedCandidates,
     };
     fs.writeFileSync(file, JSON.stringify(merged, null, 2));
@@ -164,14 +181,21 @@ export async function handlePostInbox(
       merged: true,
       addedCandidates: addedCount,
       keptCandidates: keptCount,
+      nextVersion,
     });
   }
 
-  fs.writeFileSync(file, JSON.stringify(payload, null, 2));
+  const normalizedPayload: Record<string, unknown> = {
+    ...payload,
+    inboxSchemaVersion: "2.1",
+    nextVersion,
+  };
+  fs.writeFileSync(file, JSON.stringify(normalizedPayload, null, 2));
   return send(res, 200, {
     ok: true,
     taskId,
     file: path.relative(ctx.root, file),
+    nextVersion,
   });
 }
 
@@ -297,7 +321,7 @@ export async function handlePatchInboxTask(
   if (!task) return send(res, 500, { error: "corrupt inbox json" });
 
   const diskInboxSchemaVersion = readInboxSchemaVersion(task);
-  if (diskInboxSchemaVersion !== "2.0") {
+  if (diskInboxSchemaVersion !== "2.0" && diskInboxSchemaVersion !== "2.1") {
     return send(res, 400, {
       error: `inbox task is schema v${diskInboxSchemaVersion ?? "1.0"}; run "npm run migrate-inbox" before PATCH`,
     });

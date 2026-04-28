@@ -831,7 +831,8 @@ function goodInboxV2() {
   return {
     taskId: "EV-9999-abcDEF",
     createdAt: "2026-04-27T12:00:00.000Z",
-    inboxSchemaVersion: "2.0",
+    inboxSchemaVersion: "2.1",
+    nextVersion: 5,
     query: { id: "q_1", code: "EV-9999" },
     candidates: [
       {
@@ -860,8 +861,22 @@ function lintInboxTask(task: unknown) {
 }
 
 describe("validateInboxTask · v2 schema", () => {
-  it("合法 v2 inbox payload 无违规", () => {
+  it("合法 v2.1 inbox payload 无违规", () => {
     expect(lintInboxTask(goodInboxV2())).toEqual([]);
+  });
+
+  it("兼容 legacy v2.0（无 nextVersion）", () => {
+    const t: any = goodInboxV2();
+    t.inboxSchemaVersion = "2.0";
+    delete t.nextVersion;
+    expect(lintInboxTask(t)).toEqual([]);
+  });
+
+  it("v2.1 缺 nextVersion → 报错", () => {
+    const t: any = goodInboxV2();
+    delete t.nextVersion;
+    const errors = lintInboxTask(t);
+    expect(errors.some((e) => e.path === "nextVersion")).toBe(true);
   });
 
   it("inboxSchemaVersion=1.0 → 报错并提示 migrate-inbox", () => {
