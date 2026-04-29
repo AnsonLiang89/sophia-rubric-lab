@@ -13,10 +13,10 @@
     ],
     "rubric": [
       {
-        "id": "R1", "name": "准确性", "weight": 0.40,
+        "dimensionId": "R1", "name": "准确性", "weight": 0.40,
         "subscores": [
-          {"id": "R1a", "name": "事实准确", "weight": 0.28},
-          {"id": "R1b", "name": "逻辑自洽", "weight": 0.12}
+          {"dimensionId": "R1a", "name": "事实准确", "weight": 0.28},
+          {"dimensionId": "R1b", "name": "逻辑自洽", "weight": 0.12}
         ],
         "scores": [
           {"reportId": "DzntApnv57", "tier": "A", "score": 8, "comment": "SophiaAI 核心财务数字（营收454.56亿、归母净利191.51亿、扣非132.41亿、TIDES+96%）均与年报一致。在手订单580亿、TIDES产能10万升等关键数据准确。信源以「公开权威渠道」泛指为主，缺少具体一手链接。R1a=A(8), R1b=A(8)。唯一精度瑕疵：「2026年1月生效的《生物安全法案》」实际签署日为2025年12月18日，属于月度级精度偏差，不构成承重错误。花旗目标价158.5港元、交银国际35.8港元等投行数据经外部核验一致。", "confidence": "high", "issueTags": ["一手源不足"]},
@@ -26,7 +26,7 @@
         ]
       },
       {
-        "id": "R2", "name": "相关性", "weight": 0.15,
+        "dimensionId": "R2", "name": "相关性", "weight": 0.15,
         "scores": [
           {"reportId": "DzntApnv57", "tier": "A", "score": 8, "comment": "query 要求提炼共识与非共识并交叉对比。SophiaAI 按「共识→非共识→主体交叉→核验→情景预测」展开，直接回应了核心诉求。覆盖了媒体、大V、投行、研究机构、个人投资者等多主体视角，较好地锚定了「各方评价」诉求。扣分点：缺少2026Q1季报数据，scope窗口稍窄。", "confidence": "high", "issueTags": []},
           {"reportId": "KNwkp7m-Q2", "tier": "A", "score": 8, "comment": "Gemini 以「财务韧性与全球医药外包格局演变」为框架回应query。覆盖了投行共识与非共识、地缘政治风险、业务板块等维度。但该报告更偏向「公司基本面深度分析」而非「各方评价的提炼与对比」——对媒体、大V、个人投资者的声音提及较少，主体覆盖度不及SophiaAI和Kimi。", "confidence": "high", "issueTags": []},
@@ -35,7 +35,7 @@
         ]
       },
       {
-        "id": "R3", "name": "论证深度", "weight": 0.20,
+        "dimensionId": "R3", "name": "论证深度", "weight": 0.20,
         "scores": [
           {"reportId": "DzntApnv57", "tier": "B", "score": 6, "comment": "SophiaAI 在共识/非共识拆解上有清晰的框架，但论证深度停在一阶：列出了各方观点但较少做独立的二阶追问。例如对「净利质量争议」仅列出质疑方和支持方观点，未像Kimi那样深入分析非经常性收益的具体构成和占比。情景预测章节有创意但假设较粗（概率分布60/20/20未给推理依据）。", "confidence": "medium", "issueTags": ["论据缺失"]},
           {"reportId": "KNwkp7m-Q2", "tier": "A", "score": 8, "comment": "Gemini 的论证链条完整度高。从「主业驱动vs资本运作」的利润结构透视、到「跟随分子→赢得分子」的战略演进叙事、再到地缘政治的分层评估，展现了二阶甚至三阶的分析深度。对2026Q1数据的引用增强了论证的时效性。非共识方面对「抢单行为」假说的提出有独立见解。但对各方观点的明确对比稍弱。", "confidence": "high", "issueTags": []},
@@ -44,7 +44,7 @@
         ]
       },
       {
-        "id": "R4", "name": "完备性", "weight": 0.10,
+        "dimensionId": "R4", "name": "完备性", "weight": 0.10,
         "scores": [
           {"reportId": "DzntApnv57", "tier": "A", "score": 8, "comment": "SophiaAI 覆盖了共识（3大类）、非共识（5大争议）、主体交叉对比、核心验证、情景预测、信息缺口等维度，结构完整。但缺少2026Q1数据、缺少业务板块的分板块分析（TIDES/测试/生物学等的独立分析较薄）。", "confidence": "high", "issueTags": []},
           {"reportId": "KNwkp7m-Q2", "tier": "A", "score": 8, "comment": "Gemini 从公司基本面角度做了全面覆盖：利润结构、核心业务引擎（化学/TIDES/测试/生物学）、市场情绪、地缘政治、2026指引、资本管理。但在「各方评价主体」的维度覆盖上不如Kimi全面。", "confidence": "high", "issueTags": ["维度缺漏"]},
@@ -53,7 +53,7 @@
         ]
       },
       {
-        "id": "R5", "name": "决策价值", "weight": 0.15,
+        "dimensionId": "R5", "name": "决策价值", "weight": 0.15,
         "scores": [
           {"reportId": "DzntApnv57", "tier": "B", "score": 6, "comment": "SophiaAI 的情景预测和核心观测指标章节有一定决策价值，但整体信息增量有限——大部分观点是对公开信息的重组而非独立洞察。估值修复触发条件的提出有参考价值。", "confidence": "medium", "issueTags": ["信息零增量"]},
           {"reportId": "KNwkp7m-Q2", "tier": "B", "score": 6, "comment": "Gemini 的结论段提供了「R到D转化率、非美市场渗透率、全球审计合规记录」三个前瞻指标，有一定启发性。但通篇倾向叙事而非行动指引，缺少明确的情景分析和风险标注。", "confidence": "medium", "issueTags": ["缺乏可操作建议"]},
@@ -63,7 +63,7 @@
       }
     ],
     "extraDimensions": [
-      {"id": "X1", "name": "信源可追溯性", "rationale": "本次query涉及市场多方评价的汇集与交叉验证，信源是否可追溯直接影响报告可信度和用户决策风险。", "activated": false}
+      {"dimensionId": "X1", "name": "信源可追溯性", "rationale": "本次query涉及市场多方评价的汇集与交叉验证，信源是否可追溯直接影响报告可信度和用户决策风险。", "activated": false, "scores": []}
     ],
     "sbs": {
       "pairs": [
