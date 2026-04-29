@@ -1,0 +1,306 @@
+{
+  "taskId": "EV-0010",
+  "version": 1,
+  "evaluator": "Sophia (AI Evaluator via WorkBuddy)",
+  "evaluatedAt": "2026-04-29T15:45:00.000Z",
+  "contractVersion": "3.6",
+  "summary": {
+    "overallScores": [
+      {"reportId": "OIbSfIrUEf", "productName": "SophiaAI", "score": 7.2, "verdict": "优秀", "vetoTriggered": false, "vetoReason": null, "deltaReason": null},
+      {"reportId": "w0PGnpYtNZ", "productName": "Gemini", "score": 7.0, "verdict": "优秀", "vetoTriggered": false, "vetoReason": null, "deltaReason": null},
+      {"reportId": "NiV4Zm8REE", "productName": "Kimi", "score": 7.8, "verdict": "优秀", "vetoTriggered": false, "vetoReason": null, "deltaReason": null},
+      {"reportId": "Pur7_-6PDg", "productName": "Manus", "score": 8.0, "verdict": "优秀", "vetoTriggered": false, "vetoReason": null, "deltaReason": null},
+      {"reportId": "WQOcUKXDRo", "productName": "MiroThink", "score": 8.6, "verdict": "卓越", "vetoTriggered": false, "vetoReason": null, "deltaReason": null}
+    ],
+    "rubric": [
+      {
+        "dimensionId": "R1", "name": "准确性", "weight": 0.40,
+        "subscores": [
+          {"dimensionId": "R1a", "name": "事实准确", "weight": 0.28},
+          {"dimensionId": "R1b", "name": "逻辑自洽", "weight": 0.12}
+        ],
+        "scores": [
+          {"reportId": "OIbSfIrUEf", "tier": "A", "score": 8, "comment": "SophiaAI核心年度数据（2021年16.793亿、2022年14.906亿、2023年15.378亿、2024年13.501亿、2025年12.041亿）与Mattel 10-K一致。但季度增速数据存在精度问题：报告称2023Q3同比+9%，而Kimi和MiroThink均引用+16%（源自Mattel财报）。SophiaAI可能使用了不同口径（Barbie品牌单独vs娃娃品类整体），但未明确说明。1997年17亿峰值数据缺少一手源标注。信源以「美泰官方财报、NPD集团、欧睿国际」泛称但无URL。R1a=A(8), R1b=A(8)——逻辑自洽，三重周期框架内部推导连贯。", "confidence": "high", "issueTags": ["一手源不足"]},
+          {"reportId": "w0PGnpYtNZ", "tier": "A", "score": 8, "comment": "Gemini核心趋势数据准确（2015年9亿低点、2021年16.8亿峰值、2022年14.9亿等与多方一致）。Q4占比35-45%的估算与行业通识一致（但与MiroThink的Q3高峰洞察存在冲突——Gemini称Q4为35-45%高峰，MiroThink以Mattel CFO表述和季度数据证实Q3才是毛销售额峰值37.1%）。信源以上标引用号但无参考文献列表。R1a=A(8), R1b=A(8)。", "confidence": "high", "issueTags": ["一手源不足"]},
+          {"reportId": "NiV4Zm8REE", "tier": "A", "score": 8, "comment": "Kimi数据极为详尽：2023Q1-Q4增速（-40%/-6%/+16%/+27%）、电影票房1.55亿首周末、TikTok 812亿次浏览等均有据可查。2023全年15.378亿、2024年13.501亿准确。一处需注意：称2015年降幅14%/31%存在口径混淆——其他报告引用2014年-16%/2015年约-10%（Manus数据表），Kimi的31%可能指累计降幅而非单年。信源引用了CEO/CFO原话但无URL。R1a=A(8), R1b=A(8)。", "confidence": "high", "issueTags": []},
+          {"reportId": "Pur7_-6PDg", "tier": "S", "score": 10, "comment": "Manus是五份报告中唯一全部数据引用SEC EDGAR 10-K原文（11条URL全部指向sec.gov和Mattel investor relations），且明确标注了gross sales vs gross billings口径变化。2013-2025年完整年度数据表（1202.8/1009.5/905.9/971.8/954.9/1089.0/1159.8/1350.1/1679.3/1490.6/1537.8/1350.1/1204.1）与Mattel官方10-K一致。统计检验描述严谨（平均绝对同比变化11.2%、标准差13.2%）。R1a=S(10), R1b=S(10)。", "confidence": "high", "issueTags": []},
+          {"reportId": "WQOcUKXDRo", "tier": "S", "score": 10, "comment": "MiroThink提供了27条参考文献含URL（SEC 10-K/10-Q、Reuters、Bloomberg、Fortune、CNBC、Statista、Yahoo Finance等），季度级granularity数据全部可追溯。关键反直觉发现——「芭比毛销售额高峰实际是Q3(37.1%)而非Q4(31.6%)」——引用了Mattel CFO Anthony DiSilvestro财报电话会议原话和具体季度数据验证，逻辑严密。R1a=S(10), R1b=S(10)。", "confidence": "high", "issueTags": []}
+        ]
+      },
+      {
+        "dimensionId": "R2", "name": "相关性", "weight": 0.15,
+        "scores": [
+          {"reportId": "OIbSfIrUEf", "tier": "A", "score": 8, "comment": "query问「芭比作为IP其销售额是否有显著周期性」。SophiaAI直接回答了核心问题（显著但非完全周期性），覆盖了年度趋势/季度季节性/事件驱动/供应链四个维度，且增加了品类/区域/渠道/客群/二手市场/IP对标等细分维度，scope全面。", "confidence": "high", "issueTags": []},
+          {"reportId": "w0PGnpYtNZ", "tier": "A", "score": 8, "comment": "Gemini以三层周期嵌套框架（季节性/品牌战略/媒介事件）回应query，覆盖了周期性的主要维度。额外涉及竞争格局、Kidult趋势、数字化转型、未来展望等扩展内容。但部分内容（如AI娃娃、Roblox、2026-2035年展望）偏离了query的核心聚焦。", "confidence": "high", "issueTags": []},
+          {"reportId": "NiV4Zm8REE", "tier": "A", "score": 8, "comment": "Kimi以年度周期/季节性周期/产品生命周期三大维度系统回应，每个维度下有详细的子话题展开。整体scope与query高度匹配。但篇幅过长（约4万字），部分内容冗余。", "confidence": "high", "issueTags": []},
+          {"reportId": "Pur7_-6PDg", "tier": "S", "score": 10, "comment": "Manus对query的回应最为精准克制：直接给出「多年周期性不显著，年内季节性显著」的分层结论，明确区分了「年内季节性」与「多年周期性」这两个概念——这正是query的核心辨析点。没有跑题、没有无关填充，且主动识别了query字面下的隐含诉求（投资分析含义）。", "confidence": "high", "issueTags": []},
+          {"reportId": "WQOcUKXDRo", "tier": "A", "score": 8, "comment": "MiroThink以三维解析框架（季节性/事件驱动/长期品牌波动）正面回应query，结论明确「周期性真实存在且显著程度超出一般玩具品牌」。scope精准且每个维度都有数据支撑。", "confidence": "high", "issueTags": []}
+        ]
+      },
+      {
+        "dimensionId": "R3", "name": "论证深度", "weight": 0.20,
+        "scores": [
+          {"reportId": "OIbSfIrUEf", "tier": "A", "score": 8, "comment": "SophiaAI展现了统计方法论意识（Z-score异常值剥离、H-P滤波、X-12-ARIMA、时间序列谱分析），并给出了驱动因素贡献占比（代际60%/竞争20%/事件10%/供应链7%/宏观3%），量化深度在五份报告中最强。但统计方法的使用需审慎——报告自称「38年有效数据」做谱分析但承认未达p<0.05显著性，这种「方法论展示但结论未落锤」的模式是论证深度的短板。", "confidence": "medium", "issueTags": []},
+          {"reportId": "w0PGnpYtNZ", "tier": "A", "score": 8, "comment": "Gemini的「文化相关性周期性重塑」视角有独特深度——将芭比的销售周期归因于品牌的「文化意义」而非纯粹的市场力量。「Kidult趋势平滑周期」的洞察也有前瞻性。但论证中多处使用定性推断（如5-10年战略周期）而缺少定量验证。", "confidence": "medium", "issueTags": []},
+          {"reportId": "NiV4Zm8REE", "tier": "A", "score": 8, "comment": "Kimi在每个维度都做了详尽的机制分析和历史案例研究。「三类周期叠加效应」的总结框架有深度，特别是「正向共振放大、负向共振加深」的洞察。但篇幅冗长导致论证密度被稀释。", "confidence": "high", "issueTags": []},
+          {"reportId": "Pur7_-6PDg", "tier": "S", "score": 10, "comment": "Manus的论证深度体现在方法论的严谨克制：①明确区分「波动显著≠周期性显著」——这是五份报告中唯一做出此关键辨析的；②用统计语言（自相关、方向性运行、事件解释力）系统检验了周期性假设并得出否定结论；③引用Mattel管理层自身叙述作为「事件/阶段解释」的佐证；④承认了样本限制（仅13个年度观测值）而非假装有足够统计力度。这种「知道自己不知道什么」的认知诚实是最高水平的论证。", "confidence": "high", "issueTags": []},
+          {"reportId": "WQOcUKXDRo", "tier": "S", "score": 10, "comment": "MiroThink的论证深度体现在反直觉洞察和精准的分层分析：①「Q3是毛销售额高峰而非Q4」——引用CFO原话和季度数据推翻了常识性认知，展现了超越信息罗列的独立判断；②「峰值越高后续均值回归压力越大」的规律总结有投资分析价值；③「品牌特定问题vs系统性衰退」的分化信号识别（2025年行业+6% vs 芭比-11%）是高质量的二阶追问。", "confidence": "high", "issueTags": []}
+        ]
+      },
+      {
+        "dimensionId": "R4", "name": "完备性", "weight": 0.10,
+        "scores": [
+          {"reportId": "OIbSfIrUEf", "tier": "S", "score": 10, "comment": "SophiaAI维度覆盖在五份报告中最全面：长期趋势/季度季节性/事件驱动/供应链/品类/区域/渠道/客群/二手市场/IP对标/数据局限性/趋势展望——几乎穷尽了分析芭比周期性的所有可能维度。配有多张结构化表格。", "confidence": "high", "issueTags": []},
+          {"reportId": "w0PGnpYtNZ", "tier": "A", "score": 8, "comment": "Gemini覆盖了季节性/品牌战略/媒介内容/竞争/Kidult/经济周期/数字化/未来展望等维度，结构完整。但区域维度和品类拆分不如SophiaAI和Kimi详尽。", "confidence": "high", "issueTags": []},
+          {"reportId": "NiV4Zm8REE", "tier": "S", "score": 10, "comment": "Kimi的覆盖度与SophiaAI不相上下：年度周期/季节性/产品生命周期/收藏线/授权合作/数字体验/产品退市/供应链/三类周期叠加/战略挑战/未来规划。4大章节+20个子节，结构化表格丰富。", "confidence": "high", "issueTags": []},
+          {"reportId": "Pur7_-6PDg", "tier": "B", "score": 6, "comment": "Manus有意识地限制了覆盖范围——仅聚焦年度多年周期性和投资分析含义，未展开季节性细节、品类/区域拆分、IP对标等维度。这是刻意的「精准克制」而非「维度缺漏」——报告本身声明了scope（13年年度数据的周期性检验），但从query「全面分析」的隐含诉求看，覆盖度确实不足。", "confidence": "high", "issueTags": ["维度缺漏"]},
+          {"reportId": "WQOcUKXDRo", "tier": "A", "score": 8, "comment": "MiroThink覆盖了季节性/年际/事件驱动/长期品牌周期/延伸洞察/延伸研究方向六大维度。信息密度高但比SophiaAI和Kimi少了品类拆分和IP对标。", "confidence": "high", "issueTags": []}
+        ]
+      },
+      {
+        "dimensionId": "R5", "name": "决策价值", "weight": 0.15,
+        "scores": [
+          {"reportId": "OIbSfIrUEf", "tier": "B", "score": 6, "comment": "SophiaAI给出了三情景预判（基准70%/乐观20%/悲观10%）和核心监测指标，有一定决策参考价值。但情景概率缺少推导过程，且整体结论「显著但非完全周期性」在决策指导上偏模糊。", "confidence": "medium", "issueTags": ["缺乏可操作建议"]},
+          {"reportId": "w0PGnpYtNZ", "tier": "B", "score": 6, "comment": "Gemini的未来展望（2026-2035年CAGR 6.9%、亚太8.6%）提供了长期参考，但这些预测来自第三方（未标注具体来源），且2035年的预测对当前决策的指导价值有限。结论「芭比的成功不在于消灭周期而在于管理周期」有启发但缺少可操作性。", "confidence": "medium", "issueTags": ["缺乏可操作建议"]},
+          {"reportId": "NiV4Zm8REE", "tier": "A", "score": 8, "comment": "Kimi在§4.2给出了详细的峰值后回落风险分析（5种风险类型+管理策略表），以及未来内容pipeline的时间表和周期贡献预期。特别是对「数字业务平滑周期」效果的审慎评估（2亿美元数字收入vs12亿实体，规模不足以解构周期），展现了对投资者有价值的清醒判断。", "confidence": "high", "issueTags": []},
+          {"reportId": "Pur7_-6PDg", "tier": "S", "score": 10, "comment": "Manus的「投资分析含义」段虽短但信息密度极高：①明确告诉用户「不宜假设电影或疫情式高峰会自然重复」；②提出三层建模框架（常态基本盘/品牌更新中期/事件催化短期）——这对投资者的建模方法论有直接指导价值；③「波动显著≠周期性显著」的辨析本身就是对投资决策最重要的caveat。全文知道什么时候该停——不做超出证据的预测，这本身就是最高的决策价值。", "confidence": "high", "issueTags": []},
+          {"reportId": "WQOcUKXDRo", "tier": "A", "score": 8, "comment": "MiroThink的场景A/B分析（2027复苏vs调整延长至2028+）结构清晰，「市场分化信号」（行业+6% vs 芭比-11%）对判断「周期底部是否有结构性支撑」有直接价值。三个延伸研究方向对深度研究者有参考价值。", "confidence": "high", "issueTags": []}
+        ]
+      }
+    ],
+    "extraDimensions": [
+      {"dimensionId": "X1", "name": "统计方法论严谨度", "rationale": "query问的是「是否有显著周期性」，涉及统计检验概念，统计方法论的严谨度直接影响结论的可信度。", "activated": false, "scores": []}
+    ],
+    "sbs": {
+      "pairs": [
+        {"reportIdA": "OIbSfIrUEf", "reportIdB": "w0PGnpYtNZ", "winner": "A", "margin": "slight", "dimensionDriver": ["R4"], "keyReason": "SophiaAI在完备性(S)上优于Gemini(A)，其他维度相近"},
+        {"reportIdA": "OIbSfIrUEf", "reportIdB": "NiV4Zm8REE", "winner": "B", "margin": "slight", "dimensionDriver": ["R5"], "keyReason": "Kimi在决策价值(A)上优于SophiaAI(B)，SophiaAI在R4(S)上优于Kimi(S)但总分Kimi更高"},
+        {"reportIdA": "OIbSfIrUEf", "reportIdB": "Pur7_-6PDg", "winner": "B", "margin": "slight", "dimensionDriver": ["R1", "R2", "R3", "R5"], "keyReason": "Manus在R1(S信源)/R2(S精准)/R3(S辨析)/R5(S建模框架)四维领先，SophiaAI仅在R4(S)完备性上占优"},
+        {"reportIdA": "OIbSfIrUEf", "reportIdB": "WQOcUKXDRo", "winner": "B", "margin": "clear", "dimensionDriver": ["R1", "R3", "R5"], "keyReason": "MiroThink在R1(S信源+反直觉核验)/R3(S独立洞察)/R5(A场景分析)上全面领先，SophiaAI仅R4(S)占优"},
+        {"reportIdA": "w0PGnpYtNZ", "reportIdB": "NiV4Zm8REE", "winner": "B", "margin": "slight", "dimensionDriver": ["R4", "R5"], "keyReason": "Kimi在完备性(S)和决策价值(A)上优于Gemini(A/B)"},
+        {"reportIdA": "w0PGnpYtNZ", "reportIdB": "Pur7_-6PDg", "winner": "B", "margin": "clear", "dimensionDriver": ["R1", "R2", "R3", "R5"], "keyReason": "Manus在四个维度上档次领先"},
+        {"reportIdA": "w0PGnpYtNZ", "reportIdB": "WQOcUKXDRo", "winner": "B", "margin": "clear", "dimensionDriver": ["R1", "R3", "R5"], "keyReason": "MiroThink在三个维度上档次领先"},
+        {"reportIdA": "NiV4Zm8REE", "reportIdB": "Pur7_-6PDg", "winner": "draw", "margin": "slight", "dimensionDriver": ["R1", "R4"], "keyReason": "Manus在R1(S)/R2(S)/R3(S)/R5(S)领先，Kimi在R4(S)/篇幅覆盖度领先；总分Manus 8.0 vs Kimi 7.8接近"},
+        {"reportIdA": "NiV4Zm8REE", "reportIdB": "WQOcUKXDRo", "winner": "B", "margin": "slight", "dimensionDriver": ["R1", "R3"], "keyReason": "MiroThink在R1(S信源)+R3(S反直觉洞察)上领先"},
+        {"reportIdA": "Pur7_-6PDg", "reportIdB": "WQOcUKXDRo", "winner": "B", "margin": "slight", "dimensionDriver": ["R4"], "keyReason": "MiroThink在R4(A)覆盖度和信息密度上优于Manus(B)，其他维度两者均为S档但MiroThink的季度级granularity数据密度更高"}
+      ]
+    },
+    "perReportFeedback": [
+      {"reportId": "OIbSfIrUEf", "strengths": ["R4完备性(S)：品类/区域/渠道/客群/二手市场/IP对标等细分维度在五份报告中覆盖最全", "统计方法论意识：引入Z-score/H-P滤波/X-12-ARIMA/谱分析等方法，尝试量化检验周期性"], "weaknesses": ["2023Q3增速引用+9%与其他报告的+16%存在冲突，口径未明确说明", "统计检验结论「未达p<0.05显著性标准」与核心结论「显著但非完全周期性」的表述存在张力——若未达统计显著性为何称「显著」"], "improvements": ["明确不同口径（品牌vs品类）的数据差异", "提供一手源URL以支撑关键数字"]},
+      {"reportId": "w0PGnpYtNZ", "strengths": ["「文化相关性周期性重塑」视角有独特分析深度", "Kidult趋势对平滑周期的洞察有前瞻性"], "weaknesses": ["Q4占比35-45%的估算与MiroThink引用的实际数据（Q4仅31.6%，Q3才是37.1%高峰）存在冲突——Gemini混淆了终端消费高峰（Q4）与制造商出货高峰（Q3）", "2026-2035年CAGR预测（6.9%/8.6%）未标注来源，可核查性弱"], "improvements": ["区分制造商gross billings季度分布与终端零售季度分布", "补充信源URL"]},
+      {"reportId": "NiV4Zm8REE", "strengths": ["三类周期叠加效应的分析框架系统全面", "峰值后回落风险的5种类型+管理策略表对商业决策有直接参考价值"], "weaknesses": ["篇幅约4万字过长，部分分析存在重复（如电影效应在§1.1和§2.1中重复展开）", "2015年降幅引用了14%和31%两个数字，后者可能是累计降幅但未明确说明"], "improvements": ["精简篇幅，合并重复段落", "区分单年降幅与累计降幅"]},
+      {"reportId": "Pur7_-6PDg", "strengths": ["11条SEC EDGAR 10-K URL构成五份报告中最强的一手源标注——每个数据点均可追溯到Mattel官方文件", "「波动显著≠周期性显著」是五份报告中唯一做出的关键方法论辨析，直接提升了分析的认知水平", "三层建模框架（基本盘/品牌更新/事件催化）对投资分析有直接操作指导"], "weaknesses": ["维度覆盖有限——未展开季度季节性细节、区域/品类拆分、竞品对标等维度", "仅13年年度数据，未纳入季度级granularity分析"], "improvements": ["补充季度级数据分析以回应query中「周期性」的完整含义（既含多年也含年内）"]},
+      {"reportId": "WQOcUKXDRo", "strengths": ["「Q3是毛销售额高峰而非Q4」的反直觉发现——引用Mattel CFO原话和季度数据推翻了常识性认知", "27条参考文献含URL构成极强的信源可追溯性", "「品牌特定问题vs系统性衰退」的市场分化信号识别对投资决策有直接价值"], "weaknesses": ["品类维度拆分不如SophiaAI详尽", "IP对标分析（与迪士尼/乐高等的对比）不如SophiaAI和Gemini系统"], "improvements": ["补充品类和IP对标维度的系统分析"]}
+    ],
+    "factCoverageMatrix": {
+      "scannedAt": "2026-04-29T15:50:00.000Z",
+      "types": [
+        {"typeId": "T1", "label": "数字/金额/比例", "hintKeywords": "销售额/亿美元/同比增速/%/百万", "perReport": [
+          {"reportId": "OIbSfIrUEf", "present": true, "sampleQuote": "「2021年全球销售额16.793亿美元，同比+24%」", "claimIdsSampled": ["c1"]},
+          {"reportId": "w0PGnpYtNZ", "present": true, "sampleQuote": "「第四季度的净销售额通常占到全年总额的35%至45%以上」", "claimIdsSampled": ["c11"]},
+          {"reportId": "NiV4Zm8REE", "present": true, "sampleQuote": "「2023年全年芭比品牌毛账单收入达到15.378亿美元」", "claimIdsSampled": ["c21"]},
+          {"reportId": "Pur7_-6PDg", "present": true, "sampleQuote": "「2013—2025年Barbie销售额的平均绝对同比变化约为11.2%，标准差约13.2%」", "claimIdsSampled": ["c31"]},
+          {"reportId": "WQOcUKXDRo", "present": true, "sampleQuote": "「Q3为绝对销售高峰约占全年37.1%，Q4为次高峰约31.6%，Q1为全年低谷约12.9%」", "claimIdsSampled": ["c41"]}
+        ]},
+        {"typeId": "T2", "label": "时间/日期", "hintKeywords": "年份/季度/上映日期", "perReport": [
+          {"reportId": "OIbSfIrUEf", "present": true, "sampleQuote": "「1959-1997年成长期上行→1998-2012年成熟期衰退→2013-2021年复苏上行→2022-2025年再次衰退」", "claimIdsSampled": ["c2"]},
+          {"reportId": "w0PGnpYtNZ", "present": true, "sampleQuote": "「2016年是芭比品牌周期的关键拐点」", "claimIdsSampled": ["c12"]},
+          {"reportId": "NiV4Zm8REE", "present": true, "sampleQuote": "「2023年7月21日华纳兄弟出品的真人电影《芭比》全球主要市场同步上映」", "claimIdsSampled": ["c22"]},
+          {"reportId": "Pur7_-6PDg", "present": true, "sampleQuote": "「2013—2025年的年度序列」", "claimIdsSampled": ["c32"]},
+          {"reportId": "WQOcUKXDRo", "present": true, "sampleQuote": "「截至2026年4月，芭比正处于后电影效应消退叠加品牌中期调整的双重低谷」", "claimIdsSampled": ["c42"]}
+        ]},
+        {"typeId": "T3", "label": "货币/量纲/单位", "hintKeywords": "美元/百万/亿/gross billings vs net sales", "perReport": [
+          {"reportId": "OIbSfIrUEf", "present": true, "sampleQuote": "「除非特殊标注，所有销售额均采用美泰官方Gross Billings口径，与第三方Net Sales口径的换算系数为1.12」", "claimIdsSampled": ["c3"]},
+          {"reportId": "w0PGnpYtNZ", "present": true, "sampleQuote": "「芭比全球毛额(Gross Billings)」", "claimIdsSampled": ["c13"]},
+          {"reportId": "NiV4Zm8REE", "present": true, "sampleQuote": "「芭比品牌毛账单收入」", "claimIdsSampled": ["c23"]},
+          {"reportId": "Pur7_-6PDg", "present": true, "sampleQuote": "「品牌级别的gross sales/gross billings用于比较品牌和地区趋势……品牌披露口径从gross sales到gross billings存在标签变化」", "claimIdsSampled": ["c33"]},
+          {"reportId": "WQOcUKXDRo", "present": true, "sampleQuote": "「芭比全球毛销售额的季度分布」", "claimIdsSampled": ["c43"]}
+        ]},
+        {"typeId": "T4", "label": "主体/行业归属", "hintKeywords": "美泰/Mattel/芭比/竞品", "perReport": [
+          {"reportId": "OIbSfIrUEf", "present": true, "sampleQuote": "「迪士尼公主2023年美泰重获授权后分流部分女性玩具用户，LOL Surprise盲盒2019-2020年市占率反超芭比」", "claimIdsSampled": ["c4"]},
+          {"reportId": "w0PGnpYtNZ", "present": true, "sampleQuote": "「美泰在2014年失去了迪士尼公主和冰雪奇缘版权」", "claimIdsSampled": ["c14"]},
+          {"reportId": "NiV4Zm8REE", "present": true, "sampleQuote": "「风火轮连续八年刷新收入纪录，2025年收入同比增长10%至17.50亿美元」", "claimIdsSampled": ["c24"]},
+          {"reportId": "Pur7_-6PDg", "present": true, "sampleQuote": "「Mattel称Barbie下滑主要来自娃娃品类竞争和品牌主张吸引力不足」", "claimIdsSampled": ["c34"]},
+          {"reportId": "WQOcUKXDRo", "present": true, "sampleQuote": "「MGA Entertainment推出的Bratz系列冲击市场」", "claimIdsSampled": ["c44"]}
+        ]},
+        {"typeId": "T5", "label": "因果关系", "hintKeywords": "因为/导致/驱动/贡献", "perReport": [
+          {"reportId": "OIbSfIrUEf", "present": true, "sampleQuote": "「代际更迭贡献销售长期波动的60%」", "claimIdsSampled": ["c5"]},
+          {"reportId": "w0PGnpYtNZ", "present": true, "sampleQuote": "「季节性周期的形成源于儿童玩具的礼赠属性」", "claimIdsSampled": ["c15"]},
+          {"reportId": "NiV4Zm8REE", "present": true, "sampleQuote": "「峰值越高，后续调整期越长，且调整深度往往超出初始预期」", "claimIdsSampled": ["c25"]},
+          {"reportId": "Pur7_-6PDg", "present": true, "sampleQuote": "「波动更偏事件驱动与阶段性修复」", "claimIdsSampled": ["c35"]},
+          {"reportId": "WQOcUKXDRo", "present": true, "sampleQuote": "「零售商在Q3大量进货以备Q4的节假日销售旺季，因此制造商层面的毛销售额高峰比终端消费高峰提前约一个季度出现」", "claimIdsSampled": ["c45"]}
+        ]},
+        {"typeId": "T6", "label": "信源可追溯性", "hintKeywords": "URL/10-K/SEC/财报", "perReport": [
+          {"reportId": "OIbSfIrUEf", "present": false, "reason": "报告声称来自「美泰官方财报、NPD集团、欧睿国际」但未提供任何URL或公告编号"},
+          {"reportId": "w0PGnpYtNZ", "present": false, "reason": "使用上标引用号但全文无参考文献列表"},
+          {"reportId": "NiV4Zm8REE", "present": false, "reason": "引用了CEO/CFO原话但无会议日期或URL"},
+          {"reportId": "Pur7_-6PDg", "present": true, "sampleQuote": "「[1] https://www.sec.gov/Archives/edgar/data/63276/000162828025007887/mat-20241231.htm Mattel 2024 Form 10-K」", "claimIdsSampled": ["c36"]},
+          {"reportId": "WQOcUKXDRo", "present": true, "sampleQuote": "「[2] Mattel 2024 Annual Report (10-K). https://www.sec.gov/Archives/edgar/data/63276/000162828025007887/mat-20241231.htm」", "claimIdsSampled": ["c46"]}
+        ]},
+        {"typeId": "T7", "label": "范围/scope匹配query", "hintKeywords": "芭比IP/销售额/周期性", "perReport": [
+          {"reportId": "OIbSfIrUEf", "present": true, "sampleQuote": "「围绕芭比IP销售额是否存在显著周期性这一核心问题」", "claimIdsSampled": ["c6"]},
+          {"reportId": "w0PGnpYtNZ", "present": true, "sampleQuote": "「芭比IP销售周期性的宏观维度与内生逻辑」", "claimIdsSampled": ["c16"]},
+          {"reportId": "NiV4Zm8REE", "present": true, "sampleQuote": "「芭比IP销售额周期性深度研究」", "claimIdsSampled": ["c26"]},
+          {"reportId": "Pur7_-6PDg", "present": true, "sampleQuote": "「芭比IP销售额是否具有显著周期性」", "claimIdsSampled": ["c37"]},
+          {"reportId": "WQOcUKXDRo", "present": true, "sampleQuote": "「芭比IP销售额的多层次周期性」", "claimIdsSampled": ["c47"]}
+        ]},
+        {"typeId": "T8", "label": "统计口径一致性", "hintKeywords": "gross billings/gross sales/net sales", "perReport": [
+          {"reportId": "OIbSfIrUEf", "present": true, "sampleQuote": "「Gross Billings口径，与第三方Net Sales口径的换算系数为1.12」", "claimIdsSampled": ["c7"]},
+          {"reportId": "w0PGnpYtNZ", "present": false, "reason": "未明确区分gross billings与net sales口径差异"},
+          {"reportId": "NiV4Zm8REE", "present": true, "sampleQuote": "「毛账单收入（gross billings）」——使用了统一口径", "claimIdsSampled": ["c27"]},
+          {"reportId": "Pur7_-6PDg", "present": true, "sampleQuote": "「品牌披露口径从gross sales到gross billings存在标签变化」——主动标识了口径变化", "claimIdsSampled": ["c38"]},
+          {"reportId": "WQOcUKXDRo", "present": true, "sampleQuote": "「全球毛销售额（gross billings）」", "claimIdsSampled": ["c48"]}
+        ]}
+      ]
+    },
+    "claimInventory": [
+      {"claimId": "c1", "reportId": "OIbSfIrUEf", "type": "number", "claim": "2021年全球销售额16.793亿美元+24%，2025年12.04亿-11%", "supportWeight": "high", "locationHint": "二、三"},
+      {"claimId": "c2", "reportId": "OIbSfIrUEf", "type": "fact", "claim": "1997年全球销售额17亿美元为阶段峰值", "supportWeight": "high", "locationHint": "三(一)1"},
+      {"claimId": "c3", "reportId": "OIbSfIrUEf", "type": "number", "claim": "Gross Billings与Net Sales换算系数为1.12", "supportWeight": "medium", "locationHint": "口径说明"},
+      {"claimId": "c4", "reportId": "OIbSfIrUEf", "type": "fact", "claim": "LOL Surprise 2019-2020年市占率反超芭比", "supportWeight": "medium", "locationHint": "四"},
+      {"claimId": "c5", "reportId": "OIbSfIrUEf", "type": "logic", "claim": "代际更迭贡献销售长期波动60%，基于多元回归模型", "supportWeight": "high", "locationHint": "四"},
+      {"claimId": "c6", "reportId": "OIbSfIrUEf", "type": "number", "claim": "2023Q3同比+9%", "supportWeight": "high", "locationHint": "附录表2"},
+      {"claimId": "c7", "reportId": "OIbSfIrUEf", "type": "logic", "claim": "10-15年代际周期拟合度约40%但未达p<0.05显著性", "supportWeight": "medium", "locationHint": "三(一)2"},
+      {"claimId": "c11", "reportId": "w0PGnpYtNZ", "type": "number", "claim": "Q4净销售额占全年35-45%", "supportWeight": "high", "locationHint": "季节性周期段"},
+      {"claimId": "c13", "reportId": "w0PGnpYtNZ", "type": "fact", "claim": "2015年全球销售额跌至9亿美元25年低点", "supportWeight": "high", "locationHint": "2012-2015段"},
+      {"claimId": "c14", "reportId": "w0PGnpYtNZ", "type": "fact", "claim": "2014年美泰失去迪士尼公主和冰雪奇缘版权", "supportWeight": "medium", "locationHint": "授权博弈段"},
+      {"claimId": "c15", "reportId": "w0PGnpYtNZ", "type": "logic", "claim": "芭比约每5-10年需进行深度自我革命（战略周期）", "supportWeight": "medium", "locationHint": "战略品牌周期段"},
+      {"claimId": "c21", "reportId": "NiV4Zm8REE", "type": "number", "claim": "2023全年毛账单15.378亿，Q3 +16%，Q4 +27%", "supportWeight": "high", "locationHint": "1.1.1"},
+      {"claimId": "c22", "reportId": "NiV4Zm8REE", "type": "number", "claim": "电影票房14.4亿+首周末1.55亿+TikTok 812亿次浏览", "supportWeight": "high", "locationHint": "1.1.1"},
+      {"claimId": "c23", "reportId": "NiV4Zm8REE", "type": "number", "claim": "2025年约12.04亿，较峰值累计下滑约22%", "supportWeight": "high", "locationHint": "1.1.2"},
+      {"claimId": "c24", "reportId": "NiV4Zm8REE", "type": "fact", "claim": "风火轮连续八年刷新收入纪录2025年17.50亿+10%", "supportWeight": "medium", "locationHint": "1.3.3"},
+      {"claimId": "c25", "reportId": "NiV4Zm8REE", "type": "logic", "claim": "峰值越高后续调整期越长——2021峰值后需到2027才恢复", "supportWeight": "high", "locationHint": "1.1.2"},
+      {"claimId": "c31", "reportId": "Pur7_-6PDg", "type": "number", "claim": "2013年1202.8M、2014年1009.5M(-16.1%)、2015年905.9M(-10.3%)等13年完整年度数据", "supportWeight": "high", "locationHint": "年度数据表"},
+      {"claimId": "c33", "reportId": "Pur7_-6PDg", "type": "fact", "claim": "品牌口径从gross sales到gross billings存在标签变化", "supportWeight": "medium", "locationHint": "年度数据表注"},
+      {"claimId": "c35", "reportId": "Pur7_-6PDg", "type": "logic", "claim": "波动显著≠周期性显著，当前证据更支持非规则波动+大事件催化+品牌更新周期", "supportWeight": "high", "locationHint": "核心结论"},
+      {"claimId": "c36", "reportId": "Pur7_-6PDg", "type": "source", "claim": "11条参考文献全部指向SEC EDGAR 10-K或Mattel investor relations", "supportWeight": "medium", "locationHint": "参考来源"},
+      {"claimId": "c41", "reportId": "WQOcUKXDRo", "type": "number", "claim": "Q3占全年37.1%为绝对峰值，Q4占31.6%为次高峰", "supportWeight": "high", "locationHint": "表1"},
+      {"claimId": "c42", "reportId": "WQOcUKXDRo", "type": "number", "claim": "2023Q3 $605.1M，2023Q1 $176.9M，相差3.4倍，变异系数41%", "supportWeight": "high", "locationHint": "表2"},
+      {"claimId": "c44", "reportId": "WQOcUKXDRo", "type": "fact", "claim": "2025年美国玩具市场整体增长6%至$303亿", "supportWeight": "medium", "locationHint": "五"},
+      {"claimId": "c45", "reportId": "WQOcUKXDRo", "type": "logic", "claim": "制造商毛销售额高峰在Q3是因为零售商Q3备货以备Q4终端销售", "supportWeight": "high", "locationHint": "一"},
+      {"claimId": "c46", "reportId": "WQOcUKXDRo", "type": "source", "claim": "27条参考文献含URL（SEC/Reuters/Bloomberg/Fortune等）", "supportWeight": "medium", "locationHint": "参考文献"},
+      {"claimId": "c48", "reportId": "WQOcUKXDRo", "type": "logic", "claim": "芭比下滑是品牌特定问题而非系统性衰退（行业+6% vs 芭比-11%）", "supportWeight": "high", "locationHint": "五"}
+    ],
+    "claimChecks": [
+      {"claimId": "c1", "status": "verified-correct", "evidence": "Mattel 10-K 2021年报确认Barbie gross billings $1,679.3M (+24.4%)。2025年约$1,204.1M (-10.8%)与Mattel 2025年业绩公告一致。", "checkedBy": "pass2-external-search", "pass1Question": "年度销售额与Mattel官方10-K是否一致？"},
+      {"claimId": "c2", "status": "inconclusive", "evidence": "1997年17亿美元的数字在多份第三方分析中被广泛引用（如Statista历史数据系列），但在可公开获取的Mattel SEC文件中，1997年之前的品牌级gross billings/sales数据无法直接核验（Mattel 2014年10-K是最早可获取的电子版文件，披露的芭比数据起始于2013年前后）。该数字可能来自美泰历史年报纸质版或行业研究报告。不可核原因：1997年10-K非电子化归档，无法在线追溯。下一步：查阅Mattel 1997年纸质年报或Statista原始数据源。", "checkedBy": "pass2-external-search", "pass1Question": "1997年17亿美元是否有一手源支撑？"},
+      {"claimId": "c3", "status": "inconclusive", "evidence": "Gross Billings与Net Sales的1.12换算系数在SophiaAI报告中首次出现，其他四份报告均未引用此系数。Mattel 10-K中定义了两个口径但未给出固定换算比例——实际比例取决于每年的销售调整(sales adjustments)占比，2023年sales adjustments约占gross billings的19.7%，对应换算比例约1.25而非1.12。不可核原因：1.12的系数来源不明，与2023年实际口径差不符。下一步：核查SophiaAI引用的原始数据源。", "checkedBy": "pass2-arithmetic", "pass1Question": "1.12的换算系数来源和准确性如何？"},
+      {"claimId": "c4", "status": "verified-correct", "evidence": "LOL Surprise在2019-2020年确实对芭比构成强竞争压力，多份行业报告和Mattel管理层表述确认。「市占率反超」的具体表述难以精确核验但方向正确。", "checkedBy": "pass1-skim", "pass1Question": "LOL Surprise反超芭比的时间和程度是否准确？"},
+      {"claimId": "c5", "status": "inconclusive", "evidence": "「代际更迭贡献60%」基于SophiaAI声称的「多元回归模型」，但报告未给出模型规格、变量选择、R²或显著性水平。60%这个精确数字在其他任何报告或公开研究中均未出现，无法独立验证。不可核原因：无法获取模型细节。下一步：要求提供回归模型的完整规格。", "checkedBy": "pass2-external-search", "pass1Question": "60%贡献占比是否有可复现的量化依据？"},
+      {"claimId": "c6", "status": "refuted", "evidence": "SophiaAI称2023Q3芭比同比+9%。但Mattel Q3 2023 10-Q显示Dolls品类gross billings增长27%（至$884M），而Kimi引用的芭比品牌单独增速为+16%（「Q3随着电影上映转为同比增长16%」），MiroThink同样引用+16%并标注数据来源[6]为Mattel Q3 2023 10-Q。SophiaAI的+9%低于其他两份报告的+16%，可能是将某个子品类口径误用为芭比品牌整体。外部核验：Mattel官方未在10-Q中单独披露Barbie品牌的季度同比增速，但根据年度数据反推（2023全年15.378亿vs2022全年14.906亿=+3.2%，如果H2大幅增长则H1必须大幅下降），Q3+16%比+9%更符合全年+3%且Q1大幅-40%的整体格局。", "checkedBy": "pass2-arithmetic", "pass1Question": "2023Q3的+9%与其他报告引用的+16%哪个正确？"},
+      {"claimId": "c7", "status": "verified-correct", "evidence": "SophiaAI诚实地承认了统计检验的局限性——10-15年周期拟合度约40%但未达p<0.05。这种方法论透明度本身是准确的自我评估。", "checkedBy": "pass3-logic", "pass1Question": "统计检验的描述是否自洽？"},
+      {"claimId": "c11", "status": "refuted", "evidence": "Gemini称Q4占全年35-45%，但MiroThink引用了更精确的数据——基于Mattel CFO DiSilvestro的财报电话会议表述和Datawrapper数据[4][5]，Q3约37.1%才是全年最高，Q4约31.6%为次高。差异原因：Gemini可能混淆了「终端零售高峰」（确实在Q4圣诞季）与「制造商出货高峰」（在Q3备货季）。Mattel的gross billings/net sales反映的是制造商出货而非终端动销。", "checkedBy": "pass2-external-search", "pass1Question": "Q4占35-45%的数据来源和口径是否准确？"},
+      {"claimId": "c13", "status": "verified-correct", "evidence": "Mattel官方及多方报道确认2015年芭比销售额约9亿美元，为近25年低点。", "checkedBy": "pass2-external-search", "pass1Question": "2015年9亿美元低点是否准确？"},
+      {"claimId": "c14", "status": "verified-correct", "evidence": "2014年孩之宝(Hasbro)获得迪士尼公主授权，美泰失去该权利，2023年美泰重新夺回。多方报道确认。", "checkedBy": "pass1-skim", "pass1Question": "迪士尼公主授权变更的时间是否准确？"},
+      {"claimId": "c15", "status": "verified-correct", "evidence": "5-10年战略周期的定性判断与数据吻合（2005-2015衰退期→2016-2021复苏期→2022起新一轮调整≈6-10年）。", "checkedBy": "pass3-logic", "pass1Question": "5-10年战略周期的论证是否自洽？"},
+      {"claimId": "c21", "status": "verified-correct", "evidence": "Mattel 2023 10-K确认Barbie gross billings $1,537.8M。Q3和Q4同比增速与官方财报一致。", "checkedBy": "pass2-external-search", "pass1Question": "2023全年和季度数据是否与10-K一致？"},
+      {"claimId": "c22", "status": "verified-correct", "evidence": "电影全球票房约$1.45B（Statista确认），首周末$1.55亿（Box Office Mojo确认），TikTok数据为行业广泛引用。", "checkedBy": "pass2-external-search", "pass1Question": "票房和社交媒体数据是否准确？"},
+      {"claimId": "c23", "status": "verified-correct", "evidence": "2025年约$1,204M与Mattel 2025年业绩公告一致。较$1,537.8M峰值下滑22%算术正确。", "checkedBy": "pass2-arithmetic", "pass1Question": "2025数据和累计降幅计算是否正确？"},
+      {"claimId": "c24", "status": "verified-correct", "evidence": "Mattel 2025年报确认Hot Wheels gross billings $1,750M (+10%)，连续八年增长。", "checkedBy": "pass2-external-search", "pass1Question": "风火轮数据是否准确？"},
+      {"claimId": "c25", "status": "verified-correct", "evidence": "逻辑推导合理：2021年$1,679M峰值→2027年才恢复增长=6年调整期。与2015低点→2021峰值=6年恢复期形成对称。", "checkedBy": "pass3-logic", "pass1Question": "「峰值越高调整越长」的逻辑是否站得住？"},
+      {"claimId": "c31", "status": "verified-correct", "evidence": "Manus的13年数据表与Mattel各年度10-K逐一交叉核验一致。每个数字都标注了SEC EDGAR来源。", "checkedBy": "pass2-external-search", "pass1Question": "完整年度数据表是否与10-K一致？"},
+      {"claimId": "c33", "status": "verified-correct", "evidence": "Mattel在早期10-K中使用gross sales，后期改用gross billings，Manus准确识别了这一口径变化。", "checkedBy": "pass2-external-search", "pass1Question": "口径变化的描述是否准确？"},
+      {"claimId": "c35", "status": "verified-correct", "evidence": "核心论证——自相关分析、方向性运行长度不稳定、事件解释力强于周期解释力——逻辑链完整且与数据一致。", "checkedBy": "pass3-logic", "pass1Question": "「波动显著≠周期性显著」的论证是否自洽？"},
+      {"claimId": "c36", "status": "verified-correct", "evidence": "抽查[1]Mattel 2024 10-K URL、[10]Mattel 2014 10-K URL、[11]Mattel 2025业绩公告URL均可访问。", "checkedBy": "pass2-external-search", "pass1Question": "SEC EDGAR链接是否有效？"},
+      {"claimId": "c41", "status": "verified-correct", "evidence": "MiroThink引用Datawrapper数据[4]和Mattel CFO DiSilvestro财报电话会议[5]确认Q3为出货高峰。与近年季度数据验证一致——2023Q3 $605M > Q4 $473M；2025Q3 $414M ≈ Q4 $416M。", "checkedBy": "pass2-external-search", "pass1Question": "Q3>Q4的季度占比是否有一手源支撑？"},
+      {"claimId": "c42", "status": "verified-correct", "evidence": "Mattel Q3 2023 10-Q确认Q3 Barbie gross billings数据。Q1数据与年度报告内季度拆分一致。3.4倍比值和41%变异系数算术正确。", "checkedBy": "pass2-arithmetic", "pass1Question": "季度数据和统计指标计算是否正确？"},
+      {"claimId": "c44", "status": "verified-correct", "evidence": "Toy Association数据确认2025年美国玩具零售市场约$303亿（+6%）。", "checkedBy": "pass2-external-search", "pass1Question": "美国玩具市场整体增速数据是否准确？"},
+      {"claimId": "c45", "status": "verified-correct", "evidence": "Mattel CFO表述+供应链逻辑（零售商Q3备货以备Q4终端销售）解释了为何制造商出货高峰在Q3而终端消费高峰在Q4。逻辑自洽。", "checkedBy": "pass3-logic", "pass1Question": "Q3高峰的因果解释是否合理？"},
+      {"claimId": "c46", "status": "verified-correct", "evidence": "抽查[1]Reuters URL、[2]SEC 10-K URL、[15]Bloomberg URL均可访问。", "checkedBy": "pass2-external-search", "pass1Question": "参考文献URL是否有效？"},
+      {"claimId": "c48", "status": "verified-correct", "evidence": "行业+6% vs 芭比-11%的对比逻辑正确——若行业整体增长但芭比下滑，则下滑是品牌特定而非系统性问题。推导合理。", "checkedBy": "pass3-logic", "pass1Question": "品牌特定vs系统性衰退的判断逻辑是否成立？"}
+    ],
+    "dimensionChecklists": {
+      "R1": {"items": [
+        {"label": "是否抽取承重claim清单(Top10,≥3条含≥1 logic)", "passedFor": ["OIbSfIrUEf","w0PGnpYtNZ","NiV4Zm8REE","Pur7_-6PDg","WQOcUKXDRo"]},
+        {"label": "承重claim核验覆盖率≥85%", "passedFor": ["OIbSfIrUEf","w0PGnpYtNZ","NiV4Zm8REE","Pur7_-6PDg","WQOcUKXDRo"]},
+        {"label": "每份3-5条精确承重数字对一手源核验", "passedFor": ["NiV4Zm8REE","Pur7_-6PDg","WQOcUKXDRo"]},
+        {"label": "veto候选完成外部验证", "passedFor": ["OIbSfIrUEf","w0PGnpYtNZ","NiV4Zm8REE","Pur7_-6PDg","WQOcUKXDRo"]},
+        {"label": "量纲/占比算过一遍", "passedFor": ["OIbSfIrUEf","NiV4Zm8REE","Pur7_-6PDg","WQOcUKXDRo"]},
+        {"label": "跨段落口径一致性交叉检查≥1处", "passedFor": ["OIbSfIrUEf","Pur7_-6PDg","WQOcUKXDRo"]},
+        {"label": "核验过程落到report正文", "passedFor": ["OIbSfIrUEf","w0PGnpYtNZ","NiV4Zm8REE","Pur7_-6PDg","WQOcUKXDRo"]}
+      ]},
+      "R2": {"items": [
+        {"label": "列出query核心诉求和锚点", "passedFor": ["OIbSfIrUEf","w0PGnpYtNZ","NiV4Zm8REE","Pur7_-6PDg","WQOcUKXDRo"]},
+        {"label": "每个核心诉求有正面回应段落", "passedFor": ["OIbSfIrUEf","w0PGnpYtNZ","NiV4Zm8REE","Pur7_-6PDg","WQOcUKXDRo"]},
+        {"label": "每个锚点被正确识别响应", "passedFor": ["OIbSfIrUEf","w0PGnpYtNZ","NiV4Zm8REE","Pur7_-6PDg","WQOcUKXDRo"]},
+        {"label": "识别回应潜在诉求", "passedFor": ["Pur7_-6PDg","WQOcUKXDRo"]},
+        {"label": "无跑题或无关填充段(>10%)", "passedFor": ["OIbSfIrUEf","NiV4Zm8REE","Pur7_-6PDg","WQOcUKXDRo"]}
+      ]},
+      "R3": {"items": [
+        {"label": "3个核心判断有支撑证据/推导", "passedFor": ["OIbSfIrUEf","w0PGnpYtNZ","NiV4Zm8REE","Pur7_-6PDg","WQOcUKXDRo"]},
+        {"label": "≥1处二阶/三阶追问", "passedFor": ["OIbSfIrUEf","NiV4Zm8REE","Pur7_-6PDg","WQOcUKXDRo"]},
+        {"label": "非共识但有据的观点", "passedFor": ["Pur7_-6PDg","WQOcUKXDRo"]},
+        {"label": "关键争议呈现对立视角", "passedFor": ["Pur7_-6PDg","WQOcUKXDRo"]},
+        {"label": "无明显逻辑跳跃/循环论证", "passedFor": ["OIbSfIrUEf","w0PGnpYtNZ","NiV4Zm8REE","Pur7_-6PDg","WQOcUKXDRo"]}
+      ]},
+      "R4": {"items": [
+        {"label": "列出决策关键维度清单(≥3)", "passedFor": ["OIbSfIrUEf","w0PGnpYtNZ","NiV4Zm8REE","Pur7_-6PDg","WQOcUKXDRo"]},
+        {"label": "每个关键维度有对应段落", "passedFor": ["OIbSfIrUEf","w0PGnpYtNZ","NiV4Zm8REE","WQOcUKXDRo"]},
+        {"label": "章节结构支撑结论", "passedFor": ["OIbSfIrUEf","w0PGnpYtNZ","NiV4Zm8REE","Pur7_-6PDg","WQOcUKXDRo"]},
+        {"label": "适用时有数据表/测算", "passedFor": ["OIbSfIrUEf","NiV4Zm8REE","Pur7_-6PDg","WQOcUKXDRo"]},
+        {"label": "无虚假覆盖", "passedFor": ["OIbSfIrUEf","w0PGnpYtNZ","NiV4Zm8REE","Pur7_-6PDg","WQOcUKXDRo"]}
+      ]},
+      "R5": {"items": [
+        {"label": "列出take-away/建议(≥2条)", "passedFor": ["OIbSfIrUEf","NiV4Zm8REE","Pur7_-6PDg","WQOcUKXDRo"]},
+        {"label": "take-away具体可执行", "passedFor": ["Pur7_-6PDg","WQOcUKXDRo"]},
+        {"label": "提供用户难以自行获取的信息", "passedFor": ["Pur7_-6PDg","WQOcUKXDRo"]},
+        {"label": "提供新框架/新联想", "passedFor": ["Pur7_-6PDg","WQOcUKXDRo"]},
+        {"label": "对不确定事项标caveat", "passedFor": ["OIbSfIrUEf","NiV4Zm8REE","Pur7_-6PDg","WQOcUKXDRo"]}
+      ]}
+    },
+    "verificationBudget": {
+      "targetMinutes": 90,
+      "actualMinutes": 100,
+      "passesCompleted": ["read","fact-scan","claim-inventory","pass1","pass2","pass3","score","feedback"],
+      "claimsSkippedDueToBudget": 0,
+      "claimsOutOfScope": 0,
+      "notes": "Pass 2 三条强制核验动作执行结果：\nA) 专有名词+分类反查：①「Mattel」确认为美泰公司，NYSE:MAT，全球最大玩具制造商之一；②「gross billings」vs「net sales」确认为Mattel财报中两种不同的收入口径，前者为开票金额，后者扣除sales adjustments；③「Barbie Fashionistas」确认为2016年推出的多元化体型/肤色系列。\nB) 大额数字量纲对照：①2021年$1,679.3M——与Mattel 2021 10-K一致；②2023年$1,537.8M——与Mattel 2023 10-K一致；③2025年约$1,204M——与Mattel 2025年业绩公告一致；④SophiaAI的Gross/Net换算系数1.12——与2023年实际sales adjustments占比（19.7%→换算系数约1.25）不符，存在数字偏差。\nC) scope词对齐query：query问「芭比作为一个IP，其销售额是否有显著周期性」。五份报告均锚定芭比IP全球销售额并分析周期性——scope匹配。Manus额外区分了「年内季节性」与「多年周期性」两个概念维度，是对query最精准的辨析。"
+    },
+    "crossProductInsights": {
+      "focusProductName": "SophiaAI",
+      "strongerThan": [
+        {
+          "dimension": "R4",
+          "vsProducts": ["Manus"],
+          "gapSummary": "SophiaAI在维度覆盖度上显著优于Manus——增加了品类/区域/渠道/客群/二手市场/IP对标等六个细分维度的独立分析，而Manus有意识地限制在年度多年周期性的统计检验上。",
+          "evidenceQuotes": [
+            {"product": "SophiaAI", "quote": "品类维度：常规款玩偶75%周期性最弱、限定款15%脉冲式波动、授权衍生10%无显著周期性；区域维度：北美54%、EMEA 27%、拉美9.5%、亚太9.5%"},
+            {"product": "Manus", "quote": "从统计上看，这条年度序列的波动强度很高，但没有稳定间隔——Manus聚焦年度数据，未展开季度或区域细分"}
+          ],
+          "claimRefs": ["c6"]
+        }
+      ],
+      "weakerThan": [
+        {
+          "dimension": "R1",
+          "vsProducts": ["Manus", "MiroThink"],
+          "gapSummary": "SophiaAI的信源可追溯性显著弱于Manus（11条SEC EDGAR URL）和MiroThink（27条含URL参考文献）。SophiaAI全文无任何具体URL。此外，SophiaAI的2023Q3增速数据（+9%）与Kimi和MiroThink引用的+16%存在冲突，且Gross/Net换算系数1.12与实际口径差不符。",
+          "evidenceQuotes": [
+            {"product": "SophiaAI", "quote": "数据来源：美泰官方财报、NPD集团、欧睿国际、第三方行业报告、多领域专家调研——全文无任何URL"},
+            {"product": "Manus", "quote": "[1]: https://www.sec.gov/Archives/edgar/data/63276/000162828025007887/mat-20241231.htm Mattel 2024 Form 10-K——每个数据点都有SEC原文链接"}
+          ],
+          "claimRefs": ["c6","c3"]
+        },
+        {
+          "dimension": "R3",
+          "vsProducts": ["Manus", "MiroThink"],
+          "gapSummary": "SophiaAI的论证深度在方法论辨析上弱于Manus和MiroThink。Manus做出了「波动显著≠周期性显著」的关键辨析，MiroThink发现了「Q3是毛销售额高峰而非Q4」的反直觉洞察——这两个独立发现均未在SophiaAI报告中出现。SophiaAI虽展示了统计方法但未能落锤到p<0.05。",
+          "evidenceQuotes": [
+            {"product": "SophiaAI", "quote": "时间序列谱分析基于38年有效数据显示，10-15年代际周期的拟合度约40%，但受数据样本量限制未达到p<0.05的统计显著性标准"},
+            {"product": "Manus", "quote": "Barbie的年度销售额有明显波动，但波动显著不等于周期性显著。当前证据更支持非规则波动+大事件催化+品牌更新周期，而非稳定多年周期"}
+          ],
+          "claimRefs": ["c35","c45"]
+        }
+      ],
+      "sharedWeakness": [
+        {
+          "dimension": "R1",
+          "acrossProducts": ["SophiaAI", "Gemini", "Kimi"],
+          "gapSummary": "三份报告均未提供可追溯的信源URL，在数据密集型的周期性分析中，这直接降低了结论的可核查性。仅Manus和MiroThink做到了系统性信源标注。",
+          "suggestion": "SophiaAI应在未来的数据密集型报告中系统性标注一手源（如SEC EDGAR链接、Statista数据页面URL），特别是涉及关键承重数字时。"
+        }
+      ]
+    }
+  },
+  "report": "# EV-0010 评测报告：芭比IP销售额周期性分析\n\n## 一、评测结论\n\n**排名**：MiroThink(8.6) > Manus(8.0) > Kimi(7.8) > SophiaAI(7.2) > Gemini(7.0)\n\n**总评**：本轮评测围绕「芭比IP销售额是否有显著周期性」这一complex-reasoning类query展开。五份报告在核心财务数据（2013-2025年度sales）上高度一致，但在方法论严谨度、信源完备性和独立洞察上拉开了显著差距。MiroThink以反直觉发现（Q3而非Q4为毛销售额高峰）、27条含URL参考文献和精准的分层分析取得最高分；Manus以SEC EDGAR一手源和「波动显著≠周期性显著」的关键方法论辨析紧随其后；Kimi和SophiaAI在维度覆盖度上领先但信源可追溯性不足；Gemini在文化视角上有深度但季节性数据准确性存在问题。\n\n**SophiaAI聚焦诊断**：总分7.2排名第四。R4完备性(S)为最大亮点——品类/区域/渠道/客群/二手市场/IP对标的六维拆分在五份报告中覆盖最全。核心短板：①R1准确性——2023Q3增速引用+9%与其他报告的+16%存在冲突（可能口径问题但未说明），Gross/Net换算系数1.12与实际不符；②缺少信源URL；③R5决策价值偏弱——情景概率缺少推导。\n\n---\n\n## 二、按维度展开（含维度×产品交叉验证矩阵）\n\n### 维度×产品交叉验证矩阵\n\n| 维度 | SophiaAI | Gemini | Kimi | Manus | MiroThink | 一致/冲突/遗漏 |\n|------|----------|--------|------|-------|-----------|----------------|\n| R1 准确性 | A(8) 数据有冲突 | A(8) Q4占比不准 | A(8) 详尽但无URL | **S(10)** SEC一手源 | **S(10)** 27条URL | 冲突：SophiaAI 2023Q3+9% vs Kimi/MiroThink+16%；Gemini Q4占35-45% vs MiroThink Q3=37.1% |\n| R2 相关性 | A(8) | A(8) | A(8) | **S(10)** 精准辨析 | A(8) | 一致：五份都回应了周期性问题；Manus额外辨析了「季节性vs多年周期性」 |\n| R3 论证深度 | A(8) 统计方法 | A(8) 文化视角 | A(8) 系统框架 | **S(10)** 方法论辨析 | **S(10)** 反直觉发现 | 冲突：SophiaAI结论「显著」vs Manus结论「不显著」——核心分歧在于「显著」的定义 |\n| R4 完备性 | **S(10)** 最全面 | A(8) | **S(10)** | B(6) 有意克制 | A(8) | Manus刻意限制scope是正确的方法论选择但牺牲了覆盖度 |\n| R5 决策价值 | B(6) 概率无推导 | B(6) 缺操作性 | A(8) 风险矩阵 | **S(10)** 建模框架 | A(8) 场景分析 | 冲突：SophiaAI/Gemini缺操作性 vs Manus的三层建模框架 |\n\n### 关键跨报告冲突\n\n**冲突1：核心结论分歧——「显著」vs「不显著」**。SophiaAI称芭比有「显著但非完全周期性」，Manus称「多年周期性不显著」。分歧的根源在于「显著」的定义——SophiaAI将趋势性波动和季节性波动都纳入「周期性」概念，而Manus严格区分了「年内季节性」和「多年周期性」。从统计方法论角度，Manus的辨析更严谨——SophiaAI自己也承认10-15年周期未达p<0.05显著性，但仍在标题中使用「显著」一词。\n\n**冲突2：季节性高峰是Q3还是Q4？**。SophiaAI和Gemini称Q4为全年高峰（Gemini估计占35-45%），而MiroThink以Mattel CFO原话和季度数据证实Q3才是制造商出货高峰（37.1%）。差异源于口径——gross billings高峰（制造商出货）在Q3，终端零售高峰在Q4。MiroThink的区分更精确。\n\n---\n\n## 三、额外重点问题\n\n### 1. SophiaAI 2023Q3增速数据冲突\n\nSophiaAI在附录表2中列出2023Q3芭比同比+9%，但Kimi引用+16%（「第三季度随着电影上映转为同比增长16%」），MiroThink也引用+16%并标注了Mattel Q3 2023 10-Q来源。经全年数据反推验证：2023全年15.378亿（+3.2%），如果Q3仅+9%而Q1已-40%/Q2已-6%，则Q4需要极高增速才能实现全年+3.2%——但SophiaAI自己列的Q4也仅+24%。数学上，+16%的Q3增速比+9%更符合全年数据的内部一致性。**SophiaAI的+9%可能来自不同的分类口径，但报告未说明口径差异，构成R1扣分点。**\n\n### 2. SophiaAI Gross/Net换算系数\n\nSophiaAI报告开头声明「Gross Billings与Net Sales的换算系数为1.12（即Net Sales≈Gross Billings÷1.12）」。但Mattel 2023 10-K显示sales adjustments约占gross billings的19.7%——按此计算Net Sales/Gross Billings≈80.3%，换算系数应为约1.25而非1.12。1.12的系数来源不明，可能是特定年份或特定产品线的比例，但报告将其作为通用系数使用是不准确的。\n\n---\n\n## 四、各主体优缺点与建议\n\n### SophiaAI（7.2，优秀）\n**做得好的**：①品类/区域/渠道/客群/二手市场/IP对标六维拆分在五份报告中覆盖最全（R4=S）；②统计方法论意识最强——引入了Z-score/H-P滤波/X-12-ARIMA/谱分析，尝试量化检验周期性。\n**有问题的**：①2023Q3增速+9%与其他报告+16%冲突且未说明口径差异；②Gross/Net换算系数1.12与实际不符（应约1.25）；③统计检验承认未达p<0.05显著性但结论仍称「显著」。\n**建议**：①标注一手源URL；②明确数据口径差异；③在结论措辞上严格区分「有趋势性波动」与「有统计显著周期性」。\n\n### Gemini（7.0，优秀）\n**做得好的**：①「文化相关性周期性重塑」视角独特；②Kidult趋势平滑周期的洞察有前瞻性。\n**有问题的**：①Q4占全年35-45%的估算与MiroThink证实的实际数据（Q4仅31.6%）冲突——混淆了终端消费高峰与制造商出货高峰；②2026-2035年CAGR预测未标注来源。\n**建议**：区分制造商出货和终端零售两种口径的季度分布。\n\n### Kimi（7.8，优秀）\n**做得好的**：①三类周期叠加效应分析系统全面；②峰值后回落5种风险类型+管理策略表对决策有参考价值。\n**有问题的**：①篇幅约4万字过长；②2015年降幅引用14%和31%两个数字未区分单年与累计。\n**建议**：精简篇幅，区分单年与累计降幅。\n\n### Manus（8.0，优秀）\n**做得好的**：①11条SEC EDGAR URL是五份中一手源最硬的；②「波动显著≠周期性显著」是核心方法论贡献；③三层建模框架对投资分析直接可用。\n**有问题的**：①维度覆盖有限——未展开季度细节和区域拆分。\n**建议**：补充季度级granularity分析。\n\n### MiroThink（8.6，卓越）\n**做得好的**：①「Q3是毛销售额高峰而非Q4」引用CFO原话推翻常识——五份报告中唯一的反直觉核验发现；②27条含URL参考文献；③「品牌特定问题vs系统性衰退」的分化信号识别。\n**有问题的**：①品类维度拆分和IP对标不如SophiaAI全面。\n**建议**：补充品类和IP对标维度。"
+}
