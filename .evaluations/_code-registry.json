@@ -2,7 +2,7 @@
   "version": 1,
   "prefix": "EV",
   "padWidth": 4,
-  "nextNumber": 9,
+  "nextNumber": 11,
   "entries": [
     {
       "code": "EV-0001",
@@ -50,6 +50,18 @@
       "code": "EV-0008",
       "queryId": "eujFP_LEfS",
       "registeredAt": "2026-04-28T04:45:26.443Z",
+      "note": "createQuery"
+    },
+    {
+      "code": "EV-0009",
+      "queryId": "VsFMjec-mZ",
+      "registeredAt": "2026-04-29T07:21:58.553Z",
+      "note": "createQuery"
+    },
+    {
+      "code": "EV-0010",
+      "queryId": "GWYhTqf3tO",
+      "registeredAt": "2026-04-29T07:29:15.673Z",
       "note": "createQuery"
     }
   ]

@@ -1,0 +1,315 @@
+{
+  "taskId": "EV-0009",
+  "version": 1,
+  "evaluator": "Sophia (AI Evaluator via WorkBuddy)",
+  "evaluatedAt": "2026-04-29T15:22:00.000Z",
+  "contractVersion": "3.6",
+  "summary": {
+    "overallScores": [
+      {"reportId": "DzntApnv57", "productName": "SophiaAI", "score": 7.2, "verdict": "优秀", "vetoTriggered": false, "vetoReason": null, "deltaReason": null},
+      {"reportId": "KNwkp7m-Q2", "productName": "Gemini", "score": 7.0, "verdict": "优秀", "vetoTriggered": false, "vetoReason": null, "deltaReason": null},
+      {"reportId": "IeOXgxRqRM", "productName": "Kimi", "score": 7.6, "verdict": "优秀", "vetoTriggered": false, "vetoReason": null, "deltaReason": null},
+      {"reportId": "_ri_gWvDt6", "productName": "MiroThink", "score": 8.2, "verdict": "优秀", "vetoTriggered": false, "vetoReason": null, "deltaReason": null}
+    ],
+    "rubric": [
+      {
+        "id": "R1", "name": "准确性", "weight": 0.40,
+        "subscores": [
+          {"id": "R1a", "name": "事实准确", "weight": 0.28},
+          {"id": "R1b", "name": "逻辑自洽", "weight": 0.12}
+        ],
+        "scores": [
+          {"reportId": "DzntApnv57", "tier": "A", "score": 8, "comment": "SophiaAI 核心财务数字（营收454.56亿、归母净利191.51亿、扣非132.41亿、TIDES+96%）均与年报一致。在手订单580亿、TIDES产能10万升等关键数据准确。信源以「公开权威渠道」泛指为主，缺少具体一手链接。R1a=A(8), R1b=A(8)。唯一精度瑕疵：「2026年1月生效的《生物安全法案》」实际签署日为2025年12月18日，属于月度级精度偏差，不构成承重错误。花旗目标价158.5港元、交银国际35.8港元等投行数据经外部核验一致。", "confidence": "high", "issueTags": ["一手源不足"]},
+          {"reportId": "KNwkp7m-Q2", "tier": "A", "score": 8, "comment": "Gemini 主要财务数据准确（营收454.56亿、归母净利191.51亿、化学业务364.7亿、TIDES 113.7亿等均可核验）。额外引入了2026Q1数据（营收124.4亿、经调整Non-IFRS利润率37%），增强了时效性。Non-IFRS净利润149.57亿、化学业务毛利率51.2%等均有据可查。报告称「修订后的法案未直接点名个别公司」，与外部信源一致（BIOSECURE Act最终版删除了直接点名）。R1a=A(8), R1b=A(8)。信源标注以上标引用号形式存在，但未给出完整URL。", "confidence": "high", "issueTags": ["一手源不足"]},
+          {"reportId": "IeOXgxRqRM", "tier": "A", "score": 8, "comment": "Kimi 数据极为详尽，核心财务数字全部与年报一致。额外提供了细分板块毛利率（测试29.26%、生物学34.66%）、应收账款周转率（5.98次）、存货周转率（3.31次）等运营指标——经交叉验证，2025年存货89.93亿元/营收454.56亿元≈周转率约5.05次（非3.31次，3.31次可能是用了不同口径如成本基数），此处存在口径疑点但不构成承重错误。R1a=A(8), R1b=A(8)。Kimi提到的「非经常性净收益约55.95亿元占比29.2%」与扣非口径差额（191.51-132.41=59.1亿）基本一致。", "confidence": "high", "issueTags": []},
+          {"reportId": "_ri_gWvDt6", "tier": "S", "score": 10, "comment": "MiroThink 是四份报告中信源标注最完善的：提供了34条具名参考文献含URL（华泰研报、新浪财经、东方财富、Morningstar、富途新闻等），核心数据全部可追溯核验。财务数字与年报一致，且额外整合了Q1季报数据（扣非+83.56%）并标注了与市场预期的偏差。法案时间线「2025年底正式生效」准确（2025.12.18签署）。R1a=S(10), R1b=S(10)。全文逻辑自洽，未发现内部矛盾。", "confidence": "high", "issueTags": []}
+        ]
+      },
+      {
+        "id": "R2", "name": "相关性", "weight": 0.15,
+        "scores": [
+          {"reportId": "DzntApnv57", "tier": "A", "score": 8, "comment": "query 要求提炼共识与非共识并交叉对比。SophiaAI 按「共识→非共识→主体交叉→核验→情景预测」展开，直接回应了核心诉求。覆盖了媒体、大V、投行、研究机构、个人投资者等多主体视角，较好地锚定了「各方评价」诉求。扣分点：缺少2026Q1季报数据，scope窗口稍窄。", "confidence": "high", "issueTags": []},
+          {"reportId": "KNwkp7m-Q2", "tier": "A", "score": 8, "comment": "Gemini 以「财务韧性与全球医药外包格局演变」为框架回应query。覆盖了投行共识与非共识、地缘政治风险、业务板块等维度。但该报告更偏向「公司基本面深度分析」而非「各方评价的提炼与对比」——对媒体、大V、个人投资者的声音提及较少，主体覆盖度不及SophiaAI和Kimi。", "confidence": "high", "issueTags": []},
+          {"reportId": "IeOXgxRqRM", "tier": "S", "score": 10, "comment": "Kimi 是四份报告中对query回应最精准的：按「共识/非共识」双轨展开，覆盖6大维度（营收、盈利质量、毛利率、现金流、股东回报、业务板块、地缘政治、竞争格局、研发投入、产能扩张），且每个维度都明确标注了乐观派vs审慎派的代表机构和核心论据。对「共识在哪、非共识在哪」的拆解最为系统化。第5章「市场评价来源分类与立场图谱」直接对应了query中「各方」的要求。", "confidence": "high", "issueTags": []},
+          {"reportId": "_ri_gWvDt6", "tier": "A", "score": 8, "comment": "MiroThink 同样以共识/非共识框架回应query，结构清晰。「五大定价锚」+「五条核心裂痕」的分类极具穿透力。但在「各方主体视角」的展开上不如Kimi和SophiaAI全面——个人投资者、大V、垂直媒体的声音相对弱。", "confidence": "high", "issueTags": []}
+        ]
+      },
+      {
+        "id": "R3", "name": "论证深度", "weight": 0.20,
+        "scores": [
+          {"reportId": "DzntApnv57", "tier": "B", "score": 6, "comment": "SophiaAI 在共识/非共识拆解上有清晰的框架，但论证深度停在一阶：列出了各方观点但较少做独立的二阶追问。例如对「净利质量争议」仅列出质疑方和支持方观点，未像Kimi那样深入分析非经常性收益的具体构成和占比。情景预测章节有创意但假设较粗（概率分布60/20/20未给推理依据）。", "confidence": "medium", "issueTags": ["论据缺失"]},
+          {"reportId": "KNwkp7m-Q2", "tier": "A", "score": 8, "comment": "Gemini 的论证链条完整度高。从「主业驱动vs资本运作」的利润结构透视、到「跟随分子→赢得分子」的战略演进叙事、再到地缘政治的分层评估，展现了二阶甚至三阶的分析深度。对2026Q1数据的引用增强了论证的时效性。非共识方面对「抢单行为」假说的提出有独立见解。但对各方观点的明确对比稍弱。", "confidence": "high", "issueTags": []},
+          {"reportId": "IeOXgxRqRM", "tier": "A", "score": 8, "comment": "Kimi 在每个议题上都做了系统性的乐观派vs审慎派对比，并在多处给出了自己的机制分析。例如对「TIDES甜蜜期」的持续时长判断、对「现金流幻象」的营运资本拆解、对研发投入下降的「效率vs强度」二分法，都展现了超越信息罗列的分析深度。但整体篇幅较长，部分分析有重复。", "confidence": "high", "issueTags": []},
+          {"reportId": "_ri_gWvDt6", "tier": "S", "score": 10, "comment": "MiroThink 的论证深度在四份报告中最强。核心表现：①「选择性收缩」概念——指出资产出售的「主动聚焦vs被迫收缩」两种叙事并不互斥，给出了超越二元对立的机制解释；②Q1预测偏差根源分析——明确指出市场将「非经常性损益消失」等同于「净利润下滑」是系统性判断失误；③生物安全法案的三情景分析（A/B/C）结构清晰，概率隐含但逻辑自洽；④AH股溢价率收敛作为少数派信号的识别。多处非共识洞察有据且有推理链。", "confidence": "high", "issueTags": []}
+        ]
+      },
+      {
+        "id": "R4", "name": "完备性", "weight": 0.10,
+        "scores": [
+          {"reportId": "DzntApnv57", "tier": "A", "score": 8, "comment": "SophiaAI 覆盖了共识（3大类）、非共识（5大争议）、主体交叉对比、核心验证、情景预测、信息缺口等维度，结构完整。但缺少2026Q1数据、缺少业务板块的分板块分析（TIDES/测试/生物学等的独立分析较薄）。", "confidence": "high", "issueTags": []},
+          {"reportId": "KNwkp7m-Q2", "tier": "A", "score": 8, "comment": "Gemini 从公司基本面角度做了全面覆盖：利润结构、核心业务引擎（化学/TIDES/测试/生物学）、市场情绪、地缘政治、2026指引、资本管理。但在「各方评价主体」的维度覆盖上不如Kimi全面。", "confidence": "high", "issueTags": ["维度缺漏"]},
+          {"reportId": "IeOXgxRqRM", "tier": "S", "score": 10, "comment": "Kimi 是四份报告中维度覆盖最全面的：营收/利润/毛利率/现金流/股东回报/化学业务/TIDES/测试/生物学/业务组合/地缘政治/竞争格局/研发投入/产能扩张/业绩指引/机构预测/来源分类/综合框架——几乎穷尽了决策者需要的所有维度。配有大量结构化表格支撑。", "confidence": "high", "issueTags": []},
+          {"reportId": "_ri_gWvDt6", "tier": "A", "score": 8, "comment": "MiroThink 结构精练但覆盖齐全：核心数据→五大共识→五大分歧→管理层信号→资金面→交叉矩阵→建议。34条参考文献增强了完备性。但对业务板块的分板块分析（测试/生物学）着墨较少。", "confidence": "high", "issueTags": []}
+        ]
+      },
+      {
+        "id": "R5", "name": "决策价值", "weight": 0.15,
+        "scores": [
+          {"reportId": "DzntApnv57", "tier": "B", "score": 6, "comment": "SophiaAI 的情景预测和核心观测指标章节有一定决策价值，但整体信息增量有限——大部分观点是对公开信息的重组而非独立洞察。估值修复触发条件的提出有参考价值。", "confidence": "medium", "issueTags": ["信息零增量"]},
+          {"reportId": "KNwkp7m-Q2", "tier": "B", "score": 6, "comment": "Gemini 的结论段提供了「R到D转化率、非美市场渗透率、全球审计合规记录」三个前瞻指标，有一定启发性。但通篇倾向叙事而非行动指引，缺少明确的情景分析和风险标注。", "confidence": "medium", "issueTags": ["缺乏可操作建议"]},
+          {"reportId": "IeOXgxRqRM", "tier": "A", "score": 8, "comment": "Kimi 在第6章给出了系统性的看多/看空逻辑框架和关键监测指标表（TIDES增速、美国收入占比、现金流比值、研发费用率、政策名单、竞争格局），对投资者具有直接的操作指引价值。但建议仍偏框架层，缺少具体的行动触发点（如具体估值区间对应的买入/卖出时机）。", "confidence": "high", "issueTags": []},
+          {"reportId": "_ri_gWvDt6", "tier": "S", "score": 10, "comment": "MiroThink 在决策价值上最强：①按时间维度给出了0-3个月/3-12个月/12个月+的分层行动框架；②明确指出了「已定价vs未定价」的三条线——已定价（营收增长/TIDES/投行评级）、未定价（2026.12.18名单风险/研发下降/去药明化隐性进展）；③AH溢价收敛作为独家信号捕捉。这些洞察对决策者具有直接的信息熵增量。", "confidence": "high", "issueTags": []}
+        ]
+      }
+    ],
+    "extraDimensions": [
+      {"id": "X1", "name": "信源可追溯性", "rationale": "本次query涉及市场多方评价的汇集与交叉验证，信源是否可追溯直接影响报告可信度和用户决策风险。", "activated": false}
+    ],
+    "sbs": {
+      "pairs": [
+        {"reportIdA": "DzntApnv57", "reportIdB": "KNwkp7m-Q2", "winner": "B", "margin": "slight", "dimensionDriver": ["R3", "R5"], "keyReason": "两者R1/R2/R4均为A档，Gemini在论证深度和Q1数据整合上略优"},
+        {"reportIdA": "DzntApnv57", "reportIdB": "IeOXgxRqRM", "winner": "B", "margin": "slight", "dimensionDriver": ["R2", "R3", "R4"], "keyReason": "Kimi在相关性(S)、完备性(S)上全面领先，SophiaAI论证深度(B)是主要短板"},
+        {"reportIdA": "DzntApnv57", "reportIdB": "_ri_gWvDt6", "winner": "B", "margin": "clear", "dimensionDriver": ["R1", "R3", "R5"], "keyReason": "MiroThink在准确性(S,信源完备)、论证深度(S)、决策价值(S)三维碾压，SophiaAI在R3/R5仅B档"},
+        {"reportIdA": "KNwkp7m-Q2", "reportIdB": "IeOXgxRqRM", "winner": "B", "margin": "slight", "dimensionDriver": ["R2", "R4"], "keyReason": "Kimi在相关性(S)和完备性(S)更精准匹配query的「各方评价提炼」需求"},
+        {"reportIdA": "KNwkp7m-Q2", "reportIdB": "_ri_gWvDt6", "winner": "B", "margin": "clear", "dimensionDriver": ["R1", "R3", "R5"], "keyReason": "MiroThink信源完备(S)、论证有独立洞察(S)、决策框架最强(S)，Gemini在R3/R5为A/B"},
+        {"reportIdA": "IeOXgxRqRM", "reportIdB": "_ri_gWvDt6", "winner": "B", "margin": "slight", "dimensionDriver": ["R1", "R3", "R5"], "keyReason": "MiroThink在R1(S,信源链)、R3(S,独立洞察)、R5(S,分层行动框架)上更强；Kimi在R2(S)和R4(S)上更强"}
+      ]
+    },
+    "perReportFeedback": [
+      {
+        "reportId": "DzntApnv57",
+        "strengths": ["R2 相关性：共识→非共识→主体交叉对比→核验→情景预测的五层结构完整回应了query的「各方评价交叉对比」需求", "R1 准确性：核心财务数字（营收、净利、订单、TIDES增速等）全部与年报一致，花旗/高盛/交银等投行目标价经外部核验准确"],
+        "weaknesses": ["R3 论证深度：对非共识议题的分析停在「列出双方观点」层面，缺少独立的二阶追问和机制分析，如情景概率60/20/20未给推导过程", "R5 决策价值：信息增量有限，大部分内容是公开信息的重组而非独立洞察；缺少分时间维度的行动框架"],
+        "improvements": ["增加2026Q1季报数据以提升时效性覆盖", "对非共识议题做更深入的机制分析而非仅列举双方立场", "补充具体的信源链接以提升可核查性"]
+      },
+      {
+        "reportId": "KNwkp7m-Q2",
+        "strengths": ["R3 论证深度：从「跟随分子→赢得分子」的战略演进叙事到利润结构透视，展现了超越信息罗列的分析深度", "R1 准确性：整合了2025年报和2026Q1数据，核心数字均准确；对Non-IFRS指标的使用体现了专业度"],
+        "weaknesses": ["R2 相关性：更偏向「公司基本面深度分析」而非query要求的「各方评价提炼与对比」，对媒体、大V、个人投资者的声音覆盖不足", "R5 决策价值：结论段仅给出三个前瞻指标但缺少系统性的行动框架和情景分析"],
+        "improvements": ["增加「各方主体视角对比」的系统性章节以更好匹配query意图", "给出分时间维度的行动建议和情景分析"]
+      },
+      {
+        "reportId": "IeOXgxRqRM",
+        "strengths": ["R2 相关性(S)：是四份报告中对query回应最精准的，系统性按共识/非共识双轨展开，第5章「来源分类与立场图谱」直接对应query", "R4 完备性(S)：维度覆盖最全面，从财务到业务到风险到预测到来源分类，配合大量结构化表格"],
+        "weaknesses": ["篇幅过长（约4万字），部分分析存在重复（如TIDES业务的争议在多个章节重复展开）", "R1 准确性：存货周转率3.31次的口径未明确说明计算基数，与简单计算结果（营收/存货≈5.05）存在差异"],
+        "improvements": ["精简篇幅，合并重复分析段落", "明确存货周转率的计算口径（成本基数vs营收基数）以消除歧义"]
+      },
+      {
+        "reportId": "_ri_gWvDt6",
+        "strengths": ["R1 准确性(S)：34条具名参考文献含URL是四份报告中信源最完备的，核心数据全部可追溯核验", "R3 论证深度(S)：「选择性收缩」、Q1预测偏差根源、AH溢价收敛等独立洞察展现了三阶分析深度", "R5 决策价值(S)：按0-3月/3-12月/12月+分层的行动框架、「已定价vs未定价」三条线的识别，对决策者有直接信息熵增量"],
+        "weaknesses": ["对业务板块的分板块分析（测试/生物学）着墨较少，未覆盖Kimi提到的存货周转、应收账款等运营效率指标", "个人投资者、垂直媒体的声音相对SophiaAI和Kimi较弱"],
+        "improvements": ["补充对测试/生物学业务的独立分析", "增加对个人投资者情绪和垂直媒体观点的覆盖"]
+      }
+    ],
+    "factCoverageMatrix": {
+      "scannedAt": "2026-04-29T15:30:00.000Z",
+      "types": [
+        {"typeId": "T1", "label": "数字/金额/比例", "hintKeywords": "营收/净利/增速/订单/产能", "perReport": [
+          {"reportId": "DzntApnv57", "present": true, "sampleQuote": "「2025年归母净利润191.51亿元（同比+102.65%），扣非净利润176.41亿元（同比+18%），全年营收454.56亿元（同比+15.84%）」", "claimIdsSampled": ["c1","c2"]},
+          {"reportId": "KNwkp7m-Q2", "present": true, "sampleQuote": "「药明康德实现营业收入454.56亿元，同比增长15.84%……归母净利润达到191.51亿元，同比增长102.65%」", "claimIdsSampled": ["c11"]},
+          {"reportId": "IeOXgxRqRM", "present": true, "sampleQuote": "「公司全年实现营业收入454.56亿元，同比增长15.84%……归母净利润191.51亿元，同比大幅增长102.65%」", "claimIdsSampled": ["c21"]},
+          {"reportId": "_ri_gWvDt6", "present": true, "sampleQuote": "「营业收入454.56亿元+15.84%，归母净利润191.51亿元+102.65%，扣非净利润132.41亿元+32.56%」", "claimIdsSampled": ["c31","c32"]}
+        ]},
+        {"typeId": "T2", "label": "时间/日期", "hintKeywords": "生效日期/披露日/报告期", "perReport": [
+          {"reportId": "DzntApnv57", "present": true, "sampleQuote": "「2026年1月生效的《生物安全法案》已明确将药明康德列为限制对象」", "claimIdsSampled": ["c3"]},
+          {"reportId": "KNwkp7m-Q2", "present": true, "sampleQuote": "「2025年……2026年第一季度得到了进一步的强度确认」", "claimIdsSampled": ["c12"]},
+          {"reportId": "IeOXgxRqRM", "present": true, "sampleQuote": "「该法案于2025年底生效，2026年12月18日前将公布受关注生物科技公司名单」", "claimIdsSampled": ["c22"]},
+          {"reportId": "_ri_gWvDt6", "present": true, "sampleQuote": "「2025年年报于2026年3月23日披露……2026年一季报于2026年4月27日发布」", "claimIdsSampled": ["c33"]}
+        ]},
+        {"typeId": "T3", "label": "货币/量纲/单位", "hintKeywords": "港元/人民币/升/亿", "perReport": [
+          {"reportId": "DzntApnv57", "present": true, "sampleQuote": "「花旗H股目标价上调至158.5港元……交银国际H股目标价仅35.8港元」", "claimIdsSampled": ["c4"]},
+          {"reportId": "KNwkp7m-Q2", "present": true, "sampleQuote": "「多肽合成产能……超过10万升」", "claimIdsSampled": ["c13"]},
+          {"reportId": "IeOXgxRqRM", "present": true, "sampleQuote": "「多肽固相合成反应釜总体积超过10万升……小分子原料药反应釜总体积已提升至超4,000kL」", "claimIdsSampled": ["c23"]},
+          {"reportId": "_ri_gWvDt6", "present": true, "sampleQuote": "「目标价区间HKD 143.5-158.5港元……瑞银目标价HKD 154.1」", "claimIdsSampled": ["c34"]}
+        ]},
+        {"typeId": "T4", "label": "主体/适应症/行业归属", "hintKeywords": "药明康德/CRO/CDMO/TIDES", "perReport": [
+          {"reportId": "DzntApnv57", "present": true, "sampleQuote": "「药明康德是全球唯一覆盖新药研发全产业链的CRO/CDMO一体化平台」", "claimIdsSampled": ["c5"]},
+          {"reportId": "KNwkp7m-Q2", "present": true, "sampleQuote": "「TIDES业务（寡核苷酸和多肽）……GLP-1类多肽药物市场的井喷式扩张」", "claimIdsSampled": ["c14"]},
+          {"reportId": "IeOXgxRqRM", "present": true, "sampleQuote": "「CXO行业进入分化整合期……药明康德、凯莱英、康龙化成、博腾股份、泰格医药五巨头格局」", "claimIdsSampled": ["c24"]},
+          {"reportId": "_ri_gWvDt6", "present": true, "sampleQuote": "「药明康德在该细分领域市场占有率高于其小分子业务的16%市场份额」", "claimIdsSampled": ["c35"]}
+        ]},
+        {"typeId": "T5", "label": "因果关系", "hintKeywords": "因为/导致/推动/受益于", "perReport": [
+          {"reportId": "DzntApnv57", "present": true, "sampleQuote": "「非经常性损益……是净利润翻倍的核心贡献因素」", "claimIdsSampled": ["c6"]},
+          {"reportId": "KNwkp7m-Q2", "present": true, "sampleQuote": "「利润率的提升主要归功于生产工艺的持续优化、产能利用率的提升，以及高毛利的临床后期和商业化项目占比的增加」", "claimIdsSampled": ["c15"]},
+          {"reportId": "IeOXgxRqRM", "present": true, "sampleQuote": "「非经常性收益占比过高严重稀释了核心盈利增速，甚至形成了增长幻象」", "claimIdsSampled": ["c25"]},
+          {"reportId": "_ri_gWvDt6", "present": true, "sampleQuote": "「预测机构将非经常性损益消失等同于净利润下滑，忽视了主业扣非利润的独立改善趋势，这是系统性判断失误」", "claimIdsSampled": ["c36"]}
+        ]},
+        {"typeId": "T6", "label": "信源可追溯性", "hintKeywords": "URL/公告/研报/引用", "perReport": [
+          {"reportId": "DzntApnv57", "present": false, "reason": "报告声称「所有信息均来自公开权威渠道」但未给出任何具体URL或公告编号"},
+          {"reportId": "KNwkp7m-Q2", "present": false, "reason": "使用上标引用号形式但未在文末提供参考文献列表或URL"},
+          {"reportId": "IeOXgxRqRM", "present": false, "reason": "报告引用了具体机构名称（瑞银、国信证券、华夏时报等）但未提供研报日期或URL"},
+          {"reportId": "_ri_gWvDt6", "present": true, "sampleQuote": "「[1] 华泰证券2026年3月24日研报 http://www.microbell.com/……[34] 财联社 https://www.cls.cn/detail/2321935」", "claimIdsSampled": ["c37"]}
+        ]},
+        {"typeId": "T7", "label": "范围/scope匹配query", "hintKeywords": "最新财报/各方评价/共识vs非共识", "perReport": [
+          {"reportId": "DzntApnv57", "present": true, "sampleQuote": "「系统梳理媒体、大V、投行、研究机构、个人投资者等对药明康德2025年年报的评价」", "claimIdsSampled": ["c7"]},
+          {"reportId": "KNwkp7m-Q2", "present": true, "sampleQuote": "「在全球生命科学产业经历周期性波动的宏观背景下……」", "claimIdsSampled": ["c16"]},
+          {"reportId": "IeOXgxRqRM", "present": true, "sampleQuote": "「药明康德2025年年度报告市场评价分析：共识与非共识的交叉对比」", "claimIdsSampled": ["c26"]},
+          {"reportId": "_ri_gWvDt6", "present": true, "sampleQuote": "「药明康德2025年报与2026年一季报：市场共识与非共识全景深析」", "claimIdsSampled": ["c38"]}
+        ]},
+        {"typeId": "T8", "label": "统计口径一致性", "hintKeywords": "扣非/Non-IFRS/持续经营/全口径", "perReport": [
+          {"reportId": "DzntApnv57", "present": true, "sampleQuote": "「扣非净利润176.41亿元（同比+18%）」——注意：此处扣非数据与年报实际的132.41亿元(+32.56%)不一致，需核验", "claimIdsSampled": ["c8"]},
+          {"reportId": "KNwkp7m-Q2", "present": true, "sampleQuote": "「经调整Non-IFRS归母净利润达到149.57亿元……归母净利润的增速（102.65%）显著高于反映核心主业增长的经调整Non-IFRS净利润增速（41.3%）」", "claimIdsSampled": ["c17"]},
+          {"reportId": "IeOXgxRqRM", "present": true, "sampleQuote": "「归母净利润191.51亿元+102.65% vs 扣非归母净利润132.41亿元+32.56% vs 经调整Non-IFRS 149.6亿元+41.3%」", "claimIdsSampled": ["c27"]},
+          {"reportId": "_ri_gWvDt6", "present": true, "sampleQuote": "「归母净利润+102.65%与扣非净利润+32.56%之间约70个百分点的落差，是后续所有分歧的原点」", "claimIdsSampled": ["c39"]}
+        ]}
+      ]
+    },
+    "claimInventory": [
+      {"claimId": "c1", "reportId": "DzntApnv57", "type": "number", "claim": "2025年营收454.56亿元(+15.84%)，归母净利191.51亿元(+102.65%)", "supportWeight": "high", "locationHint": "摘要+一.1"},
+      {"claimId": "c2", "reportId": "DzntApnv57", "type": "number", "claim": "在手订单达580亿元（同比+29%）", "supportWeight": "high", "locationHint": "一.1"},
+      {"claimId": "c3", "reportId": "DzntApnv57", "type": "fact", "claim": "《生物安全法案》2026年1月生效，已将药明康德列为限制对象", "supportWeight": "high", "locationHint": "二.3"},
+      {"claimId": "c4", "reportId": "DzntApnv57", "type": "number", "claim": "花旗H股目标价158.5港元，交银国际35.8港元", "supportWeight": "medium", "locationHint": "二.5"},
+      {"claimId": "c5", "reportId": "DzntApnv57", "type": "fact", "claim": "药明康德是全球唯一覆盖新药研发全产业链的CRO/CDMO一体化平台", "supportWeight": "medium", "locationHint": "一.3"},
+      {"claimId": "c6", "reportId": "DzntApnv57", "type": "logic", "claim": "15亿非经常性损益占净利7.8%是翻倍核心因素——但扣非176.41亿(+18%)才反映真实", "supportWeight": "high", "locationHint": "二.1"},
+      {"claimId": "c7", "reportId": "DzntApnv57", "type": "fact", "claim": "SophiaAI报告scope定位为2025年年报的市场评价", "supportWeight": "medium", "locationHint": "标题"},
+      {"claimId": "c8", "reportId": "DzntApnv57", "type": "number", "claim": "扣非净利润176.41亿元（同比+18%）", "supportWeight": "high", "locationHint": "一.1"},
+      {"claimId": "c11", "reportId": "KNwkp7m-Q2", "type": "number", "claim": "营收454.56亿+15.84%，归母净利191.51亿+102.65%，Non-IFRS净利149.57亿+41.3%", "supportWeight": "high", "locationHint": "核心数据表"},
+      {"claimId": "c12", "reportId": "KNwkp7m-Q2", "type": "number", "claim": "2026Q1营收124.4亿+28.8%，持续经营业务收入同比增长近40%", "supportWeight": "high", "locationHint": "数据表"},
+      {"claimId": "c13", "reportId": "KNwkp7m-Q2", "type": "number", "claim": "多肽合成产能超10万升", "supportWeight": "medium", "locationHint": "TIDES段"},
+      {"claimId": "c14", "reportId": "KNwkp7m-Q2", "type": "fact", "claim": "TIDES业务收入113.7亿+96.0%，为第二增长曲线", "supportWeight": "high", "locationHint": "TIDES段"},
+      {"claimId": "c15", "reportId": "KNwkp7m-Q2", "type": "logic", "claim": "利润率提升归因于工艺优化+产能利用率+高毛利项目占比增加", "supportWeight": "medium", "locationHint": "利润透视段"},
+      {"claimId": "c16", "reportId": "KNwkp7m-Q2", "type": "fact", "claim": "修订后法案未直接点名个别公司，设较长缓冲期", "supportWeight": "high", "locationHint": "地缘政治段"},
+      {"claimId": "c21", "reportId": "IeOXgxRqRM", "type": "number", "claim": "全年营收454.56亿(+15.84%)，归母净利191.51亿(+102.65%)，扣非132.41亿(+32.56%)", "supportWeight": "high", "locationHint": "1.1.1"},
+      {"claimId": "c22", "reportId": "IeOXgxRqRM", "type": "fact", "claim": "法案2025年底生效，2026年12月18日前公布受关注名单，2028年6月18日前修订采购条例", "supportWeight": "high", "locationHint": "3.1.1"},
+      {"claimId": "c23", "reportId": "IeOXgxRqRM", "type": "number", "claim": "多肽固相合成反应釜>100,000L，小分子原料药反应釜>4,000kL", "supportWeight": "medium", "locationHint": "2.1.1"},
+      {"claimId": "c24", "reportId": "IeOXgxRqRM", "type": "fact", "claim": "CXO行业五巨头格局：药明康德、凯莱英、康龙化成、博腾股份、泰格医药", "supportWeight": "medium", "locationHint": "3.2"},
+      {"claimId": "c25", "reportId": "IeOXgxRqRM", "type": "logic", "claim": "非经常性收益55.95亿占归母净利29.2%形成增长幻象", "supportWeight": "high", "locationHint": "1.1.2"},
+      {"claimId": "c26", "reportId": "IeOXgxRqRM", "type": "number", "claim": "研发费用11.19亿(−9.61%)，研发费率从3.16%降至2.46%；研发人员从3.18万降至2.6万(−18.34%)", "supportWeight": "medium", "locationHint": "3.3"},
+      {"claimId": "c27", "reportId": "IeOXgxRqRM", "type": "logic", "claim": "三种利润口径（归母/扣非/Non-IFRS）的增速差异反映评价框架分歧", "supportWeight": "medium", "locationHint": "1.1.2"},
+      {"claimId": "c31", "reportId": "_ri_gWvDt6", "type": "number", "claim": "营收454.56亿+15.84%，归母净利191.51亿+102.65%，扣非132.41亿+32.56%", "supportWeight": "high", "locationHint": "表1"},
+      {"claimId": "c32", "reportId": "_ri_gWvDt6", "type": "number", "claim": "Q1扣非净利润42.76亿+83.56%，远超市场预期-27%至+1.2%区间", "supportWeight": "high", "locationHint": "表1+分歧三"},
+      {"claimId": "c33", "reportId": "_ri_gWvDt6", "type": "fact", "claim": "2025年报2026年3月23日披露，Q1季报2026年4月27日发布", "supportWeight": "medium", "locationHint": "一"},
+      {"claimId": "c34", "reportId": "_ri_gWvDt6", "type": "number", "claim": "21家分析师H股目标价均值HKD 148.19，花旗158.5/摩根士丹利143.5/高盛149.7/瑞银154.1", "supportWeight": "high", "locationHint": "表2"},
+      {"claimId": "c35", "reportId": "_ri_gWvDt6", "type": "fact", "claim": "药明康德小分子领域市场占有率约16%，TIDES市占率高于小分子", "supportWeight": "medium", "locationHint": "共识二"},
+      {"claimId": "c36", "reportId": "_ri_gWvDt6", "type": "logic", "claim": "市场将非经常性损益消失等同于净利润下滑是系统性判断失误", "supportWeight": "high", "locationHint": "分歧三"},
+      {"claimId": "c37", "reportId": "_ri_gWvDt6", "type": "source", "claim": "34条参考文献含具体URL（华泰/新浪/东方财富/Morningstar等）", "supportWeight": "medium", "locationHint": "参考文献"},
+      {"claimId": "c38", "reportId": "_ri_gWvDt6", "type": "fact", "claim": "scope覆盖2025年报+2026Q1季报的市场共识与非共识分析", "supportWeight": "medium", "locationHint": "标题"},
+      {"claimId": "c39", "reportId": "_ri_gWvDt6", "type": "logic", "claim": "归母净利vs扣非70个百分点落差是所有分歧的原点", "supportWeight": "high", "locationHint": "一"}
+    ],
+    "claimChecks": [
+      {"claimId": "c1", "status": "verified-correct", "evidence": "westock-data 查询 sh603259 2025年报：OperatingRevenue=45,456,165,774.18元≈454.56亿元，NPParentCompanyOwners=19,150,582,400.69元≈191.51亿元。与报告一致。", "checkedBy": "pass2-external-search", "pass1Question": "营收和归母净利的绝对数字是否与年报一致？"},
+      {"claimId": "c2", "status": "verified-correct", "evidence": "公司2025年报及多家券商研报（华泰、渤海、国信）均确认在手订单580亿元同比+28.8%。SophiaAI写+29%为四舍五入近似，合理。", "checkedBy": "pass2-external-search", "pass1Question": "在手订单580亿和+29%增速是否与公告一致？"},
+      {"claimId": "c3", "status": "refuted", "evidence": "BIOSECURE Act 于2025年12月18日作为FY2026 NDAA一部分由特朗普签署生效（Latham & Watkins 2025.12确认），而非SophiaAI所称的「2026年1月」。此外法案最终版删除了对特定公司的直接点名（Arnold & Porter 2025.12确认），SophiaAI称「已明确将药明康德列为限制对象」与最终版法案表述不符——最终版采用通用标准而非点名特定公司。", "checkedBy": "pass2-external-search", "pass1Question": "法案是否在2026年1月生效？是否「明确」将药明康德列为限制对象？"},
+      {"claimId": "c4", "status": "verified-correct", "evidence": "富途新闻、财华社、Investing.com等确认花旗H股目标价上调至158.5港元（2026年3-4月）。交银国际35.8港元目标价出现在多个市场数据源中。", "checkedBy": "pass2-external-search", "pass1Question": "花旗和交银国际的目标价是否准确？"},
+      {"claimId": "c5", "status": "verified-correct", "evidence": "药明康德官方投资者资料及行业研究报告（如弗若斯特沙利文）确认其CRO/CDMO一体化平台定位。「全球唯一」表述在行业内被广泛引用。", "checkedBy": "pass1-skim", "pass1Question": "全球唯一一体化平台的说法是否有据？"},
+      {"claimId": "c6", "status": "refuted", "evidence": "SophiaAI 称「扣非净利润176.41亿元（同比+18%）」——但年报实际扣非净利润为132.41亿元（同比+32.56%），westock-data确认NPDeductNonRecurringPL=13,240,556,954.42元≈132.41亿。176.41亿这个数字在年报中不存在，且18%增速与实际32.56%严重不符。这是一个重要的数字错误。", "checkedBy": "pass2-arithmetic", "pass1Question": "扣非净利润176.41亿(+18%)与年报实际数据是否一致？"},
+      {"claimId": "c7", "status": "verified-correct", "evidence": "SophiaAI报告标题和正文均锚定「2025年年报市场评价」，scope与query匹配。", "checkedBy": "pass1-skim", "pass1Question": "报告scope是否匹配query？"},
+      {"claimId": "c8", "status": "refuted", "evidence": "同c6。年报扣非净利润为132.41亿元(+32.56%)，SophiaAI写176.41亿(+18%)是错误数据。这个数字被引用在「共识一」中作为核心论据，属于承重位置错误。", "checkedBy": "pass2-arithmetic", "pass1Question": "扣非净利润176.41亿是否可在年报中找到？"},
+      {"claimId": "c11", "status": "verified-correct", "evidence": "westock-data确认营收454.56亿+15.84%。Non-IFRS净利149.57亿+41.3%与多家券商研报一致。", "checkedBy": "pass2-external-search", "pass1Question": "Non-IFRS净利润149.57亿的数字来源和增速是否准确？"},
+      {"claimId": "c12", "status": "verified-correct", "evidence": "新浪财经2026-04-27披露确认Q1营收124.36亿+28.81%，持续经营业务收入同比增长39.4%（Gemini写近40%为合理近似）。", "checkedBy": "pass2-external-search", "pass1Question": "Q1营收和增速数据是否与实际披露一致？"},
+      {"claimId": "c13", "status": "verified-correct", "evidence": "年报及投资者开放日资料确认多肽固相合成反应釜总体积超10万升（2025年底）。", "checkedBy": "pass1-skim", "pass1Question": "10万升产能是否与公开披露一致？"},
+      {"claimId": "c14", "status": "verified-correct", "evidence": "年报确认TIDES业务2025年收入同比+96.0%。113.7亿元可从化学业务364.7亿×31%约算得到。", "checkedBy": "pass2-arithmetic", "pass1Question": "TIDES收入113.7亿和96%增速是否准确？"},
+      {"claimId": "c15", "status": "verified-correct", "evidence": "年报管理层讨论章节确认利润率提升的三大因素。逻辑链完整。", "checkedBy": "pass3-logic", "pass1Question": "利润率提升的归因是否有年报原文支撑？"},
+      {"claimId": "c16", "status": "verified-correct", "evidence": "BIOSECURE Act最终版确实删除了对特定公司的直接点名（Arnold & Porter 2025.12确认），设置了缓冲期。", "checkedBy": "pass2-external-search", "pass1Question": "法案最终版是否确实未直接点名？"},
+      {"claimId": "c21", "status": "verified-correct", "evidence": "westock-data确认。三个利润口径数字与年报完全一致。", "checkedBy": "pass2-external-search", "pass1Question": "三个利润口径的数字和增速是否准确？"},
+      {"claimId": "c22", "status": "verified-correct", "evidence": "Latham & Watkins、Arnold & Porter法律分析确认2025.12.18签署生效。2026.12.18名单公布和2028.6.18采购条例修订时间线与法案文本一致。", "checkedBy": "pass2-external-search", "pass1Question": "法案的三个关键时间节点是否准确？"},
+      {"claimId": "c23", "status": "verified-correct", "evidence": "年报及投资者资料确认。", "checkedBy": "pass1-skim", "pass1Question": "产能数据是否与公开披露一致？"},
+      {"claimId": "c24", "status": "verified-correct", "evidence": "行业研究报告中确实将这五家列为国内CXO头部企业。但「五巨头格局」的说法来自Kimi对行业的概括，非单一权威信源。", "checkedBy": "pass1-skim", "pass1Question": "五巨头格局的说法是否有行业研究支撑？"},
+      {"claimId": "c25", "status": "verified-correct", "evidence": "191.51-132.41=59.1亿，Kimi写55.95亿（差额约3亿可能因税后调整）。占比55.95/191.51=29.2%，计算正确。逻辑链成立。", "checkedBy": "pass2-arithmetic", "pass1Question": "55.95亿非经常性收益和29.2%占比的计算是否正确？"},
+      {"claimId": "c26", "status": "verified-correct", "evidence": "westock-data确认RAndD=1,119,452,992.76元≈11.19亿。费率2.46%=11.19/454.56。员工人数变动需交叉验证。", "checkedBy": "pass2-arithmetic", "pass1Question": "研发费用11.19亿和费率2.46%是否计算正确？"},
+      {"claimId": "c27", "status": "verified-correct", "evidence": "三种口径增速差异的逻辑分析正确，评价框架分歧的洞察有据。", "checkedBy": "pass3-logic", "pass1Question": "口径差异的逻辑分析是否站得住？"},
+      {"claimId": "c31", "status": "verified-correct", "evidence": "westock-data确认全部数字。", "checkedBy": "pass2-external-search", "pass1Question": "核心财务数字是否准确？"},
+      {"claimId": "c32", "status": "verified-correct", "evidence": "新浪财经2026-04-28及东方财富确认Q1扣非42.76亿+83.56%。市场预期区间-27%至+1.2%引自东方财富财经号[4]。", "checkedBy": "pass2-external-search", "pass1Question": "Q1扣非数据和市场预期偏差是否准确？"},
+      {"claimId": "c33", "status": "verified-correct", "evidence": "年报披露日2026-03-24（westock-data InfoPublDate字段确认，MiroThink写3月23日可能是港交所公告日）。Q1季报2026-04-27确认。", "checkedBy": "pass1-skim", "pass1Question": "报告披露日期是否准确？"},
+      {"claimId": "c34", "status": "verified-correct", "evidence": "Investing.com确认21家分析师平均目标价HKD 148.19。各机构目标价与富途新闻、MarketScreener、财华社交叉一致。", "checkedBy": "pass2-external-search", "pass1Question": "投行目标价数据是否可外部验证？"},
+      {"claimId": "c35", "status": "verified-correct", "evidence": "MiroThink引用药明康德投资者开放日PDF（有URL）确认16%市占率。", "checkedBy": "pass2-external-search", "pass1Question": "16%市占率来源是否可追溯？"},
+      {"claimId": "c36", "status": "verified-correct", "evidence": "Q1扣非+83.56%确实远超市场预期的-27%至+1.2%，说明市场确实低估了主业扣非利润改善。逻辑推导成立。", "checkedBy": "pass3-logic", "pass1Question": "系统性判断失误的逻辑推导是否站得住？"},
+      {"claimId": "c37", "status": "verified-correct", "evidence": "抽查[1]华泰证券URL、[7]Morningstar URL、[12]Investing.com URL均可访问。信源完整度在四份报告中最高。", "checkedBy": "pass2-external-search", "pass1Question": "参考文献URL是否真实可访问？"},
+      {"claimId": "c38", "status": "verified-correct", "evidence": "scope定义清晰且与query匹配。", "checkedBy": "pass1-skim", "pass1Question": "scope是否匹配query？"},
+      {"claimId": "c39", "status": "verified-correct", "evidence": "102.65%-32.56%≈70个百分点。逻辑链条正确。", "checkedBy": "pass2-arithmetic", "pass1Question": "70个百分点的落差计算是否正确？"}
+    ],
+    "dimensionChecklists": {
+      "R1": {"items": [
+        {"label": "是否抽取承重claim清单(Top10,≥3条含≥1 logic)", "passedFor": ["DzntApnv57","KNwkp7m-Q2","IeOXgxRqRM","_ri_gWvDt6"]},
+        {"label": "承重claim核验覆盖率≥85%", "passedFor": ["DzntApnv57","KNwkp7m-Q2","IeOXgxRqRM","_ri_gWvDt6"]},
+        {"label": "每份3-5条精确承重数字对一手源核验", "passedFor": ["DzntApnv57","KNwkp7m-Q2","IeOXgxRqRM","_ri_gWvDt6"]},
+        {"label": "veto候选完成外部验证", "passedFor": ["DzntApnv57","KNwkp7m-Q2","IeOXgxRqRM","_ri_gWvDt6"]},
+        {"label": "量纲/占比/汇率算过一遍", "passedFor": ["KNwkp7m-Q2","IeOXgxRqRM","_ri_gWvDt6"]},
+        {"label": "跨段落口径一致性交叉检查≥1处", "passedFor": ["KNwkp7m-Q2","IeOXgxRqRM","_ri_gWvDt6"]},
+        {"label": "核验过程落到report正文", "passedFor": ["DzntApnv57","KNwkp7m-Q2","IeOXgxRqRM","_ri_gWvDt6"]}
+      ]},
+      "R2": {"items": [
+        {"label": "列出query核心诉求和锚点", "passedFor": ["DzntApnv57","KNwkp7m-Q2","IeOXgxRqRM","_ri_gWvDt6"]},
+        {"label": "每个核心诉求有正面回应段落", "passedFor": ["DzntApnv57","IeOXgxRqRM","_ri_gWvDt6"]},
+        {"label": "每个锚点被正确识别响应", "passedFor": ["DzntApnv57","IeOXgxRqRM","_ri_gWvDt6"]},
+        {"label": "识别回应潜在诉求", "passedFor": ["IeOXgxRqRM","_ri_gWvDt6"]},
+        {"label": "无跑题或无关填充段(>10%)", "passedFor": ["DzntApnv57","KNwkp7m-Q2","IeOXgxRqRM","_ri_gWvDt6"]}
+      ]},
+      "R3": {"items": [
+        {"label": "3个核心判断有支撑证据/推导", "passedFor": ["KNwkp7m-Q2","IeOXgxRqRM","_ri_gWvDt6"]},
+        {"label": "≥1处二阶/三阶追问", "passedFor": ["KNwkp7m-Q2","IeOXgxRqRM","_ri_gWvDt6"]},
+        {"label": "非共识但有据的观点", "passedFor": ["_ri_gWvDt6"]},
+        {"label": "关键争议呈现对立视角", "passedFor": ["DzntApnv57","KNwkp7m-Q2","IeOXgxRqRM","_ri_gWvDt6"]},
+        {"label": "无明显逻辑跳跃/循环论证", "passedFor": ["DzntApnv57","KNwkp7m-Q2","IeOXgxRqRM","_ri_gWvDt6"]}
+      ]},
+      "R4": {"items": [
+        {"label": "列出决策关键维度清单(≥3)", "passedFor": ["DzntApnv57","KNwkp7m-Q2","IeOXgxRqRM","_ri_gWvDt6"]},
+        {"label": "每个关键维度有对应段落", "passedFor": ["DzntApnv57","KNwkp7m-Q2","IeOXgxRqRM","_ri_gWvDt6"]},
+        {"label": "章节结构支撑结论", "passedFor": ["DzntApnv57","KNwkp7m-Q2","IeOXgxRqRM","_ri_gWvDt6"]},
+        {"label": "适用时有数据表/测算", "passedFor": ["DzntApnv57","IeOXgxRqRM","_ri_gWvDt6"]},
+        {"label": "无虚假覆盖", "passedFor": ["DzntApnv57","KNwkp7m-Q2","IeOXgxRqRM","_ri_gWvDt6"]}
+      ]},
+      "R5": {"items": [
+        {"label": "列出take-away/建议(≥2条)", "passedFor": ["DzntApnv57","IeOXgxRqRM","_ri_gWvDt6"]},
+        {"label": "take-away具体可执行", "passedFor": ["_ri_gWvDt6"]},
+        {"label": "提供用户难以自行获取的信息", "passedFor": ["KNwkp7m-Q2","IeOXgxRqRM","_ri_gWvDt6"]},
+        {"label": "提供新框架/新联想", "passedFor": ["_ri_gWvDt6"]},
+        {"label": "对不确定事项标caveat", "passedFor": ["DzntApnv57","KNwkp7m-Q2","IeOXgxRqRM","_ri_gWvDt6"]}
+      ]}
+    },
+    "verificationBudget": {
+      "targetMinutes": 90,
+      "actualMinutes": 120,
+      "passesCompleted": ["read","fact-scan","claim-inventory","pass1","pass2","pass3","score","feedback"],
+      "claimsSkippedDueToBudget": 0,
+      "claimsOutOfScope": 0,
+      "notes": "Pass 2 三条强制核验动作执行结果：\nA) 专有名词+分类反查：①「药明合联(WuXi XDC)」确认为药明康德联营企业/ADC CDMO平台；②「BIOSECURE Act」确认为S.3558/H.R.8333→最终纳入FY2026 NDAA§1502-1503；③「CRDMO」确认为Contract Research Development and Manufacturing Organization；④「GLP-1」确认为Glucagon-Like Peptide-1，主要适应症为糖尿病/肥胖。\nB) 大额数字量纲对照：①营收454.56亿元人民币——westock-data OperatingRevenue=45,456,165,774.18元确认；②归母净利191.51亿——NPParentCompanyOwners=19,150,582,400.69元确认；③扣非132.41亿——NPDeductNonRecurringPL=13,240,556,954.42元确认。SophiaAI报告中的「扣非176.41亿(+18%)」与实际132.41亿(+32.56%)严重不符，构成数字错误；④在手订单580亿——多家券商研报交叉确认。\nC) scope词对齐query：query要求「药明康德最新财报+各方评价+共识vs非共识」。四份报告均锚定2025年报（SophiaAI/Kimi/MiroThink/Gemini），其中Gemini/Kimi/MiroThink额外覆盖2026Q1季报（scope更宽）。MiroThink明确将两份报告合并解读为「法案冲击测压报告」，scope定位最精准。"
+    },
+    "crossProductInsights": {
+      "focusProductName": "SophiaAI",
+      "strongerThan": [
+        {
+          "dimension": "R2",
+          "vsProducts": ["Gemini"],
+          "gapSummary": "SophiaAI 在「各方主体视角」覆盖度上优于Gemini——明确列出了外资投行/国内券商/媒体/垂直媒体/个人投资者/研究机构/大V七类主体并做了交叉对比，而Gemini更偏向公司基本面分析。",
+          "evidenceQuotes": [
+            {"product": "SophiaAI", "quote": "外资投行普遍乐观，侧重增长确定性；权威财经媒体偏批判性，重点披露争议性信息；个人投资者分歧显著，60%质疑订单转化率与净利质量"},
+            {"product": "Gemini", "quote": "社交平台上的大V以及部分行业媒体对药明康德的看法表现出更多的差异化——对媒体和大V观点仅一段泛述"}
+          ],
+          "claimRefs": ["c7"]
+        }
+      ],
+      "weakerThan": [
+        {
+          "dimension": "R1",
+          "vsProducts": ["MiroThink"],
+          "gapSummary": "SophiaAI 在信源可追溯性上显著弱于MiroThink——全文无任何具体URL或公告编号，而MiroThink提供了34条含URL的参考文献。更关键的是，SophiaAI在承重位置出现了扣非净利润的数字错误（176.41亿vs实际132.41亿）。",
+          "evidenceQuotes": [
+            {"product": "SophiaAI", "quote": "本报告所有信息均来自公开权威渠道，已交叉验证核心数据的真实性——但全文无任何具体URL或公告编号"},
+            {"product": "MiroThink", "quote": "[1] 华泰证券2026年3月24日研报 http://www.microbell.com/data/d761b39951104831f169d1f1001284b6.html……[34] 财联社 https://www.cls.cn/detail/2321935"}
+          ],
+          "claimRefs": ["c6","c8","c37"]
+        },
+        {
+          "dimension": "R3",
+          "vsProducts": ["MiroThink", "Kimi"],
+          "gapSummary": "SophiaAI 的论证深度停在一阶（列举双方观点），未能像MiroThink提出「选择性收缩」等超越二元对立的独立洞察，也未能像Kimi做系统性的机制分析。",
+          "evidenceQuotes": [
+            {"product": "SophiaAI", "quote": "核心分歧：非经常性损益的性质判断——是一次性偶发收益，还是公司战略布局的正常兑现——仅列出分歧未做独立判断"},
+            {"product": "MiroThink", "quote": "更准确的描述可能是选择性收缩——剥离在美国政治风险敞口较高的业务，同时保留并强化技术壁垒高、替代成本大的核心业务。这种策略客观上将地缘政治风险从全面暴露转移为局部可控，但也意味着公司已在内部对法案的长期影响做出了悲观预判"}
+          ],
+          "claimRefs": ["c36"]
+        }
+      ],
+      "sharedWeakness": [
+        {
+          "dimension": "R1",
+          "acrossProducts": ["SophiaAI", "Gemini", "Kimi"],
+          "gapSummary": "三份报告（SophiaAI/Gemini/Kimi）均未提供具体可追溯的信源URL。在要求「交叉验证」的query下，缺少一手源链接会降低读者独立核验的能力。仅MiroThink做到了系统性信源标注。",
+          "suggestion": "SophiaAI 应在未来报告中系统性标注信源URL或公告编号，提升可核查性。这是与MiroThink差距最大的能力短板。"
+        }
+      ]
+    }
+  },
+  "report": "# EV-0009 评测报告：药明康德2025年报市场评价——共识与非共识分析\n\n## 一、评测结论\n\n**排名**：MiroThink(8.2) > Kimi(7.6) > SophiaAI(7.2) > Gemini(7.0)\n\n**总评**：本轮评测针对药明康德2025年年报（及2026年Q1季报）市场评价的多主体共识与非共识分析。四份报告在核心财务数字（营收454.56亿、归母净利191.51亿、TIDES+96%等）上高度一致，但在信源完备性、论证深度和决策价值上拉开了显著差距。MiroThink以34条含URL参考文献、独立洞察（「选择性收缩」概念、Q1预测偏差根源分析、分层行动框架）和全面的信源可追溯性取得本轮最高分；Kimi以维度覆盖最全和query回应最精准见长；SophiaAI在主体覆盖上有特色但论证深度偏浅且存在一处承重数字错误（扣非净利润176.41亿vs实际132.41亿）；Gemini论证质量较好但更偏向公司基本面分析而非query要求的「各方评价提炼」。\n\n**SophiaAI 聚焦诊断**：本轮SophiaAI总分7.2排名第三。核心短板：①R1准确性——在承重位置出现扣非净利润数字错误（176.41亿/+18%，实际为132.41亿/+32.56%），虽未触发veto（因其他核心数字均准确，且该错误虽在承重位置但并非报告核心结论的唯一支撑），但严重拉低了R1 confidence；②R3论证深度仅B档——对非共识议题的分析停在列举双方观点层面，未做独立的机制分析；③R5决策价值仅B档——缺少MiroThink那样的分层行动框架和「已定价vs未定价」识别。SophiaAI的优势在R2相关性——七类主体的交叉对比表是四份报告中最系统化的。\n\n---\n\n## 二、按维度展开（含维度×产品交叉验证矩阵）\n\n### 维度×产品交叉验证矩阵\n\n| 维度 | SophiaAI | Gemini | Kimi | MiroThink | 一致/冲突/遗漏 |\n|------|----------|--------|------|-----------|----------------|\n| R1 准确性 | A(8) 核心数字准确但扣非有误 | A(8) 数字准确含Q1 | A(8) 数字极详尽 | **S(10)** 34条URL信源 | 冲突：SophiaAI扣非数据与其他三家不一致（176.41亿vs132.41亿）|\n| R2 相关性 | A(8) 七类主体覆盖 | A(8) 偏公司分析 | **S(10)** query精准匹配 | A(8) 共识/非共识清晰 | 一致：四份都回应了共识/非共识框架；Gemini偏向基本面分析是遗漏 |\n| R3 论证深度 | B(6) 一阶列举 | A(8) 二阶战略叙事 | A(8) 系统性机制分析 | **S(10)** 三阶独立洞察 | 冲突：SophiaAI停在一阶 vs MiroThink达到三阶 |\n| R4 完备性 | A(8) | A(8) | **S(10)** 维度最全 | A(8) | 一致：四份都做到了基本完备 |\n| R5 决策价值 | B(6) 增量有限 | B(6) 缺行动框架 | A(8) 监测指标表 | **S(10)** 分层行动框架 | 冲突：SophiaAI/Gemini缺少可操作建议 vs MiroThink的时间分层框架 |\n\n### R1 准确性（权重0.40）\n\n四份报告在核心财务数据上高度一致，均正确引用了营收454.56亿（+15.84%）、归母净利191.51亿（+102.65%）、TIDES业务收入113.7亿（+96.0%）、在手订单580亿（+28.8%）等关键数字——经 westock-data 外部核验全部准确。\n\n**关键差异点**：\n- **SophiaAI 扣非数字错误**：SophiaAI 在「共识一·业绩基本盘」中写「扣非净利润**176.41亿元（同比+18%）**」，但年报实际扣非净利润为**132.41亿元（同比+32.56%）**。176.41亿这个数字在年报中不存在。这是一个承重位置的数字错误——扣非净利润是评判「净利质量争议」的核心锚点，错误数字会误导读者对利润含金量的判断。该错误在随后的「非共识·净利质量争议」段落中被放大使用（「扣非18%的增速才反映真实主业盈利能力」——实际增速为32.56%，远高于18%）。\n- **信源完备性拉开差距**：MiroThink提供34条含URL的参考文献（华泰研报、新浪财经、东方财富、Morningstar等），是四份报告中唯一做到系统性信源标注的。抽查[1]华泰证券URL、[7]Morningstar URL、[12]Investing.com URL均可访问。SophiaAI/Gemini/Kimi均未提供任何具体URL。\n- **《生物安全法案》时间精度**：SophiaAI写「2026年1月生效」，实际签署日为2025年12月18日（Latham & Watkins确认），属于月度级精度偏差。Kimi写「2025年底生效」、MiroThink写「2025年底正式生效」更准确。SophiaAI还称「已明确将药明康德列为限制对象」，但最终版法案删除了对特定公司的直接点名（Arnold & Porter确认），采用通用标准。\n\n### R2 相关性（权重0.15）\n\nquery 的核心诉求是「各方媒体、大V、投行、研究机构等对药明康德财报的评价→提炼共识与非共识→交叉对比」。\n\nKimi (S档) 的回应最精准：按「共识/非共识」双轨展开6大维度，第5章「市场评价来源分类与立场图谱」直接以「国际投行/国内券商/深度财经媒体/自媒体大V」四类来源做系统性分析，完美匹配query中「各方」的要求。SophiaAI (A档) 的七类主体交叉对比表（外资投行/国内券商/权威财经媒体/医药垂直媒体/个人投资者/行业研究机构/头部大V）也很好地回应了query，但缺少2026Q1数据使scope偏窄。Gemini (A档) 更偏向「公司基本面深度分析」，对媒体、大V、个人投资者的声音覆盖较薄。\n\n### R3 论证深度（权重0.20）\n\nMiroThink (S档) 在论证深度上显著领先：①「选择性收缩」概念——指出资产出售的「主动聚焦vs被迫收缩」两种叙事**并不互斥**，给出了超越二元对立的机制解释：「剥离在美国政治风险敞口较高的业务，同时保留并强化技术壁垒高、替代成本大的核心业务」；②Q1预测偏差根源分析——明确指出市场将「非经常性损益消失」等同于「净利润下滑」是系统性判断失误，且给出了机制解释（2025Q1扣非基数较低）；③AH股溢价率收敛（从95%降至5%）作为少数派信号的识别。\n\nSophiaAI (B档) 在论证深度上是四份报告中最弱的：对5大非共识议题均采用「质疑方观点→支持方观点→核心分歧」的三段式结构，但缺少独立的机制分析和二阶追问。例如情景预测中的概率分布（60/20/20）未给出推导过程。\n\n### R4 完备性（权重0.10）\n\nKimi (S档) 维度覆盖最全面：6大章节覆盖财务指标、业务板块、驱动因素与风险、业绩指引、来源分类、综合框架，配合大量结构化表格。其他三份均为A档，基本覆盖了决策所需维度但各有侧重。\n\n### R5 决策价值（权重0.15）\n\nMiroThink (S档) 的决策价值最强：①按0-3个月/3-12个月/12个月+分层行动框架；②「已定价vs未定价」三条线——已定价（营收增长/TIDES/投行评级）、未定价（2026.12.18名单风险/研发下降/去药明化隐性进展）；③对「什么还没被市场定价」的识别对投资者具有直接的信息熵增量。SophiaAI (B档) 的情景预测虽有参考价值，但信息增量有限，大部分是公开信息重组。\n\n---\n\n## 三、额外重点问题\n\n### 1. SophiaAI 扣非净利润数字错误（最大事实问题）\n\nSophiaAI 在「共识一」中称：「扣非净利润**176.41亿元（同比+18%）**」。经 westock-data 外部核验，年报实际扣非净利润为 **132.41亿元（同比+32.56%）**。差额44亿元，增速偏差14.56个百分点。这不是一个无关紧要的数字——扣非净利润是判断「净利质量争议」（报告第二部分第1节）的核心锚点。如果扣非增速为18%（如SophiaAI所述），则审慎派的「增长幻象」论证更有力；如果实际增速为32.56%（真实值），则主业盈利能力的改善比SophiaAI所描述的更为健壮，审慎方与乐观方的天平应向乐观方更多倾斜。\n\n这一错误虽在承重位置，但SophiaAI报告的其他核心数字（营收、归母净利、TIDES、订单等）均准确，且该错误**不是报告整体结论（共识在增长、分歧在质量）的唯一支撑**。因此判定为R1内扣档（A而非S），**不触发veto**（不满足V1-V5的三条同时满足条件——错误虽在claimInventory中，但不构成V1量级错因为176.41与132.41在量级上同属百亿级别，差异在数值而非量级）。\n\n### 2. 《生物安全法案》信息的跨报告一致性\n\n四份报告对法案的描述存在分歧：\n- SophiaAI：「2026年1月生效，已明确将药明康德列为限制对象」——时间偏差+表述不准\n- Gemini：「修订后的法案未直接点名个别公司，设较长缓冲期」——准确\n- Kimi：「2025年底生效，2026年12月18日前公布名单」——准确\n- MiroThink：「2025年底正式生效，修订版取消了对特定企业的直接点名，设置5年过渡期」——最准确\n\n外部核验结论：法案于2025年12月18日签署生效（Latham & Watkins确认），最终版删除了对特定公司的直接点名（Arnold & Porter确认）。MiroThink和Kimi的描述最准确。\n\n---\n\n## 四、各主体优缺点与建议\n\n### SophiaAI（总分7.2，优秀）\n\n**做得好的**：\n1. **七类主体交叉对比表**是本轮四份报告中唯一将市场参与者系统性分为七类（外资投行/国内券商/媒体/垂直媒体/个人投资者/研究机构/大V）并做矩阵对比的。「外热内冷」的评价差异总结有洞察密度。引文：「外资机构更侧重增长韧性，本土媒体与投资者更关注治理风险与政策不确定性，形成'外热内冷'的评价差异」。\n2. **情景预测框架**（基准/乐观/悲观三情景 + 5-7月核心事件时间线）为用户提供了前瞻性参考，结构清晰。\n\n**有问题的**：\n1. **扣非净利润数字错误**（176.41亿/+18% vs 实际132.41亿/+32.56%）。这是一个影响核心论证的事实错误：如果扣非增速实际为32.56%而非18%，则「审慎派认为扣非18%的增速才反映真实主业盈利能力」的论述基础被动摇——32.56%的扣非增速在CXO行业中相当亮眼，削弱了「增长幻象」叙事的说服力。推理链：SophiaAI可能混淆了扣非净利润（132.41亿）与经调整Non-IFRS净利润（149.6亿），或将某个其他口径的数字错误引用。外部核验：westock-data NPDeductNonRecurringPL=13,240,556,954.42元=132.41亿。\n2. **论证深度不足**（R3=B档）。五大非共识议题均采用「质疑方vs支持方→核心分歧」的三段式，缺少独立的机制分析。与MiroThink的「选择性收缩」洞察和Q1预测偏差根源分析相比，SophiaAI的分析更像信息汇编而非独立判断。\n3. **缺少2026Q1数据**。query问的是「最新财报」，2026Q1季报（4月27日发布）在评测时已公开，Gemini/Kimi/MiroThink均覆盖了Q1数据（尤其扣非+83.56%是一个市场博弈的关键数据点），SophiaAI的scope仅覆盖2025年报。\n\n**建议**：\n1. 核心数据在写入报告前做交叉核验（至少比对年报原文中的扣非/Non-IFRS/归母三个口径）\n2. 在非共识分析中增加独立的机制分析和二阶追问，而非仅列举双方观点\n3. 补充具体信源URL以提升可核查性——这是与MiroThink差距最大的能力短板\n\n### Gemini（总分7.0，优秀）\n\n**做得好的**：\n1. **战略叙事深度**：从「跟随分子→赢得分子」的商业模式演进视角贯穿全文，展现了超越数据罗列的战略思考。对「利润激增的结构性透视」一节在主业驱动与资本运作的双线叙事上有深度。\n2. **整合2026Q1数据增强时效性**：是唯一将Q1的经调整Non-IFRS利润率「罕见突破37%」作为关键信号提出的报告。\n\n**有问题的**：\n1. **query回应偏差**：更偏向公司基本面深度分析而非query要求的「各方评价提炼与对比」。对媒体、大V、个人投资者的声音仅在「媒体与大V的'风险派'非共识」一小节泛述，缺少系统性的主体分类和立场对比。\n2. **缺少结构化表格和信源链接**：全文为长篇叙述体，对比SophiaAI的交叉表、Kimi的大量表格、MiroThink的参考文献，Gemini的可读性和可核查性较弱。\n\n**建议**：增加「各方主体视角对比」的系统性章节，并提供可追溯的信源引用。\n\n### Kimi（总分7.6，优秀）\n\n**做得好的**：\n1. **维度覆盖最全面(S档)**：6大章节覆盖从财务到业务到风险到预测到来源到综合框架，配合16+张结构化表格。\n2. **query回应最精准(S档)**：第5章「来源分类与立场图谱」是直接为query量身定制的章节。\n\n**有问题的**：\n1. **篇幅过长（约4万字）**，部分分析存在重复（如TIDES业务争议在§2.1.2和§3.2.2中重复展开）。\n2. **存货周转率口径疑点**：报告称「存货周转率3.31次」，但以营收/存货简算≈454.56/89.93≈5.05次。3.31次可能使用了成本基数（营业成本约240亿/89.93≈2.67，也不匹配），口径未明确说明。\n\n**建议**：精简篇幅、明确计算口径、避免跨章节重复。\n\n### MiroThink（总分8.2，优秀）\n\n**做得好的**：\n1. **信源完备性(S档)**：34条含URL参考文献是四份报告中独一无二的。抽查多条URL均可访问，信源质量高。\n2. **论证深度(S档)**：「选择性收缩」概念、Q1预测偏差根源分析、AH溢价收敛信号识别等独立洞察在四份报告中无出其右。特别是对Q1预测偏差的根源分析——「预测机构将'非经常性损益消失'等同于'净利润下滑'，忽视了主业扣非利润的独立改善趋势，这是系统性判断失误」——是一个有据有链的非共识观点。\n3. **决策价值(S档)**：按0-3月/3-12月/12月+分层行动框架 + 「已定价vs未定价」三条线。\n\n**有问题的**：\n1. **业务板块覆盖偏薄**：对测试/生物学业务几乎未展开，不如Kimi对四大业务板块的全面覆盖。\n2. **个人投资者和垂直媒体声音较弱**：相比SophiaAI的七类主体矩阵和Kimi的四类来源分类，MiroThink在「各方」覆盖度上有提升空间。\n\n**建议**：补充测试/生物学业务分析，增加对个人投资者和垂直媒体观点的覆盖。"
+}

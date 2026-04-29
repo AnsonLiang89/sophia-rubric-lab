@@ -183,6 +183,21 @@
         "queries": 7,
         "submissions": 33
       }
+    },
+    {
+      "publishedAt": "2026-04-29T07:29:23.693Z",
+      "ok": false,
+      "failedStep": "bake:public",
+      "error": "\u001b[31m[bake:error]\u001b[0m bake finished but self-check still reports 1 stale item(s):\n  · [outbox-task] outbox 任务 EV-0009 存在于 .evaluations/ 但未出现在对外版产物中\n\n这意味着 bake 脚本自身有 bug（新产物规则漏同步？字段拼错？）。不应该发布。\n"
+    },
+    {
+      "publishedAt": "2026-04-29T07:40:45.739Z",
+      "ok": true,
+      "commit": "publish: 2026-04-29T07:40:45.739Z",
+      "stats": {
+        "queries": 9,
+        "submissions": 41
+      }
     }
   ]
 }
