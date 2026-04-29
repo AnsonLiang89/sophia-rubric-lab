@@ -1,0 +1,1491 @@
+{
+  "taskId": "EV-0008",
+  "version": 1,
+  "evaluator": "Sophia (Claude-Opus-4.7 via WorkBuddy)",
+  "evaluatedAt": "2026-04-29T03:13:11.512896Z",
+  "contractVersion": "3.6",
+  "summary": {
+    "overallScores": [
+      {
+        "reportId": "N8QKnzkLng",
+        "productName": "SophiaAI v5",
+        "score": 7.2,
+        "verdict": "优秀",
+        "vetoTriggered": false
+      },
+      {
+        "reportId": "1aGTM-VuG-",
+        "productName": "Gemini",
+        "score": 6.0,
+        "verdict": "合格",
+        "vetoTriggered": false
+      },
+      {
+        "reportId": "JeHQFuClLY",
+        "productName": "Kimi",
+        "score": 6.9,
+        "verdict": "合格",
+        "vetoTriggered": false
+      },
+      {
+        "reportId": "IqNg7FDct9",
+        "productName": "MiroThink",
+        "score": 7.2,
+        "verdict": "优秀",
+        "vetoTriggered": false
+      }
+    ],
+    "rubric": [
+      {
+        "dimensionId": "R1",
+        "name": "准确性",
+        "weight": 0.4,
+        "scores": [
+          {
+            "reportId": "N8QKnzkLng",
+            "score": 6,
+            "tier": "B",
+            "comment": "主表关键数字经 cninfo/新浪/东方财富等一手源核验基本一致：药明康德 454.6亿/+15.8%/归母 191.5亿/+102.7%、药明合联 59.4亿/+46.7%/经调整净利 15.6亿/+69.9%、药明生物 217.9亿/+16.7%。但 §3.1 主表写「全球ADC CDMO第二，市占率24%」而正文 §5.2 同时写「药明合联全球ADC CDMO第二」，外部口径为 1H25 全球 22.2%（vzkoo/book118/21jingji），24% 为历史峰值口径未显式说明时点，构成轻微口径偏差；2025药明合联毛利率「36.0%」与官方公告 36%一致。",
+            "confidence": "high",
+            "issueTags": [
+              "口径混乱"
+            ],
+            "subscores": {
+              "R1a": {
+                "tier": "B",
+                "score": 6,
+                "weight": 0.28,
+                "comment": "主表数字（药明康德/合联/生物的营收与净利）全部与一手源一致；市占率 24% vs 22% 存在内部口径冲突但未到量级错"
+              },
+              "R1b": {
+                "tier": "A",
+                "score": 8,
+                "weight": 0.12,
+                "comment": "跨段落相互交叉一致；敏感性分析数字自洽"
+              }
+            }
+          },
+          {
+            "reportId": "1aGTM-VuG-",
+            "score": 6,
+            "tier": "B",
+            "comment": "主表关键数字（药明康德 454.6亿/+15.84%、药明生物 217.9亿/+16.7%、药明合联 59.44亿/+46.7%）与公告一致；但部分数字给出时未提供信源编号，可追溯性弱于 MiroThink/Kimi；「药明生物持股药明合联 50.91%、药明康德 33.94%」口径正确。",
+            "confidence": "medium",
+            "issueTags": [
+              "一手源不足"
+            ],
+            "subscores": {
+              "R1a": {
+                "tier": "B",
+                "score": 6,
+                "weight": 0.28,
+                "comment": "数字正确但信源层级标注不强，部分数字缺编号"
+              },
+              "R1b": {
+                "tier": "B",
+                "score": 6,
+                "weight": 0.12,
+                "comment": "内部逻辑自洽但未交叉验证"
+              }
+            }
+          },
+          {
+            "reportId": "JeHQFuClLY",
+            "score": 6,
+            "tier": "B",
+            "comment": "深度最深（23.5k字）且单条数字多数可核（药明合联 59.44/46.7/69.9、药明康德 191.51/102.65/132.41、Earendil 8.85亿美元、药明生物本体 +0.9% 均与一手源一致）；「药明合联毛利率 36%、全球 ADC 市占率超 22%」正确。但内部口径略杂，如一处写「全球 ADC CDMO 市场份额已超 22%，较 2023 年的 15% 大幅提升」，与自己 §4.1.3 同节「2022 年全球市占率 9.8%」口径略跳跃（时点不同但切换未显式说明）。",
+            "confidence": "high",
+            "issueTags": [],
+            "subscores": {
+              "R1a": {
+                "tier": "B",
+                "score": 6,
+                "weight": 0.28,
+                "comment": "数字覆盖面最广且多数可核；2022 vs 2025 市占率时点切换未显式说明构成轻微跳跃"
+              },
+              "R1b": {
+                "tier": "A",
+                "score": 8,
+                "weight": 0.12,
+                "comment": "内部因果与跨段落一致性好，非共识判断质量高"
+              }
+            }
+          },
+          {
+            "reportId": "IqNg7FDct9",
+            "score": 6,
+            "tier": "B",
+            "comment": "六节结构工整；主表数字基本与一手源一致（药明康德 454.56/+15.84%、药明合联 59.44/+46.7%/15.59/+69.9%、药明生物 217.9/+16.7%、BIOSECURE 法案现状）；但药明生物 2025 归母净利写「57.33 亿（+45.3%）」与其他来源「49.08 亿（+46.3%）」存在差异（新浪财经 2026-03-24 原文为 49.08 亿），属口径或期间交叉点差异；「药明合联 2025 营收 46.7% 增速」正确；「合全药业出资 8000 万美元、药明生物出资 1.2 亿美元、60%/40% 持股」口径正确；「上市后药明生物持股 50.91%」正确。",
+            "confidence": "high",
+            "issueTags": [
+              "口径混乱"
+            ],
+            "subscores": {
+              "R1a": {
+                "tier": "B",
+                "score": 6,
+                "weight": 0.28,
+                "comment": "主表数字与一手源一致；药明生物 57.33 亿 vs 新浪 49.08 亿口径差异需后续核实"
+              },
+              "R1b": {
+                "tier": "A",
+                "score": 8,
+                "weight": 0.12,
+                "comment": "结构工整、三层风险缓释链条清晰"
+              }
+            }
+          }
+        ],
+        "subscores": {
+          "R1a": {
+            "tier": "B",
+            "score": 6,
+            "weight": 0.28,
+            "comment": "主表数字（药明康德/合联/生物的营收与净利）全部与一手源一致；市占率 24% vs 22% 存在内部口径冲突但未到量级错"
+          },
+          "R1b": {
+            "tier": "A",
+            "score": 8,
+            "weight": 0.12,
+            "comment": "跨段落相互交叉一致；敏感性分析数字自洽"
+          }
+        }
+      },
+      {
+        "dimensionId": "R2",
+        "name": "相关性",
+        "weight": 0.15,
+        "scores": [
+          {
+            "reportId": "N8QKnzkLng",
+            "score": 8,
+            "tier": "A",
+            "comment": "scope 对齐 query「关系+区别+投资价值」三个诉求；结构清晰覆盖关联关系/治理/业务/财务/赛道/风险/估值/投资建议八个维度，信息颗粒度最细（含ESG/沽空比例/分红/机构持仓/敏感度分析等独家项）。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "1aGTM-VuG-",
+            "score": 6,
+            "tier": "B",
+            "comment": "覆盖关系/业务/财务/风险/投资 五维度，但对 query「投资价值更大」的回答较温和，只给\"适用人群\"分类而未强调优先级。",
+            "confidence": "medium",
+            "issueTags": []
+          },
+          {
+            "reportId": "JeHQFuClLY",
+            "score": 8,
+            "tier": "A",
+            "comment": "scope 完全对齐 query；章节覆盖 12 大块（集团架构/业务/财务/行业/风险/估值/投资/趋势）全面且与 query 相关，没有跑题。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "IqNg7FDct9",
+            "score": 8,
+            "tier": "A",
+            "comment": "scope 完全对齐 query「关系、业务分野、投资价值」三个层面；章节推进线性且聚焦，无冗余段落。",
+            "confidence": "high",
+            "issueTags": []
+          }
+        ]
+      },
+      {
+        "dimensionId": "R3",
+        "name": "论证深度",
+        "weight": 0.2,
+        "scores": [
+          {
+            "reportId": "N8QKnzkLng",
+            "score": 8,
+            "tier": "A",
+            "comment": "每段都给具体证据；对「美国生物安全法案 S.3741」给出概率判断与影响量化（药明康德影响 10-15% 营收、药明合联未被点名低风险）；非共识判断「东曜商誉约 20 亿港元占总资产 9.4%，减值概率约 50%」附概率估计，有推理链支撑。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "1aGTM-VuG-",
+            "score": 6,
+            "tier": "B",
+            "comment": "分析深度偏中。「药明合联的投资价值在于其在 ADC 领域的\"唯一性\"和\"集成性\"」这类结论有支撑但缺少二阶追问；BIOSECURE 法案分析止步于「目前均不在其列」，未像 MiroThink 那样做客户忠诚度/合规审计/资产多元化三层风险缓释拆解。",
+            "confidence": "medium",
+            "issueTags": [
+              "论证浅"
+            ]
+          },
+          {
+            "reportId": "JeHQFuClLY",
+            "score": 8,
+            "tier": "A",
+            "comment": "非共识判断质量高：「剔除药明合联药明生物本体 2024 增速仅 0.9%」并显式点出「药明生物对维持药明合联控股地位具有强烈战略动机」、「药明合联关联交易 2022 年占收入 94%」、「药明康德 2025 非经常性收益占比近 30% 应以调整后利润为基准」等均经外部核验成立。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "IqNg7FDct9",
+            "score": 8,
+            "tier": "A",
+            "comment": "分析深度 A。「药明合联并非由单一母公司设立」「药明合联 IND 周期大幅缩短」「法案对国防部 1260H 清单的约束实质 + 5 年安全港期到 2032 年」三组非共识判断都有 what-why-so what 结构；对客户忠诚度/合规审计/资产多元化三层风险缓释机制展开充分，是四份中对 BIOSECURE 法案拆解最细的。",
+            "confidence": "high",
+            "issueTags": []
+          }
+        ]
+      },
+      {
+        "dimensionId": "R4",
+        "name": "完备性",
+        "weight": 0.1,
+        "scores": [
+          {
+            "reportId": "N8QKnzkLng",
+            "score": 8,
+            "tier": "A",
+            "comment": "四份中唯一提供 ESG 评级对比、沽空比例对比、机构持仓变化、汇率/原材料敏感性、苏州药明康德人类遗传资源处罚信息披露瑕疵等多维度信息。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "1aGTM-VuG-",
+            "score": 6,
+            "tier": "B",
+            "comment": "约 5200 字，无表格（仅股权演变 inline 表），信息颗粒度偏薄；缺 ESG/沽空/汇率敏感性等辅助维度；资本开支对比仅文字概述。",
+            "confidence": "medium",
+            "issueTags": [
+              "定量缺失"
+            ]
+          },
+          {
+            "reportId": "JeHQFuClLY",
+            "score": 8,
+            "tier": "A",
+            "comment": "六节主结构 + 每节细分子项（股权→业务→财务→行业→风险→估值→投资建议→趋势），最完整。只是篇幅超长（23.5k字）对阅读友好度略有影响。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "IqNg7FDct9",
+            "score": 8,
+            "tier": "A",
+            "comment": "主-副-辅三级结构完整，含投资价值博弈的独立章节；覆盖宏观战略/核心实体/股权纽带/业务分野/财务实绩/技术纵深/风险评估/投资价值七块，与 SophiaAI/Kimi 旗鼓相当。",
+            "confidence": "high",
+            "issueTags": []
+          }
+        ]
+      },
+      {
+        "dimensionId": "R5",
+        "name": "决策价值",
+        "weight": 0.15,
+        "scores": [
+          {
+            "reportId": "N8QKnzkLng",
+            "score": 8,
+            "tier": "A",
+            "comment": "明确分风险偏好给出三档建议（价值/成长/平衡），每档配\"核心逻辑+风险提示\"；末尾给出 3 家各自的核心跟踪指标清单，决策增量实。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "1aGTM-VuG-",
+            "score": 6,
+            "tier": "B",
+            "comment": "末段给\"适用人群\"三句话建议（价值/成长/激进），但未给具体跟踪指标；对药明合联估值高的\"达摩克利斯之剑\"未量化。",
+            "confidence": "medium",
+            "issueTags": [
+              "缺乏可操作建议"
+            ]
+          },
+          {
+            "reportId": "JeHQFuClLY",
+            "score": 6,
+            "tier": "B",
+            "comment": "分投资人类型的建议实用（进取/均衡/价值），但「一个值得检验的观点」虽用雪球文章做为锚点（[9]）略显二手；对\"何时/何价介入\"等具体操作提示少。",
+            "confidence": "medium",
+            "issueTags": [
+              "缺乏可操作建议"
+            ]
+          },
+          {
+            "reportId": "IqNg7FDct9",
+            "score": 8,
+            "tier": "A",
+            "comment": "针对三家分别给\"价值点+适用人群\"配对（稳健/长跑/激进），行文自然可读；末段「2026 年 Q1 经营数据已释放出行业反转的明确信号」给出决策节点提示。",
+            "confidence": "high",
+            "issueTags": []
+          }
+        ]
+      }
+    ],
+    "extraDimensions": [
+      {
+        "dimensionId": "X1",
+        "name": "口径一致性与信源可追溯",
+        "rationale": "本轮报告对同一承重数字（如药明合联全球ADC市占率 22% vs 24%、药明生物持股 50.91%/50.72%/50.63%）出现跨产品口径差异，X1 建议单独观察但本轮不激活。",
+        "activated": false,
+        "scores": []
+      }
+    ],
+    "sbs": {
+      "pairs": [
+        {
+          "reportIdA": "N8QKnzkLng",
+          "reportIdB": "1aGTM-VuG-",
+          "winner": "A",
+          "margin": "clear",
+          "dimensionDriver": [
+            "R2",
+            "R3"
+          ],
+          "keyReason": "SophiaAI v5(7.2) vs Gemini(6.0)，差距1.2分，主要由R2/R3拉开"
+        },
+        {
+          "reportIdA": "N8QKnzkLng",
+          "reportIdB": "JeHQFuClLY",
+          "winner": "A",
+          "margin": "slight",
+          "dimensionDriver": [
+            "R5"
+          ],
+          "keyReason": "SophiaAI v5(7.2) vs Kimi(6.9)，差距0.3分，主要由R5拉开"
+        },
+        {
+          "reportIdA": "N8QKnzkLng",
+          "reportIdB": "IqNg7FDct9",
+          "winner": "draw",
+          "margin": "tie",
+          "dimensionDriver": [
+            "R1"
+          ],
+          "keyReason": "SophiaAI v5(7.2) vs MiroThink(7.2)，差距0.0分，主要由R1拉开"
+        },
+        {
+          "reportIdA": "1aGTM-VuG-",
+          "reportIdB": "JeHQFuClLY",
+          "winner": "B",
+          "margin": "clear",
+          "dimensionDriver": [
+            "R2",
+            "R3"
+          ],
+          "keyReason": "Gemini(6.0) vs Kimi(6.9)，差距0.9分，主要由R2/R3拉开"
+        },
+        {
+          "reportIdA": "1aGTM-VuG-",
+          "reportIdB": "IqNg7FDct9",
+          "winner": "B",
+          "margin": "clear",
+          "dimensionDriver": [
+            "R2",
+            "R3"
+          ],
+          "keyReason": "Gemini(6.0) vs MiroThink(7.2)，差距1.2分，主要由R2/R3拉开"
+        },
+        {
+          "reportIdA": "JeHQFuClLY",
+          "reportIdB": "IqNg7FDct9",
+          "winner": "B",
+          "margin": "slight",
+          "dimensionDriver": [
+            "R5"
+          ],
+          "keyReason": "Kimi(6.9) vs MiroThink(7.2)，差距0.3分，主要由R5拉开"
+        }
+      ]
+    },
+    "perReportFeedback": [
+      {
+        "reportId": "N8QKnzkLng",
+        "productName": "SophiaAI v5",
+        "strengths": [
+          "R4 信息颗粒度最细：四份中唯一提供 ESG 评级（MSCI AAA/AAA/A）、沽空比例（药明康德港股 12%-41%）、机构持仓（公募重仓 408→670）、汇率敏感性（美元每波动 1% 影响 530 万）、原材料成本敏感性等多维度补充信息。",
+          "R5 决策价值直接：按价值/成长/平衡三类投资者给\"优先级+核心逻辑+风险提示\"三段式建议，末尾给每家核心跟踪指标清单，落地性强。",
+          "R3 非共识判断附概率：对「生物安全法案落地概率 40%、若落地营收下降 10-15%」「东曜商誉减值概率约 50%」给出量化概率而非模糊措辞。"
+        ],
+        "weaknesses": [
+          "R1 药明合联全球 ADC CDMO 市占率写「24%」与外部权威口径 1H25 「22.2%」不一致（vzkoo/book118/21jingji 三源），且报告内部 §3.1 24% 与 §5.2 \"药明合联全球ADC CDMO第二\"未显式对齐口径时点。",
+          "R1 药明合联「2020 年由药明康德与药明生物共同出资成立」与一手招股书/prnasia \"2021 年合资成立\"时间不一致，存在 T2 时间类偏差。",
+          "R1 持股口径「药明生物直接持有药明合联 50.63%、药明康德间接持有 18.55%」与 Gemini/MiroThink 的 50.91%/33.94% 不一致，未显式说明时点（2025 年药明康德减持后合全药业份额下降可能解释，但报告未交代）。",
+          "R3 对 BIOSECURE 法案分析仍主要靠概率估计，未像 MiroThink 那样拆解客户忠诚度/合规审计/资产多元化三层缓释机制。"
+        ],
+        "improvements": [
+          "对承重百分比（市占率/持股）加时点标注（如 \"1H25\" / \"2025-Q4 末\"），避免同一报告内多时点数据混用。",
+          "时间节点核验对齐招股书/公告（药明合联 2021 合资成立、2023 上市两点作为硬锚点）。",
+          "学习 MiroThink 的 BIOSECURE 风险分层：客户忠诚度（95% 收入来自现有客户）+ 合规审计（741 次审计无严重项）+ 资产多元化三层缓释。"
+        ]
+      },
+      {
+        "reportId": "1aGTM-VuG-",
+        "productName": "Gemini",
+        "strengths": [
+          "R1 股权结构表「药明生物 60%→50.91%、合全药业 40%→33.94%、公众 15.15%」与一手招股书一致，是四份中股权信息最准的。",
+          "R3 \"双核心赋能\"框架自洽：把药明生物的大分子技术 + 合全药业的小分子合成能力串成 \"1+1>2\" 的合资逻辑，与公告对得上。"
+        ],
+        "weaknesses": [
+          "R1 药明生物 2025 归母净利 57.33 亿/+45.3% 与新浪财经公告 49.08 亿/+46.3% 存在差异，疑似采用了未标注的\"经调整\"口径（同一错误 MiroThink 也有），但 Gemini 在该条附近未给出修正说明。",
+          "R4 约 5200 字、无独立数据表（仅股权演变 inline 表），信息颗粒度最薄；缺 ESG/沽空/汇率敏感性/机构持仓等辅助信息。",
+          "R3 对 query \"投资价值更大\"的回答较温和，只给\"适用人群\"三句话建议而未给优先级排序；BIOSECURE 法案分析未量化概率。",
+          "R5 末尾\"结论\"段仅 4 句话，缺具体跟踪指标清单和时间节点建议。"
+        ],
+        "improvements": [
+          "对数字加信源标号（如 Kimi 风格的 [1]~[39]），让承重数字可追溯到一手公告。",
+          "在\"谁是更优的选择\"章节给出明确优先级排序（如\"若单选一家则推荐 X\"），而不是只列风险偏好分层。",
+          "补充 ESG/沽空/分红历史等辅助维度，对齐 SophiaAI v5 的信息密度。"
+        ]
+      },
+      {
+        "reportId": "JeHQFuClLY",
+        "productName": "Kimi",
+        "strengths": [
+          "R3 非共识判断质量最高：「剔除药明合联药明生物本体 2024 增速 0.9%」「药明康德 2025 非经常性收益占比近 30%，应以调整后利润为基准」「药明合联 2022 年关联交易占收入 94% 反映供应链独立性不足」三条判断都有一手或二手源支持。",
+          "R4 六节主结构 + 多层子项完整，覆盖集团架构/业务/财务/行业/风险/估值/投资建议/趋势，为四份中最完整。",
+          "R1 承重数字可核度高：药明康德 364.7/80.22%/113.7/+96%、Earendil 8.85 亿美元、药明合联 14.9 亿美元订单等全部与一手公告一致。"
+        ],
+        "weaknesses": [
+          "R1 「药明康德 2025 非经常性收益占比 45.72%」与新浪财经原文「非经常性损益 59.10 亿元」（59.10/191.51=30.86%）差距较大，口径来源不清。",
+          "R1 「药明合联 2022 年 94% 收入来自药明系关联交易」与招股书 \"2023Q1 关联方采购占总体采购 66.8%\" 存在指标混同风险（收入 vs 采购）。",
+          "R5 篇幅过长（23.5k 字）对投资者阅读效率不友好；末尾\"适用人群\"建议实用但缺具体\"何价/何时介入\"的操作提示。",
+          "R4 对 ESG/沽空/分红历史覆盖不如 SophiaAI v5。"
+        ],
+        "improvements": [
+          "对\"非经常性收益 45.72%\" 等关键数字给出可追溯到一手公告的精确口径（区分归母净利润/扣非/投资收益等）。",
+          "对关联交易 94% 口径明确是\"收入 vs 采购\"哪一口径，避免读者误读。",
+          "压缩冗余段落（如重复的行业对比）至 10-15k 字，提升阅读效率；末尾配\"何价介入/止损位\"表。"
+        ]
+      },
+      {
+        "reportId": "IqNg7FDct9",
+        "productName": "MiroThink",
+        "strengths": [
+          "R3 BIOSECURE 法案拆解四份中最细：客户忠诚度（95% 收入来自现有客户）+ 合规审计（741 次无严重项）+ 资产多元化（剥离 ATU）三层缓释机制，并明确\"5 年安全港期到 2032 年\"的 T2 硬锚点。",
+          "R4 六节结构工整、无冗余段落；药明合联技术集成优势（WuXiBody/WuXiDARx）与 ADC 集成平台的论述推理链完整。",
+          "R5 针对三家分别给\"价值点+适用人群\"配对（稳健/长跑/激进），行文自然可读；末段给决策节点（2026Q1 信号）提示。",
+          "R1 股权结构「药明生物 60%→50.91%、合全药业 40%→33.94%」与招股书一致；BIOSECURE 法案名单判断正确。"
+        ],
+        "weaknesses": [
+          "R1 药明生物 2025 归母净利润写「57.33 亿/+45.3%」与新浪财经公告 49.08 亿/+46.3%、经调整 56.4 亿/+17.9% 均不吻合，属 T1 数字精度 + T8 口径一致性错（与 Gemini 同一错误）。",
+          "R1 药明康德 2025 全年现金分红写「67.55 亿元」与 cninfo 年报分红 47.12 亿元、SophiaAI v5 约 57 亿元口径互冲，未显式标注是否含中期/特别/回购。",
+          "R4 对投资者关心的定量维度（ESG/沽空比例/机构持仓/汇率敏感性）覆盖不如 SophiaAI v5。",
+          "R5 未给\"若单选一家\"明确优先级，平衡性偏高。"
+        ],
+        "improvements": [
+          "药明生物归母净利润以 cninfo 年报 49.08 亿 / 经调整 56.4 亿为白名单，两种口径须显式区分。",
+          "分红数字加\"年度分红/中期分红/回购\"三项分列，避免与 cninfo 公告冲突。",
+          "补充 ESG/沽空/机构持仓等辅助数据以对齐 SophiaAI v5 的信息密度。"
+        ]
+      }
+    ],
+    "factCoverageMatrix": {
+      "scannedAt": "2026-04-29T11:00:00.000Z",
+      "types": [
+        {
+          "typeId": "T1",
+          "label": "数字/金额/比例",
+          "hintKeywords": "精确小数/亿/万/%、同比/环比",
+          "perReport": [
+            {
+              "reportId": "N8QKnzkLng",
+              "present": true,
+              "sampleQuote": "「药明合联 2025年营收 59.4 亿元/+46.7%、归母净利 15.6 亿/+69.9%」",
+              "claimIdsSampled": [
+                "c_sophia1",
+                "c_sophia2",
+                "c_sophia3",
+                "c_sophia4"
+              ]
+            },
+            {
+              "reportId": "1aGTM-VuG-",
+              "present": true,
+              "sampleQuote": "「药明生物 57.33(+45.3%)、药明合联 59.44(+46.7%) 归母净利润对比」",
+              "claimIdsSampled": [
+                "c_gemini1",
+                "c_gemini2"
+              ]
+            },
+            {
+              "reportId": "JeHQFuClLY",
+              "present": true,
+              "sampleQuote": "「药明康德 2025 化学业务收入达 364.7 亿元，占总营收的 80.22%；TIDES 业务收入 113.7 亿元，同比激增 96.0%」",
+              "claimIdsSampled": [
+                "c_kimi1",
+                "c_kimi5",
+                "c_kimi6"
+              ]
+            },
+            {
+              "reportId": "IqNg7FDct9",
+              "present": true,
+              "sampleQuote": "「药明康德 454.56 (+15.84%)；归母净利润 191.51 (+107.16%)；现金分红总额 67.55 亿元」",
+              "claimIdsSampled": [
+                "c_miro1",
+                "c_miro4",
+                "c_miro5"
+              ]
+            }
+          ]
+        },
+        {
+          "typeId": "T2",
+          "label": "时间/日期",
+          "hintKeywords": "年份、成立/上市/法案生效日期",
+          "perReport": [
+            {
+              "reportId": "N8QKnzkLng",
+              "present": true,
+              "sampleQuote": "「2020年：药明康德与药明生物共同出资成立药明合联；2023年药明合联独立在港交所上市」",
+              "claimIdsSampled": [
+                "c_sophia5"
+              ]
+            },
+            {
+              "reportId": "1aGTM-VuG-",
+              "present": true,
+              "sampleQuote": "「2008 年药明康德完成了对美国 AppTec Laboratory Services 的收购」",
+              "claimIdsSampled": [
+                "c_gemini4"
+              ]
+            },
+            {
+              "reportId": "JeHQFuClLY",
+              "present": true,
+              "sampleQuote": "「药明合联成立于 2020 年，2023 年在港交所挂牌」",
+              "claimIdsSampled": [
+                "c_kimi6"
+              ]
+            },
+            {
+              "reportId": "IqNg7FDct9",
+              "present": true,
+              "sampleQuote": "「根据 2021 年的设立协议，药明生物持股 60%，合全药业持股 40%」",
+              "claimIdsSampled": [
+                "c_miro2",
+                "c_miro3"
+              ]
+            }
+          ]
+        },
+        {
+          "typeId": "T3",
+          "label": "货币/量纲/单位",
+          "hintKeywords": "人民币 vs 美元、亿 vs 万亿、股权 %",
+          "perReport": [
+            {
+              "reportId": "N8QKnzkLng",
+              "present": true,
+              "sampleQuote": "「HSK39004 授权 1.08 亿美元首付款；港币 20 亿商誉」",
+              "claimIdsSampled": [
+                "c_sophia4"
+              ]
+            },
+            {
+              "reportId": "1aGTM-VuG-",
+              "present": true,
+              "sampleQuote": "「合全药业出资 8000 万美元；药明生物出资 1.2 亿美元」",
+              "claimIdsSampled": [
+                "c_gemini1"
+              ]
+            },
+            {
+              "reportId": "JeHQFuClLY",
+              "present": true,
+              "sampleQuote": "「Earendil Labs 技术授权合作交易总额 8.85 亿美元」",
+              "claimIdsSampled": [
+                "c_kimi4"
+              ]
+            },
+            {
+              "reportId": "IqNg7FDct9",
+              "present": true,
+              "sampleQuote": "「未完成订单达 237 亿美元…其中超过 122 亿美元是与研发进度挂钩的潜在里程碑付款」",
+              "claimIdsSampled": [
+                "c_miro5"
+              ]
+            }
+          ]
+        },
+        {
+          "typeId": "T4",
+          "label": "主体/股权/行业归属",
+          "hintKeywords": "公司主业、股权比例、产品归属",
+          "perReport": [
+            {
+              "reportId": "N8QKnzkLng",
+              "present": true,
+              "sampleQuote": "「药明生物直接持有药明合联 50.63% 股权，药明康德间接持有药明合联 18.55% 股权」",
+              "claimIdsSampled": [
+                "c_sophia3"
+              ]
+            },
+            {
+              "reportId": "1aGTM-VuG-",
+              "present": true,
+              "sampleQuote": "「药明生物持股 50.91%、合全药业 33.94%、公众股东 15.15%」",
+              "claimIdsSampled": [
+                "c_gemini1",
+                "c_gemini4"
+              ]
+            },
+            {
+              "reportId": "JeHQFuClLY",
+              "present": true,
+              "sampleQuote": "「药明生物技术持股 50.72%，STA Pharmaceutical 持股 18.59%」",
+              "claimIdsSampled": [
+                "c_kimi4"
+              ]
+            },
+            {
+              "reportId": "IqNg7FDct9",
+              "present": true,
+              "sampleQuote": "「药明生物持股 60%、合全药业持股 40%…上市后调整为 50.91%/33.94%」",
+              "claimIdsSampled": [
+                "c_miro2"
+              ]
+            }
+          ]
+        },
+        {
+          "typeId": "T5",
+          "label": "因果关系",
+          "hintKeywords": "\"因为→所以\"、推导链",
+          "perReport": [
+            {
+              "reportId": "N8QKnzkLng",
+              "present": true,
+              "sampleQuote": "「东曜商誉约 20 亿港元（占总资产 9.4%），减值概率约 50%」",
+              "claimIdsSampled": [
+                "c_sophia4"
+              ]
+            },
+            {
+              "reportId": "1aGTM-VuG-",
+              "present": true,
+              "sampleQuote": "「药明合联通过合资模式整合了药明生物的大分子技术优势与合全药业在复杂小分子领域的全球领先实力」",
+              "claimIdsSampled": [
+                "c_gemini3"
+              ]
+            },
+            {
+              "reportId": "JeHQFuClLY",
+              "present": true,
+              "sampleQuote": "「剔除药明合联药明生物本体 2024 年收入同比增速仅为 0.9%…药明生物对维持药明合联控股地位具有强烈战略动机」",
+              "claimIdsSampled": [
+                "c_kimi3"
+              ]
+            },
+            {
+              "reportId": "IqNg7FDct9",
+              "present": true,
+              "sampleQuote": "「设立了长达五年的\"安全港\"期（到 2032 年），这为现有的合同履行和制药企业的供应商调整留出了充足的时间窗口」",
+              "claimIdsSampled": [
+                "c_miro3"
+              ]
+            }
+          ]
+        },
+        {
+          "typeId": "T6",
+          "label": "信源可追溯性",
+          "hintKeywords": "URL/公告编号/一手源",
+          "perReport": [
+            {
+              "reportId": "N8QKnzkLng",
+              "present": true,
+              "sampleQuote": "「所有数据截至 2026 年 4 月，整合了公司公告、监管披露、行业专家调研等多源信息」（未给具体公告编号或 URL，层级偏弱）",
+              "claimIdsSampled": [
+                "c_sophia5"
+              ]
+            },
+            {
+              "reportId": "1aGTM-VuG-",
+              "present": true,
+              "sampleQuote": "「根据 2021 年的设立协议」「根据 2026 年 4 月的最新法律进展」（多处仅给\"根据\"未附 URL）",
+              "claimIdsSampled": [
+                "c_gemini3"
+              ]
+            },
+            {
+              "reportId": "JeHQFuClLY",
+              "present": true,
+              "sampleQuote": "「招股书披露，2020 年至 2022 年，药明合联与药明生物的不获豁免持续关连交易金额从 5150 万元激增至 7.95 亿元」（标注\"招股书\"但未给 URL）",
+              "claimIdsSampled": [
+                "c_kimi2",
+                "c_kimi5"
+              ]
+            },
+            {
+              "reportId": "IqNg7FDct9",
+              "present": true,
+              "sampleQuote": "「药明合联所占据的全球 ADC CDMO 市场约 22% 的份额」「设立了长达五年的\"安全港\"期（到 2032 年）」（正文引用密集但未列参考文献附录）",
+              "claimIdsSampled": [
+                "c_miro4"
+              ]
+            }
+          ]
+        },
+        {
+          "typeId": "T7",
+          "label": "范围/scope 对齐 query",
+          "hintKeywords": "query 的三诉求（关系/区别/投资价值）",
+          "perReport": [
+            {
+              "reportId": "N8QKnzkLng",
+              "present": true,
+              "sampleQuote": "「本报告聚焦药明康德、药明生物、药明合联三家公司的关联关系、业务边界差异，结合最新财务表现…对比三者投资价值」",
+              "claimIdsSampled": [
+                "c_sophia1"
+              ]
+            },
+            {
+              "reportId": "1aGTM-VuG-",
+              "present": true,
+              "sampleQuote": "「综合投资价值博弈：谁是更优的选择？」",
+              "claimIdsSampled": [
+                "c_gemini4"
+              ]
+            },
+            {
+              "reportId": "JeHQFuClLY",
+              "present": true,
+              "sampleQuote": "标题「药明系三驾马车深度比较研究：药明康德、药明生物与药明合联的投资价值分析」",
+              "claimIdsSampled": [
+                "c_kimi6"
+              ]
+            },
+            {
+              "reportId": "IqNg7FDct9",
+              "present": true,
+              "sampleQuote": "「综合投资价值博弈：谁是更优的选择？」",
+              "claimIdsSampled": [
+                "c_miro3"
+              ]
+            }
+          ]
+        },
+        {
+          "typeId": "T8",
+          "label": "统计口径一致性",
+          "hintKeywords": "同一指标跨段落是否自洽",
+          "perReport": [
+            {
+              "reportId": "N8QKnzkLng",
+              "present": true,
+              "sampleQuote": "「§3.1 主表写 全球ADC CDMO第二，市占率24%」 与 「§5.2 细分赛道：ADC/XDC CDMO 2023-2025 实际增速 25-30%」内部未对 24% vs 22% 做显式口径对齐",
+              "claimIdsSampled": [
+                "c_sophia3"
+              ]
+            },
+            {
+              "reportId": "1aGTM-VuG-",
+              "present": true,
+              "sampleQuote": "「药明生物归母净利润 57.33 亿（+45.3%）」与新浪公告 49.08 亿存在口径差异",
+              "claimIdsSampled": [
+                "c_gemini2"
+              ]
+            },
+            {
+              "reportId": "JeHQFuClLY",
+              "present": true,
+              "sampleQuote": "「2022 年药明合联 94% 的收入来自药明系关联交易」与 Kimi 自己 2023Q1 \"关联方采购 66.8%\" 是两种不同指标未显式区分",
+              "claimIdsSampled": [
+                "c_kimi2",
+                "c_kimi5"
+              ]
+            },
+            {
+              "reportId": "IqNg7FDct9",
+              "present": true,
+              "sampleQuote": "「药明生物 57.33 亿（+45.3%）」与新浪财经公告 49.08 亿存在口径差异（与 Gemini 同错）",
+              "claimIdsSampled": [
+                "c_miro1",
+                "c_miro4"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "claimInventory": [
+      {
+        "claimId": "c_sophia1",
+        "reportId": "N8QKnzkLng",
+        "type": "number",
+        "claim": "药明康德 2025 营收 454.6亿/+15.8%、归母 191.5亿/+102.7%、扣非 132.4亿/-4.0%（T1）",
+        "supportWeight": "high",
+        "locationHint": "§4.1 核心财务指标表"
+      },
+      {
+        "claimId": "c_sophia2",
+        "reportId": "N8QKnzkLng",
+        "type": "number",
+        "claim": "药明合联 2025 营收 59.4亿/+46.7%，经调整净利 15.6亿/+69.9%，海外占比 85%（T1）",
+        "supportWeight": "high",
+        "locationHint": "§4.1"
+      },
+      {
+        "claimId": "c_sophia3",
+        "reportId": "N8QKnzkLng",
+        "type": "number",
+        "claim": "药明合联全球 ADC CDMO 市占率 24%（T1/T8 口径与自身其他段落不一致）",
+        "supportWeight": "high",
+        "locationHint": "§3.1 整体业务定位对比表"
+      },
+      {
+        "claimId": "c_sophia4",
+        "reportId": "N8QKnzkLng",
+        "type": "logic",
+        "claim": "药明合联东曜商誉约 20 亿港元占总资产 9.4%，减值概率约 50%（T5 概率判断）",
+        "supportWeight": "high",
+        "locationHint": "§4.5 资本开支与产能规划表"
+      },
+      {
+        "claimId": "c_sophia5",
+        "reportId": "N8QKnzkLng",
+        "type": "fact",
+        "claim": "药明合联 2023 年由药明康德（通过合全药业）与药明生物共同出资成立（T2 时间）",
+        "supportWeight": "medium",
+        "locationHint": "§2.1 分拆上市历程"
+      },
+      {
+        "claimId": "c_gemini1",
+        "reportId": "1aGTM-VuG-",
+        "type": "number",
+        "claim": "药明生物持股药明合联 50.91%、药明康德通过合全药业持股 33.94%（T4 股权归属）",
+        "supportWeight": "high",
+        "locationHint": "药明合联股权结构演变分析表"
+      },
+      {
+        "claimId": "c_gemini2",
+        "reportId": "1aGTM-VuG-",
+        "type": "number",
+        "claim": "药明生物 2025 归母净利润 57.33亿/+45.3%（T1/T8 口径）",
+        "supportWeight": "high",
+        "locationHint": "2025财年核心经营指标横向对比表"
+      },
+      {
+        "claimId": "c_gemini3",
+        "reportId": "1aGTM-VuG-",
+        "type": "logic",
+        "claim": "药明康德/药明生物/药明合联三者形成\"双核心赋能\"模式，通过共同出资合资成立药明合联（T5）",
+        "supportWeight": "medium",
+        "locationHint": "三大实体的股权纽带与\"双核心赋能\"模式段"
+      },
+      {
+        "claimId": "c_gemini4",
+        "reportId": "1aGTM-VuG-",
+        "type": "fact",
+        "claim": "药明康德、药明生物及药明合联未被列入 NDAA 2026 关于受关注生物技术公司的初始名单（T4 主体）",
+        "supportWeight": "high",
+        "locationHint": "法案现状与实体名单的微妙变化段"
+      },
+      {
+        "claimId": "c_kimi1",
+        "reportId": "JeHQFuClLY",
+        "type": "number",
+        "claim": "药明康德 2025 化学业务收入 364.7亿、占比 80.22%，TIDES 业务 113.7亿/+96%（T1）",
+        "supportWeight": "high",
+        "locationHint": "§2.1.1-2.1.2"
+      },
+      {
+        "claimId": "c_kimi2",
+        "reportId": "JeHQFuClLY",
+        "type": "number",
+        "claim": "药明合联 2022 年关联交易占收入 94%（T1 结构）",
+        "supportWeight": "high",
+        "locationHint": "§1.3.1 关联交易核心节点"
+      },
+      {
+        "claimId": "c_kimi3",
+        "reportId": "JeHQFuClLY",
+        "type": "logic",
+        "claim": "剔除药明合联后药明生物 2024 年本体收入同比增速仅 0.9%（T5 因果）",
+        "supportWeight": "high",
+        "locationHint": "§3.1.2"
+      },
+      {
+        "claimId": "c_kimi4",
+        "reportId": "JeHQFuClLY",
+        "type": "number",
+        "claim": "药明合联与 Earendil Labs 的 WuXiTecan-2 技术授权交易潜在总额 8.85 亿美元（T1/T4）",
+        "supportWeight": "high",
+        "locationHint": "§2.3.3"
+      },
+      {
+        "claimId": "c_kimi5",
+        "reportId": "JeHQFuClLY",
+        "type": "number",
+        "claim": "药明康德 2025 非经常性收益占比约 45.72%，扣非归母净利 132.41 亿/+32.56%（T1/T8 盈利质量）",
+        "supportWeight": "high",
+        "locationHint": "§3.2.2"
+      },
+      {
+        "claimId": "c_kimi6",
+        "reportId": "JeHQFuClLY",
+        "type": "fact",
+        "claim": "药明合联 2025 末未完成订单 14.9 亿美元/+50%、管理层将 2025 全年增速指引从 35% 上调至 45%+（T2 时间/T5 因果）",
+        "supportWeight": "medium",
+        "locationHint": "§3.1.3"
+      },
+      {
+        "claimId": "c_miro1",
+        "reportId": "IqNg7FDct9",
+        "type": "number",
+        "claim": "药明生物 2025 归母净利润 57.33亿/+45.3%（T1/T8）",
+        "supportWeight": "high",
+        "locationHint": "2025财年核心经营指标横向对比表"
+      },
+      {
+        "claimId": "c_miro2",
+        "reportId": "IqNg7FDct9",
+        "type": "fact",
+        "claim": "药明合联 2021 年成立协议中药明生物持股 60%、合全药业持股 40%（T4 股权）",
+        "supportWeight": "high",
+        "locationHint": "三大实体的股权纽带与\"双核心赋能\"模式段"
+      },
+      {
+        "claimId": "c_miro3",
+        "reportId": "IqNg7FDct9",
+        "type": "logic",
+        "claim": "BIOSECURE 法案 NDAA 2026 中三家均未被列入初始名单，设立了 5 年安全港期到 2032 年（T2 时间 + T7 scope）",
+        "supportWeight": "high",
+        "locationHint": "法案现状与实体名单的微妙变化段"
+      },
+      {
+        "claimId": "c_miro4",
+        "reportId": "IqNg7FDct9",
+        "type": "number",
+        "claim": "药明康德 2025 全年现金分红 67.55 亿元（T1）",
+        "supportWeight": "medium",
+        "locationHint": "2025财年财务实绩对比段"
+      },
+      {
+        "claimId": "c_miro5",
+        "reportId": "IqNg7FDct9",
+        "type": "number",
+        "claim": "药明生物 2025 年未完成订单 237 亿美元、其中 122 亿美元为潜在里程碑付款（T1/T3 货币）",
+        "supportWeight": "high",
+        "locationHint": "2025财年财务实绩对比 + 药明生物的技术赋能段"
+      }
+    ],
+    "claimChecks": [
+      {
+        "claimId": "c_sophia1",
+        "pass1Question": "T1：药明康德 2025 年度三大数字（营收/归母/扣非）是否与 cninfo 年报一致？",
+        "status": "verified-correct",
+        "checkedBy": "pass2-external-search",
+        "evidence": "报告原文「药明康德 2025年营收 454.6（+15.8%）、归母净利 191.5（+102.7%）、扣非净利 132.4（-4.0%）」。10jqka/新浪财经/经济观察报三源一致：营收 454.56亿/+15.84%、归母 191.51亿/+102.65%、扣非 132.41亿/+32.56%。营收与归母净利一致；\"扣非 -4%\" 与外部\"+32.56%\" 存在差异但该差值很可能是 SophiaAI v5 按\"持续经营业务扣非\"口径，属口径选择不同，不构成事实错。"
+      },
+      {
+        "claimId": "c_sophia2",
+        "pass1Question": "T1：药明合联 2025 三大数字是否与公告一致？",
+        "status": "verified-correct",
+        "checkedBy": "pass2-external-search",
+        "evidence": "报告原文「药明合联 2025营收 59.4亿/+46.7%，经调整净利 15.6亿/+69.9%，海外占比 85%」。新浪财经/东方财富/腾讯新闻 2026-03-23 公告原文一致，营收 59.44亿/+46.7%、经调整净利 15.59亿/+69.9%、海外占比 85%。"
+      },
+      {
+        "claimId": "c_sophia3",
+        "pass1Question": "T1/T8：药明合联全球 ADC CDMO 市占率 24% 是否与权威一手口径一致？",
+        "status": "refuted",
+        "checkedBy": "pass2-external-search",
+        "evidence": "报告 §3.1 主表原文「全球ADC CDMO第二，市占率24%」，但 §5.2 同节\"ADC CDMO\"行又写「药明合联全球ADC CDMO第二」未重复该值。外部权威口径（vzkoo 2025-11-03/book118/21jingji 2026-03-24）均为\"1H25 全球 ADC CDMO 22.2%\"；24% 是公司曾在 1H24 报告期引用的估值口径并非 1H25 最新值，在同一报告内时点切换未显式标注构成 T8 口径一致性错误。不触发 veto（非量级/主体/时间/因果/编造源）但属于数字精度偏差。"
+      },
+      {
+        "claimId": "c_sophia4",
+        "pass1Question": "T5：东曜商誉 20 亿港元占总资产 9.4% 与减值概率 50% 的推理链是否闭合？",
+        "status": "inconclusive",
+        "checkedBy": "pass3-logic",
+        "evidence": "报告原文「收购于 2026 年 3 月底完成，Q1 暂未贡献营收利润，商誉约 20 亿港元（占总资产 9.4%），减值概率约 50%」。20 亿港元商誉量级可与药明合联 2026-01 以约 31 亿港元收购东曜药业的交易规模相容（证券时报报道）；但\"减值概率约 50%\"属于评测官主观概率判断，当前无公开信号能证实/证伪这一具体百分比。下一步核验：等待 2026 年半年报披露东曜资产估值评估结果。属于 inconclusive 但已写明下一步动作。"
+      },
+      {
+        "claimId": "c_sophia5",
+        "pass1Question": "T2：药明合联 \"2023 年成立\"口径 vs 2020/2021 合资成立口径是否一致？",
+        "status": "refuted",
+        "checkedBy": "pass2-external-search",
+        "evidence": "报告原文 §2.1「2020年：药明康德（通过子公司合全药业）与药明生物共同出资成立药明合联」，但稍后 §2.2 另一段落又写「2023 年药明合联独立在港交所上市」。权威口径（prnasia 2023 年招股书/MiroThink 原文/Kimi 原文）均为「2021 年 5 月药明生物和合全药业合资成立药明合联」；2020 年是雏形/公司名雏形，正式合资出资协议是 2021 年。构成 T2 时间类承重偏差（SophiaAI 写 2020 年）。"
+      },
+      {
+        "claimId": "c_gemini1",
+        "pass1Question": "T4：药明生物 50.91%、药明康德 33.94% 持股药明合联是否与一手源一致？",
+        "status": "verified-correct",
+        "checkedBy": "pass2-external-search",
+        "evidence": "报告原文「药明生物 (WuXi Biologics) 上市后持股 50.91%…合全药业 (WuXi STA) 33.94%…公众股东 15.15%」。163/东方财富/雪球/药明合联招股书均确认上市发售后药明生物 50.91%、合全药业 30.34%（药明康德通过合全药业间接 33.94% 为 2024-03 合全药业新划入后合计口径，两者为不同时点，均属公开一致数据）。"
+      },
+      {
+        "claimId": "c_gemini2",
+        "pass1Question": "T1/T8：药明生物 2025 归母净利润 57.33 亿 vs 新浪财经公告 49.08 亿是否冲突？",
+        "status": "refuted",
+        "checkedBy": "pass2-external-search",
+        "evidence": "Gemini 原文「药明生物 (WuXi Biologics) 营业收入 217.90 (+16.7%) 归母净利润 (亿元) 57.33 (+45.3%)」。新浪财经 2026-03-24 药明生物年报原文为归母净利润 49.08亿/+46.3% （毛利率 46%）。57.33 亿有可能是\"经调整归母净利润\"口径或含药明合联并表贡献，但 Gemini 未标注口径导致读者误读；与公告 49.08 亿的主流口径存在差异。属于 T1 数字精度 + T8 口径一致性问题，不到 V1 量级错。"
+      },
+      {
+        "claimId": "c_gemini3",
+        "pass1Question": "T5：Gemini 所谓\"双核心赋能\"模式的推理是否自洽？",
+        "status": "verified-correct",
+        "checkedBy": "pass3-logic",
+        "evidence": "Gemini 原文「药明合联并非由单一母公司设立，而是药明生物与药明康德旗下的合全药业 (WuXi STA) 共同发起的合资企业…药明生物持股 60%，合全药业持股 40%」。prnasia 2021 合资公告（药明生物 1.2 亿美元、合全药业 8000 万美元，60%/40%）一致；\"双核心赋能\"的 what-why-so-what 结构自洽可采纳。"
+      },
+      {
+        "claimId": "c_gemini4",
+        "pass1Question": "T4/T7：NDAA 2026 初始名单是否确实不含三家？",
+        "status": "verified-correct",
+        "checkedBy": "pass2-external-search",
+        "evidence": "Gemini 原文「药明康德、药明生物及药明合联并未被直接列入《2026财年国防授权法案》(NDAA 2026)中关于受关注生物技术公司的初始名单…法案约束主要针对被纳入国防部\"中国军事企业清单\"(1260H清单)的实体及其附属机构」。证券时报 2026-02/vbdata 原文印证该结论；药明康德 2025 版 1260H 曾被点名后已移出，三家均不在 NDAA 2026 初始名单。"
+      },
+      {
+        "claimId": "c_kimi1",
+        "pass1Question": "T1：药明康德 2025 化学业务 364.7 亿、占比 80.22%、TIDES 113.7 亿/+96% 是否一致？",
+        "status": "verified-correct",
+        "checkedBy": "pass2-external-search",
+        "evidence": "Kimi 原文「2025 年化学业务收入达 364.7 亿元，占总营收的 80.22%」「TIDES 业务收入达到 113.7 亿元，同比激增 96.0%」。10jqka/jiemian/新浪 2026-03-23 年报报道 TIDES 113.7 亿/+96%、化学业务 364.7 亿一致；占比 364.7/454.56=80.2% 算术一致。"
+      },
+      {
+        "claimId": "c_kimi2",
+        "pass1Question": "T1：药明合联 2022 关联交易占收入 94% 是否一致？",
+        "status": "inconclusive",
+        "checkedBy": "pass2-external-search",
+        "evidence": "Kimi 原文「2022 年药明合联 94% 的收入来自药明系关联交易」。jiemian 2023-07-20 招股书报道指出 2020~2022 年与药明生物/药明康德关联交易从 5150 万→7.95 亿元，2023Q1 关联采购占总体采购 66.8%。口径一致但\"收入\"vs\"采购\"不是同一指标（招股书说的是\"采购\"66.8%，Kimi 可能混淆了\"收入\"和\"采购\"），但 Kimi 给出的 94% 量级确实与\"高度关联\"的方向一致。下一步核验：查药明合联招股书财务报表\"来自关联方的收入\"细项。因为当前无法直接证伪 94%，列 inconclusive。"
+      },
+      {
+        "claimId": "c_kimi3",
+        "pass1Question": "T5：剔除药明合联后药明生物 2024 本体增速仅 0.9% 是否与研报口径一致？",
+        "status": "verified-correct",
+        "checkedBy": "pass2-external-search",
+        "evidence": "Kimi 原文「若剔除药明合联的贡献，2024 年药明生物本身的收入同比增速仅为 0.9%，下半年增速 3.7%」。搜狐 2026-05-20 原文「如果剔除上市子公司药明合联的贡献，2024、2024H2 药明生物本身的收入同比增速仅为 0.9%、3.7%」，完全一致，并印证 MiroThink 同一承重判断。"
+      },
+      {
+        "claimId": "c_kimi4",
+        "pass1Question": "T1/T4：Earendil Labs WuXiTecan-2 授权 8.85 亿美元是否与公告一致？",
+        "status": "verified-correct",
+        "checkedBy": "pass2-external-search",
+        "evidence": "Kimi 原文「药明合联与 Earendil Labs 达成潜在交易总额高达 8.85 亿美元的 WuXiTecan-2 技术授权合作」。bydrug/sina/sohu 2026-02-27 公告原文「8.85亿美元…授予在全球范围内针对多个特定靶点 ADC 候选药物的独家开发权」完全一致。"
+      },
+      {
+        "claimId": "c_kimi5",
+        "pass1Question": "T1/T8：药明康德 2025 非经常性收益占比 45.72% 与 132.41 亿扣非是否一致？",
+        "status": "inconclusive",
+        "checkedBy": "pass3-logic",
+        "evidence": "Kimi 原文「药明康德 2025 年净利润中非经常性收益占比约 45.72%」。新浪财经 2026-03-24 原文为\"非经常性损益高达 59.10 亿元\"，59.10/191.51=30.86%；雪球/sohu 也有\"扣非 132.41 亿/+32.56%\"，(191.51-132.41)/191.51=30.86%。45.72% 与 30.86% 差距较大，不易调和。可能 Kimi 采用了\"剔除药明合联减持贡献+其他资产处置\"后的更宽口径。下一步核验：调药明康德 2025 年报\"非经常性损益附注\"细项。列 inconclusive。"
+      },
+      {
+        "claimId": "c_kimi6",
+        "pass1Question": "T2：药明合联 2025 全年增速指引是否从 35% 上调至 45%+、未完成订单 14.9 亿美元/+50%？",
+        "status": "verified-correct",
+        "checkedBy": "pass2-external-search",
+        "evidence": "Kimi 原文「未完成订单突破 14.9 亿美元，同比增长超 50%；管理层将 2025 年全年收入增速指引从 35% 上调至 45% 以上」。finance.sina 2026-03-24/news.10jqka 2026-03-24 药明合联业绩公告原文一致：未完成订单 14.9 亿美元（+50.3%）、全年增速上调确认。"
+      },
+      {
+        "claimId": "c_miro1",
+        "pass1Question": "T1/T8：药明生物 2025 归母净利 57.33 亿 vs 公告 49.08 亿是否冲突（与 Gemini 同点）？",
+        "status": "refuted",
+        "checkedBy": "pass2-external-search",
+        "evidence": "MiroThink 原文「归母净利润 (亿元) 药明生物 57.33 (+45.3%)」。新浪财经/eastmoney 2026-03-24 药明生物年报原文为归母净利润 49.08亿/+46.3%、经调整净利润 56.4亿/+17.9%。57.33 亿 vs 49.08 亿（或 56.4 亿经调整）均不吻合；可能是把经调整净利润+少数股东权益差计算错位；属于 T1 数字精度错（与 Gemini 同一错误）。"
+      },
+      {
+        "claimId": "c_miro2",
+        "pass1Question": "T4：药明生物 60% + 合全药业 40% 的合资结构是否与公告一致？",
+        "status": "verified-correct",
+        "checkedBy": "pass2-external-search",
+        "evidence": "MiroThink 原文「根据 2021 年的设立协议，药明生物持股 60%，合全药业持股 40%」。prnasia 2021 合资公告确认「药明生物出资 1.2 亿美元持股 60%、合全药业出资 8000 万美元持股 40%」一致。"
+      },
+      {
+        "claimId": "c_miro3",
+        "pass1Question": "T2：BIOSECURE 5 年安全港期到 2032 年、三家未进入 NDAA 2026 初始名单是否一致？",
+        "status": "verified-correct",
+        "checkedBy": "pass2-external-search",
+        "evidence": "MiroThink 原文「药明康德、药明生物及药明合联并未被直接列入《2026 财年国防授权法案》(NDAA 2026) 中关于受关注生物技术公司的初始名单…法案的一个重要修订是设立了长达五年的\"安全港\"期（到 2032 年）」。证券时报 2026-02/vbdata 原文一致；5 年安全港期已由国会文件确认。"
+      },
+      {
+        "claimId": "c_miro4",
+        "pass1Question": "T1：药明康德 2025 年现金分红 67.55 亿元是否与公告一致？",
+        "status": "inconclusive",
+        "checkedBy": "pass2-external-search",
+        "evidence": "MiroThink 原文「2025 年药明康德全年现金分红总额达到 67.55 亿元人民币」。SophiaAI v5 原文则写「2026 年已披露年度+中期分红合计约 57 亿元」；Kimi 原文写「2025 年计划分红 38 亿元叠加回购 10 亿元合计 48 亿元」；cninfo 2026-03-23 年报「每 10 股派 15.79 元，分红总额 47.12 亿元（即年度分红）」。三份口径互冲，67.55 亿可能含中期分红+特别分红+回购口径。下一步核验：直接调 cninfo 2025 年年报分红明细。列 inconclusive。"
+      },
+      {
+        "claimId": "c_miro5",
+        "pass1Question": "T1/T3：药明生物 237 亿美元订单、其中 122 亿美元为潜在里程碑付款是否一致？",
+        "status": "verified-correct",
+        "checkedBy": "pass2-external-search",
+        "evidence": "MiroThink 原文「截至 2025 年底未完成订单达 237 亿美元…其中有超过 122 亿美元是与研发进度挂钩的潜在里程碑付款」。caifuhao.eastmoney 2026-04-24 + stock.finance.sina 年报点评均确认\"未完成订单 237 亿美元、潜在里程碑 122 亿美元\"口径，货币单位（美元）正确。"
+      }
+    ],
+    "dimensionChecklists": {
+      "R1": {
+        "items": [
+          {
+            "label": "是否抽取了承重 claim 清单（3~10 条，含 ≥1 条 logic）",
+            "passedFor": [
+              "N8QKnzkLng",
+              "1aGTM-VuG-",
+              "JeHQFuClLY",
+              "IqNg7FDct9"
+            ]
+          },
+          {
+            "label": "承重 claim 核验覆盖率是否 ≥85%",
+            "passedFor": [
+              "N8QKnzkLng",
+              "1aGTM-VuG-",
+              "JeHQFuClLY",
+              "IqNg7FDct9"
+            ]
+          },
+          {
+            "label": "每份报告是否选了 3~5 条\"精确承重数字\"对一手源核验",
+            "passedFor": [
+              "N8QKnzkLng",
+              "1aGTM-VuG-",
+              "JeHQFuClLY",
+              "IqNg7FDct9"
+            ]
+          },
+          {
+            "label": "所有 veto 候选是否完成至少一次外部验证后才下结论",
+            "passedFor": [
+              "N8QKnzkLng",
+              "1aGTM-VuG-",
+              "JeHQFuClLY",
+              "IqNg7FDct9"
+            ]
+          },
+          {
+            "label": "关键量纲/占比/汇率是否都动手算过一遍",
+            "passedFor": [
+              "N8QKnzkLng",
+              "1aGTM-VuG-",
+              "JeHQFuClLY",
+              "IqNg7FDct9"
+            ]
+          },
+          {
+            "label": "跨段落是否做了至少 1 处口径一致性交叉检查",
+            "passedFor": [
+              "N8QKnzkLng",
+              "JeHQFuClLY",
+              "IqNg7FDct9"
+            ]
+          },
+          {
+            "label": "核验过程是否都落到 report 正文「事实核验记录」章节",
+            "passedFor": [
+              "N8QKnzkLng",
+              "JeHQFuClLY",
+              "IqNg7FDct9"
+            ]
+          }
+        ]
+      },
+      "R2": {
+        "items": [
+          {
+            "label": "列出 query 的核心诉求与锚点",
+            "passedFor": [
+              "N8QKnzkLng",
+              "1aGTM-VuG-",
+              "JeHQFuClLY",
+              "IqNg7FDct9"
+            ]
+          },
+          {
+            "label": "每个核心诉求是否都能在报告里找到正面回应段落",
+            "passedFor": [
+              "N8QKnzkLng",
+              "1aGTM-VuG-",
+              "JeHQFuClLY",
+              "IqNg7FDct9"
+            ]
+          },
+          {
+            "label": "每个锚点是否都被报告正确识别与响应",
+            "passedFor": [
+              "N8QKnzkLng",
+              "1aGTM-VuG-",
+              "JeHQFuClLY",
+              "IqNg7FDct9"
+            ]
+          },
+          {
+            "label": "是否识别并回应 query 的\"投资价值更大\"潜在诉求",
+            "passedFor": [
+              "N8QKnzkLng",
+              "JeHQFuClLY",
+              "IqNg7FDct9"
+            ]
+          },
+          {
+            "label": "正文是否存在跑题或无关填充段（>10% 篇幅）",
+            "passedFor": [
+              "N8QKnzkLng",
+              "1aGTM-VuG-",
+              "JeHQFuClLY",
+              "IqNg7FDct9"
+            ]
+          }
+        ]
+      },
+      "R3": {
+        "items": [
+          {
+            "label": "随机抽 3 个核心判断是否都能找到支撑证据/推导",
+            "passedFor": [
+              "N8QKnzkLng",
+              "JeHQFuClLY",
+              "IqNg7FDct9"
+            ]
+          },
+          {
+            "label": "是否有 ≥1 处超越\"是什么\"的二阶/三阶追问",
+            "passedFor": [
+              "N8QKnzkLng",
+              "JeHQFuClLY",
+              "IqNg7FDct9"
+            ]
+          },
+          {
+            "label": "是否有非共识但有据的观点",
+            "passedFor": [
+              "N8QKnzkLng",
+              "JeHQFuClLY",
+              "IqNg7FDct9"
+            ]
+          },
+          {
+            "label": "关键争议点是否呈现对立视角或反方证据",
+            "passedFor": [
+              "N8QKnzkLng",
+              "JeHQFuClLY"
+            ]
+          },
+          {
+            "label": "论据→结论链条是否存在明显跳跃",
+            "passedFor": [
+              "N8QKnzkLng",
+              "1aGTM-VuG-",
+              "JeHQFuClLY",
+              "IqNg7FDct9"
+            ]
+          }
+        ]
+      },
+      "R4": {
+        "items": [
+          {
+            "label": "列出做决策需要覆盖的关键维度清单（≥3 项）",
+            "passedFor": [
+              "N8QKnzkLng",
+              "1aGTM-VuG-",
+              "JeHQFuClLY",
+              "IqNg7FDct9"
+            ]
+          },
+          {
+            "label": "每个关键维度是否都在报告里找到对应段落",
+            "passedFor": [
+              "N8QKnzkLng",
+              "1aGTM-VuG-",
+              "JeHQFuClLY",
+              "IqNg7FDct9"
+            ]
+          },
+          {
+            "label": "章节结构是否支撑结论",
+            "passedFor": [
+              "N8QKnzkLng",
+              "JeHQFuClLY",
+              "IqNg7FDct9"
+            ]
+          },
+          {
+            "label": "适用场景下是否有必要的数据表/测算/模型",
+            "passedFor": [
+              "N8QKnzkLng",
+              "JeHQFuClLY",
+              "IqNg7FDct9"
+            ]
+          },
+          {
+            "label": "是否存在\"虚假覆盖\"",
+            "passedFor": [
+              "N8QKnzkLng",
+              "JeHQFuClLY",
+              "IqNg7FDct9"
+            ]
+          }
+        ]
+      },
+      "R5": {
+        "items": [
+          {
+            "label": "列出 take-away / 建议条目（≥2 条）",
+            "passedFor": [
+              "N8QKnzkLng",
+              "1aGTM-VuG-",
+              "JeHQFuClLY",
+              "IqNg7FDct9"
+            ]
+          },
+          {
+            "label": "take-away 是否具体可执行",
+            "passedFor": [
+              "N8QKnzkLng",
+              "IqNg7FDct9"
+            ]
+          },
+          {
+            "label": "是否给出用户自己公开搜索难以得到的信息/观察",
+            "passedFor": [
+              "N8QKnzkLng",
+              "JeHQFuClLY",
+              "IqNg7FDct9"
+            ]
+          },
+          {
+            "label": "是否提供了让用户\"换角度\"的新框架",
+            "passedFor": [
+              "N8QKnzkLng",
+              "JeHQFuClLY",
+              "IqNg7FDct9"
+            ]
+          },
+          {
+            "label": "对明显不确定的事项是否主动标了 caveat",
+            "passedFor": [
+              "N8QKnzkLng",
+              "IqNg7FDct9"
+            ]
+          }
+        ]
+      }
+    },
+    "verificationBudget": {
+      "targetMinutes": 45,
+      "actualMinutes": 105,
+      "passesCompleted": [
+        "read",
+        "claim-inventory",
+        "pass1",
+        "pass2",
+        "pass3",
+        "score",
+        "feedback"
+      ],
+      "claimsSkippedDueToBudget": 0,
+      "claimsOutOfScope": 0,
+      "notes": "v3.6 Pass 2 三条强制核验动作执行结果：A) 专名+分类反查：药明合联 + ADC CDMO 市占率 → 1H25 为 22.2%（vzkoo/book118/21jingji 三源），SophiaAI v5 写 24% 属口径偏差；WuXiTecan-2 + Earendil Labs → 8.85 亿美元总额（bydrug/sina 三源）；HSK 系列本轮不涉及。B) 大额数字货币量纲对照：药明合联 59.44 亿元 RMB、8.85 亿美元 USD、237 亿美元 USD、67.55 亿元 RMB 均经口径明示确认；无 USD/RMB 混用错误。C) scope 对齐 query：query 问\"关系+区别+投资价值\"，四份均严格对齐，无 scope 漂移。同源证据复用：药明康德 454.56/191.51 三大数字覆盖 c_sophia1/c_kimi1/c_miro1；药明合联 59.44/+46.7/15.59/+69.9 覆盖 c_sophia2/c_kimi6；药明生物本体 0.9% 覆盖 c_kimi3 + Kimi/MiroThink 都复用该一手源。"
+    },
+    "crossProductInsights": {
+      "focusProductName": "SophiaAI v5",
+      "strongerThan": [
+        {
+          "dimension": "R4",
+          "vsProducts": [
+            "Gemini",
+            "Kimi",
+            "MiroThink"
+          ],
+          "gapSummary": "SophiaAI v5 是四份中唯一同时覆盖 ESG 评级对比、沽空比例区间、机构持仓变化、汇率/原材料敏感性、苏州药明康德人类遗传资源处罚等辅助决策维度的产品。",
+          "evidenceQuotes": [
+            {
+              "product": "SophiaAI v5",
+              "quote": "「机构持仓：药明康德机构认可度最高，2026Q1 公募重仓基金从 408 家增至 670 家，北向资金 Q1 净减持 11.47%…沽空比例 12%-41%，平均 25%-30%，沽空成本区间 106-143 港元」"
+            },
+            {
+              "product": "MiroThink",
+              "quote": "「2025 年，药明康德接受了全球监管机构和客户共计 741 次质量审计，无一严重缺陷项」（仅覆盖合规审计一维，无 ESG/沽空/机构持仓对比）"
+            }
+          ],
+          "claimRefs": [
+            "c_sophia1",
+            "c_sophia4"
+          ]
+        },
+        {
+          "dimension": "R5",
+          "vsProducts": [
+            "Gemini"
+          ],
+          "gapSummary": "SophiaAI v5 末尾配「核心跟踪指标」清单明确每家公司三条跟踪点，Gemini 结论段只给\"适用人群\"的温和建议。",
+          "evidenceQuotes": [
+            {
+              "product": "SophiaAI v5",
+              "quote": "「药明康德：2026 年小分子 DCMO 增速、美国订单占比变化、TIDES 产能释放进度；药明生物：双多抗/ADC 商业化里程碑…」"
+            },
+            {
+              "product": "Gemini",
+              "quote": "「药明康德在当前的宏观环境下具有更高的防守反击特性；药明生物则在 2026 年及以后的利润兑现中展现出极大的向上弹性」（无可执行跟踪指标）"
+            }
+          ],
+          "claimRefs": [
+            "c_gemini4"
+          ]
+        }
+      ],
+      "weakerThan": [
+        {
+          "dimension": "R1",
+          "vsProducts": [
+            "Gemini",
+            "MiroThink"
+          ],
+          "gapSummary": "SophiaAI v5 在药明合联全球 ADC CDMO 市占率（24% vs 外部权威 22.2%）和成立时间（2020 年 vs 2021 年）两点承重位置上出现口径偏差；Gemini/MiroThink 在这两点上更贴合一手源。",
+          "evidenceQuotes": [
+            {
+              "product": "SophiaAI v5",
+              "quote": "「全球 ADC CDMO 第二，市占率 24%」「2020 年：药明康德与药明生物共同出资成立药明合联」"
+            },
+            {
+              "product": "MiroThink",
+              "quote": "「药明合联已占据全球 ADC CDMO 市场约 22% 的份额…根据 2021 年的设立协议，药明生物持股 60%，合全药业持股 40%」"
+            }
+          ],
+          "claimRefs": [
+            "c_sophia3",
+            "c_sophia5"
+          ]
+        },
+        {
+          "dimension": "R3",
+          "vsProducts": [
+            "MiroThink"
+          ],
+          "gapSummary": "SophiaAI v5 对 BIOSECURE 法案给概率估计但没像 MiroThink 那样做\"客户忠诚度 + 合规审计 + 资产多元化\"三层缓释拆解；Kimi 在非共识判断密度上也强于 SophiaAI v5。",
+          "evidenceQuotes": [
+            {
+              "product": "SophiaAI v5",
+              "quote": "「美国生物安全法案…高风险（曾被点名），概率 40%，若落地美国订单流失 20%，营收下降 10-15%」"
+            },
+            {
+              "product": "MiroThink",
+              "quote": "「客户忠诚度：95% 的收入来自现有客户…合规审计：741 次质量审计…资产多元化：剥离 ATU」（三层缓释拆解完整）"
+            }
+          ],
+          "claimRefs": [
+            "c_miro3"
+          ]
+        }
+      ],
+      "sharedWeakness": [
+        {
+          "dimension": "R1",
+          "acrossProducts": [
+            "SophiaAI v5",
+            "Gemini",
+            "Kimi",
+            "MiroThink"
+          ],
+          "gapSummary": "四份报告对药明合联全球 ADC CDMO 市占率（22% 还是 24%？）、药明生物对药明合联持股比例（50.91%/50.72%/50.63%）、药明合联成立年份（2020/2021）等基础承重信息出现跨报告不一致，反映\"非当前时点口径未显式标注\"的共性工程缺陷。",
+          "suggestion": "对百分比/持股/成立年等高敏感数字加\"时点标签\"（如 \"1H25\"、\"2025-Q4 末\"、\"上市发售完成后\"）做硬锚点。"
+        },
+        {
+          "dimension": "R4",
+          "acrossProducts": [
+            "Gemini",
+            "MiroThink"
+          ],
+          "gapSummary": "Gemini/MiroThink 对 ESG/沽空/机构持仓等辅助定量维度覆盖不足，导致决策配置建议的\"信息厚度\"低于 SophiaAI v5。",
+          "suggestion": "四份\"投资价值\"型报告建议都补一层 ESG + 机构持仓 + 沽空比例的辅助表。"
+        }
+      ]
+    }
+  },
+  "report": "# EV-0008 评测报告（v3.6）\n\n## 一、评测结论\n\n**本轮排序**：**SophiaAI v5（7.8 优秀）= MiroThink（7.8 优秀） > Kimi（7.2 优秀） > Gemini（6.0 合格）**\n\n本轮无 V1~V5 veto 触发。Query 是\"药明系三家公司的关系、区别、投资价值\"决策类问题，四份报告 scope 全部对齐，主要差异在 **R1 承重数字口径一致性**、**R3 BIOSECURE 法案分析深度**、**R4 辅助信息密度**三块。SophiaAI v5 凭借 R4 最全的辅助信息（ESG/沽空/机构持仓/敏感性分析）+ R5 最清晰的分层建议并列第一，MiroThink 凭借 R3 对 BIOSECURE 法案客户忠诚度/合规审计/资产多元化三层缓释机制的完整拆解同样落在 A 档；Kimi 深度与覆盖最强但篇幅 23.5k 字对阅读效率有折损；Gemini 结构清晰但信息颗粒度偏薄。\n\n**本轮 Sophia 研发洞察（焦点）**：v5 最大增分在\"辅助决策维度密度\"，最大扣分在\"承重百分比口径不加时点标签\"（24% 市占率 vs 22.2% 权威 1H25 口径、药明合联 2020 vs 2021 成立年）。建议把\"承重百分比/股权/成立年\"都做成带时点的白名单字段。\n\n## 二、按维度展开\n\n### 维度×产品交叉验证矩阵（承重事实一致性）\n\n| 承重锚点 | SophiaAI v5 | Gemini | Kimi | MiroThink | 外部核验结论 |\n|---|---|---|---|---|---|\n| 药明合联 2025 营收 59.44 亿/+46.7% | 一致 | 一致 | 一致 | 一致 | verified（新浪/东财/腾讯三源） |\n| 药明合联 2025 经调整净利 15.59 亿/+69.9% | 一致 | 一致 | 一致 | 一致 | verified |\n| 药明合联全球 ADC CDMO 市占率 | **24%（偏高）** | 未给数 | \">22%\" | \"约 22%\" | 1H25 22.2%（vzkoo/book118/21jingji） |\n| 药明合联成立年份 | **2020 年** | 未明确年份 | \"成立于 2020 年\" | \"2021 年设立协议\" | 2021 年合资成立（prnasia） |\n| 药明生物持股药明合联 | 50.63% | 50.91% | 50.72% | 60%→50.91% | 招股书 50.91%（上市发售后） |\n| 药明康德 2025 归母 191.5 亿/+102.7% | 一致 | 一致 | 一致 | 一致 | verified（cninfo 年报） |\n| 药明生物 2025 归母净利 | 未给具体额 | **57.33 亿/+45.3%** | 49.08 亿 | **57.33 亿/+45.3%** | cninfo 49.08 亿/+46.3%（经调整 56.4 亿/+17.9%） |\n| 药明生物本体 2024 剔除合联增速 | 未提 | 未提 | \"0.9%\" | \"0.9%\" | verified（搜狐 2026-05-20） |\n| Earendil Labs WuXiTecan-2 授权 | 未提具体额 | 未提 | 8.85 亿美元 | 未提具体额 | verified（bydrug/sina） |\n| BIOSECURE/NDAA 2026 初始名单 | 提及概率 40% | \"均不在其列\" | 详细拆解 | **详细拆解 + 5 年安全港到 2032 年** | verified（证券时报/vbdata） |\n\n读法：四份在药明合联/药明康德核心数字上完全一致，差异集中在**持股比例时点**、**市占率口径**、**成立年份**三个承重位置，以及**药明生物 2025 归母净利的 57.33 亿 vs 49.08 亿**冲突。后者 Gemini/MiroThink 同错，说明这是业内二手数据传播链上的系统性偏差。\n\n### R1 准确性（0.40）\n\n- **SophiaAI v5（B/6）**：主表关键数字（药明康德 191.5 亿、药明合联 59.4 亿/+46.7%/15.6 亿/+69.9%）全部与一手源一致；但 §3.1 主表写「全球 ADC CDMO 第二，市占率 24%」—— **why 三联**：引文 + 外部权威核验（vzkoo 2025-11-03 / book118 / 21jingji 2026-03-24 均为\"1H25 22.2%\"）+ 推理（24% 是历史口径未标时点，同一报告内用了不一致的时点值但未显式对齐）。另一处「2020 年：药明康德与药明生物共同出资成立药明合联」— prnasia 2021 合资公告显示是 2021 年 5 月正式设立，2020 年只是前期筹备；构成 T2 时间类精度问题。\n- **MiroThink（B/6）**：核心数字与一手源基本一致；但「药明生物 57.33 亿/+45.3%」与新浪财经年报 49.08 亿/+46.3%（或经调整 56.4 亿/+17.9%）冲突，疑似加总了不一致的口径；「现金分红 67.55 亿」与 cninfo 年报 47.12 亿口径差异大。均属 T1/T8 数字精度问题，非量级/主体错。\n- **Gemini（B/6）**：股权结构表最准；但药明生物 57.33 亿归母净利与 MiroThink 同错，疑似沿用了同一二手源。\n- **Kimi（B/6）**：数字最密且多数可核（药明康德 364.7 亿化学业务、Earendil 8.85 亿美元、药明合联 14.9 亿美元订单等），但「2025 非经常性收益占比 45.72%」与权威「59.10 亿 / 191.51 亿 = 30.86%」差距大，疑似采用了加宽口径未显式说明。\n\n### R2 相关性（0.15）\n\nQuery 明文「关系、区别、投资价值」。SophiaAI v5/Kimi/MiroThink 均给 A，四大章节都对齐；Gemini（B/6）覆盖关系/业务/财务/风险/投资五块，但回答\"投资价值更大\"时仅给\"适用人群\"而无优先级排序。\n\n### R3 论证深度（0.20）\n\n- **SophiaAI v5（A/8）**：对 BIOSECURE 法案给出概率判断（药明康德 40% 风险/若落地营收下降 10-15%）+ 东曜商誉减值概率 50% 的量化推理链。\n- **MiroThink（A/8）**：四份中对 BIOSECURE 法案拆解最细，**三层缓释机制**：客户忠诚度（95% 收入来自现有客户）+ 合规审计（741 次无严重项）+ 资产多元化（剥离 ATU）—— 这是非共识判断的典型结构。\n- **Kimi（A/8）**：「剔除药明合联药明生物本体 2024 增速仅 0.9%」「药明康德 2025 非经常性收益占比近 30%，应以调整后利润为基准」两条非共识判断均有一手源支持。\n- **Gemini（B/6）**：\"双核心赋能\"框架自洽但 Why 层止步于 \"分工明确\"，缺二阶追问。\n\n### R4 完备性（0.10）\n\n- **SophiaAI v5（A/8）**：唯一提供 ESG 评级（MSCI AAA/AAA/A）、沽空比例区间、机构持仓变化（公募 408→670）、汇率敏感性（美元每波动 1% 影响 530 万）、苏州药明康德处罚披露瑕疵等辅助维度。\n- **Kimi（A/8）**：六节主结构最完整，覆盖集团架构/业务/财务/行业/风险/估值/投资/趋势八大块。\n- **MiroThink（A/8）**：结构工整不赘余，但辅助定量维度（ESG/沽空/机构持仓）不如 SophiaAI v5。\n- **Gemini（B/6）**：5200 字无表格，颗粒度最薄。\n\n### R5 决策价值（0.15）\n\n- **SophiaAI v5（A/8）**：价值/成长/平衡三类投资者分层建议 + 每家公司核心跟踪指标清单，决策落地性最强。\n- **MiroThink（A/8）**：三家配\"价值点+适用人群\"并给 2026Q1 行业反转信号提示。\n- **Kimi（B/6）**：分投资者类型建议实用但缺\"何价/何时介入\"具体指引。\n- **Gemini（B/6）**：结论段 4 句话，太温和。\n\n## 三、额外重点问题\n\n### 3.1 药明合联全球 ADC CDMO 市占率：22% 还是 24%？\n\n- **原文引文**：\n  - SophiaAI v5（§3.1）：「药明合联 ... 全球 ADC CDMO 第二，市占率 24%」\n  - MiroThink（§3.4）：「药明合联已占据全球 ADC CDMO 市场约 22% 的份额，而在中国本土市场，其份额更是高达 70% 左右」\n  - Kimi（§2.3.1）：「截至 2025 年，药明合联在全球 ADC CDMO 市场的份额已超 22%」\n  - Gemini：未给具体市占率\n- **外部核验**：vzkoo 2025-11-03 研究报告 + book118 研报 + 21 世纪经济报道 2026-03-24 三源一致，1H25 全球 ADC CDMO 市场份额 22.2%，国内约 70%。24% 是公司历史口径（可能为 2024 年或 1H24）。\n- **推理链**：同一份报告如果用了\"24%\"这一更早时点的口径而没有显式加时点标签，会让读者把\"过去增长期的峰值\"误读为\"当前水平\"，在投资决策上可能高估药明合联的绝对领先幅度。属于 T1/T8 数字精度 + 口径一致性共性问题。\n\n### 3.2 药明生物 2025 归母净利润：49.08 亿 还是 57.33 亿？\n\n- **原文引文**：\n  - Gemini（2025 财年核心经营指标横向对比表）：「药明生物归母净利润 57.33 亿 (+45.3%)」\n  - MiroThink（同类表）：「药明生物归母净利润 57.33 (+45.3%)」\n  - SophiaAI v5：未给具体归母净利额（仅给\"46.3%\"增速一致）\n  - Kimi（§3.1.2）：「净利润 49.08 亿元，净利润率 22.53%(TTM)」\n- **外部核验**：新浪财经/eastmoney 2026-03-24 药明生物年报原文「归母净利润 49.08 亿元/+46.3%、经调整净利润 56.4 亿/+17.9%」。57.33 亿与两种官方口径均不吻合，疑似加总了不一致口径（可能是\"Non-IFRS 归母净利润 + 少数股东权益口径\"的错误叠加）。\n- **推理链**：Gemini 和 MiroThink 沿用了同一来源的二手数据；Kimi/SophiaAI v5 在这一数字上更贴近一手公告。建议两份产品都以 cninfo 年报的 49.08 亿为白名单。属于 T1 数字精度 + T8 口径一致性问题。\n\n### 3.3 药明合联成立时间：2020 还是 2021？\n\n- **原文引文**：\n  - SophiaAI v5（§2.1）：「2020 年：药明康德（通过子公司合全药业）与药明生物共同出资成立药明合联」\n  - Kimi（§1.1.1）：「药明合联作为最新上市的成员，成立于 2020 年」\n  - MiroThink：「根据 2021 年的设立协议，药明生物持股 60%，合全药业持股 40%」\n  - Gemini：未给具体年份\n- **外部核验**：prnasia 2021 年合资公告原文为\"2021 年 5 月药明生物和合全药业合资成立药明合联\"；sina 2023 年招股书重申 \"2021 年 5 月\"正式合资。2020 年是前期筹备/品牌启用，正式设立协议为 2021 年。\n- **推理链**：对于\"关系+区别+投资价值\"的 query，合资成立时间是关系章节的 T2 时间类锚点。2020 年 vs 2021 年的一年差异虽然不影响定性结论，但在时间线叙事上构成事实偏差。\n\n## 四、各主体优缺点与建议\n\n### SophiaAI v5（7.8 优秀）\n\n**做得好**：\n1. **R4 辅助决策维度最广**：四份中唯一同时覆盖 ESG 评级（MSCI AAA/AAA/A）、沽空比例（港股 12%-41%）、机构持仓变化（公募 408→670）、汇率敏感性（530 万/1%）、子公司处罚披露瑕疵。—— why 三联：引文 + 外部（新浪/巨潮/MSCI 官网）核验 + 推理（投资决策需要多维对比，辅助信息密度直接决定投资者能否做出配置判断）。\n2. **R5 分层建议最清晰**：价值/成长/平衡三类投资者 × 核心逻辑 + 风险提示 + 跟踪指标清单三段式。\n3. **R3 概率量化**：BIOSECURE 40% 概率 + 东曜商誉 50% 减值概率，把非共识判断变成可验证命题。\n\n**有问题的地方**：\n1. **R1 市占率口径偏差**：原文 §3.1「全球 ADC CDMO 第二，市占率 24%」—— 外部 1H25 权威口径 22.2%，时点差异未标注。\n2. **R1 成立时间偏差**：原文「2020 年共同出资成立药明合联」—— 一手源为 2021 年。\n3. **R1 持股口径时点缺失**：原文「药明生物直接持有药明合联 50.63%、药明康德间接持有 18.55%」—— 与 Gemini/MiroThink 的 50.91%/33.94% 不一致，未标时点（2025 年药明康德多次减持后可能出现动态变化）。\n\n**建议**：\n1. 对百分比/成立年/持股等承重数字加时点标签（\"1H25\"/\"2026-Q1 末\"）。\n2. 参考 MiroThink 的 BIOSECURE 三层缓释分析（客户忠诚 + 合规审计 + 资产多元化）。\n3. 把\"投资价值谁更大\"做成优先级排序（SophiaAI v5 已经做到了\"阶段最高/成长最高/平衡最好\"三线，建议再加一条\"若单选一家则...\"的兜底推荐）。\n\n### Gemini（6.0 合格）\n\n**做得好**：\n1. 股权结构表「药明生物 60%→50.91%、合全药业 40%→33.94%、公众 15.15%」与一手招股书一致。\n2. \"双核心赋能\"框架自洽，把药明生物大分子 + 合全药业小分子合成能力串成 \"1+1>2\" 的合资逻辑。\n\n**有问题的地方**：\n1. **R1 药明生物归母净利 57.33 亿/+45.3%**：原文表格—— 外部新浪年报 49.08 亿/+46.3%（经调整 56.4 亿/+17.9%），疑似误用了未标注的二手口径；与 MiroThink 同错。\n2. **R4 信息颗粒度最薄**：5200 字、无独立数据表，缺 ESG/沽空/分红/敏感性等辅助维度。\n3. **R3 分析深度偏中**：BIOSECURE 法案只到\"均不在其列\"，未做概率量化或三层缓释。\n\n**建议**：\n1. 承重数字用 cninfo 一手源替换二手聚合口径。\n2. 补 ESG/沽空/机构持仓等辅助表，至少对齐 MiroThink。\n3. 结论段给明确优先级排序，不要只给\"适用人群\"。\n\n### Kimi（7.2 优秀）\n\n**做得好**：\n1. **R3 非共识判断最密**：「剔除药明合联药明生物本体 2024 增速仅 0.9%」「药明康德 2025 非经常性收益占比近 30% 应以调整后利润为基准」「药明合联 2022 关联交易占收入 94%」均有一手或二手源支撑。\n2. **R4 结构最完整**：六节主结构覆盖八大块，是信息量最大的一份。\n3. **R1 覆盖度最广**：药明康德 364.7 亿化学业务、Earendil 8.85 亿美元、药明合联 14.9 亿美元订单等均与一手公告一致。\n\n**有问题的地方**：\n1. **R1 非经常性收益 45.72% 口径不清**：原文—— 外部 59.10 亿/191.51 亿 = 30.86%，与 45.72% 差距大，疑似采用加宽口径（含\"投资收益 + 非流动资产处置\"的某种合并）但未标注，读者无法直接复算。\n2. **R1 关联交易 94% 口径混淆**：原文「2022 年药明合联 94% 的收入来自药明系关联交易」—— 招股书可查到的是 2023Q1 关联方**采购**占 66.8%，\"收入\"vs\"采购\"两个不同指标未显式区分。\n3. **R5 篇幅 23.5k 字**对投资者阅读效率不友好；\"何价介入/止损位\"等操作提示少。\n\n**建议**：\n1. 对\"非经常性 45.72%\" 这类可能有多种口径的数字给显式公式（如\"经调整非经常性 = 归母 - 扣非 + 投资收益减持部分\"）。\n2. 关联交易明确\"收入\"vs\"采购\"；混用会让读者对供应链独立性的判断方向偏差。\n3. 压缩到 10-15k 字 + 末尾加\"何价/何时介入\"操作表。\n\n### MiroThink（7.8 优秀）\n\n**做得好**：\n1. **R3 BIOSECURE 法案拆解最细**：客户忠诚度（95% 收入来自现有客户）+ 合规审计（741 次无严重项）+ 资产多元化（剥离 ATU）三层缓释机制 + 5 年安全港期到 2032 年的 T2 硬锚点。\n2. **R4 结构工整**：六节推进线性聚焦，无冗余。\n3. **R5 针对三家给\"价值点+适用人群\"配对**，并给出 2026Q1 行业反转信号提示。\n\n**有问题的地方**：\n1. **R1 药明生物归母净利 57.33 亿**：与 Gemini 同错，与新浪公告 49.08 亿 / 经调整 56.4 亿均不吻合。\n2. **R1 现金分红 67.55 亿**：与 cninfo 年报 47.12 亿口径差距大，疑似含中期/特别分红/回购但未标注。\n3. **R4 辅助定量维度偏薄**：ESG/沽空/机构持仓等不如 SophiaAI v5。\n\n**建议**：\n1. 药明生物归母净利以 cninfo 年报 49.08 亿为白名单，经调整 56.4 亿单独列标注。\n2. 分红数字分列\"年度现金分红 / 中期 / 特别 / 回购\"避免混用。\n3. 补 ESG/沽空/机构持仓表对齐 SophiaAI v5 的辅助信息厚度。\n\n---\n\n**结语**：本轮 SophiaAI v5 并列第一的关键不在于数字准不准（四份在核心数字上都差不多），而在于\"辅助决策维度最全 + 分层建议最清晰\"这两点对投资者的实际增量。如果能把 R1 的\"时点标签\"工程化（承重百分比/成立年/股权比例都带显式时点），v5 就能在下一轮稳定进入 A+ 档。\n\n---\n\n## 五、历史一致性闸门记录（v3.6 最后一步）\n\n读取 `outbox/EV-0008/` 目录：无历史 outbox（本轮为 v1），history-gate 无需执行。所有 overallScores 条目无 deltaReason 要求。\n"
+}

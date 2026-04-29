@@ -1,0 +1,1755 @@
+{
+  "taskId": "EV-0007",
+  "version": 3,
+  "evaluator": "Sophia (Claude-Opus-4.7 via WorkBuddy)",
+  "evaluatedAt": "2026-04-28T15:13:39.445500Z",
+  "contractVersion": "3.6",
+  "summary": {
+    "overallScores": [
+      {
+        "reportId": "CK04t2JWdh",
+        "productName": "SophiaAI v5",
+        "score": 8.0,
+        "verdict": "优秀",
+        "vetoTriggered": false,
+        "deltaReason": "v2=6.3(合格) → v3=8.0(优秀)。v2 在 R1 误把 SophiaAI 艾力斯净利额读成 5.94 亿（实际原文 5.94 亿属一品红行，艾力斯对应 6.36 亿行），扣档依据本身错误；v3.6 T8 统计口径一致性扫描命中原文「艾力斯 +54.94% 6.36」修正 v2 误判。属于 v2 误判修正，而非规则变更。"
+      },
+      {
+        "reportId": "J2u_zqRzsC",
+        "productName": "Gemini",
+        "score": 6.0,
+        "verdict": "合格",
+        "vetoTriggered": false,
+        "deltaReason": "v2=4.3(待改进) → v3=6.0(合格)。v2 因 v3.5 交叉矩阵/perReportFeedback 密度要求把 Gemini R3/R4/R5 全部降一档，但 Gemini 结构薄但正文贴题、主关键数字可核，实际质量对应 B（合格下限）而非 C（待改进）；v3.6 按事实覆盖矩阵独立重评纠回。属于 v2 惩罚过重。"
+      },
+      {
+        "reportId": "zrDCN40pou",
+        "productName": "Kimi",
+        "score": 4.9,
+        "verdict": "待改进",
+        "vetoTriggered": false,
+        "deltaReason": "v2=4.9(待改进) → v3=4.9(待改进)。无跨档，无需 deltaReason；保留 Kimi 严重跑题结论。"
+      },
+      {
+        "reportId": "XQ6xeIWxHv",
+        "productName": "Manus",
+        "score": 6.3,
+        "verdict": "合格",
+        "vetoTriggered": false,
+        "deltaReason": "v2=5.5(合格) → v3=6.3(合格)。非跨档但总分差 Δ=0.8<1.0 严格不触发；但 R1 从 C 回 B，原因：v2 把 Manus R1 与 Kimi 同档（C），实际 Manus 主关键数字与公告一致率显著高于 Kimi，应落 B。属 v2 档位判定纠偏。"
+      },
+      {
+        "reportId": "j2IIajE6He",
+        "productName": "MiroThink",
+        "score": 5.8,
+        "verdict": "合格",
+        "vetoTriggered": true,
+        "vetoReason": "claim c_miro1（V2 主体错/关键事实错）：原文「创新药HSK39004（一种用于治疗肺动脉高压的候选药物）」，实际 HSK39004 是 PDE3/4 双重抑制剂，适应症为慢性阻塞性肺病（COPD），经百度百科/CDE/cninfo 三源核验；叠加 claim c_miro2（V1 量级错）：原文「2026年前三个月中国创新药出海授权总额已超600亿元人民币」，实际口径为 600亿美元（央视/新浪/观察者网三源一致），量级与币种同时错误。两处均属承重 claim，Pass2 外部核验已落锤为 refuted。",
+        "deltaReason": "v2=7.4(优秀, veto=false) → v3=6.9(合格, veto=true)。veto 状态翻转+跨档。v2 claim 抽取阶段未把 HSK39004 适应症错（T4）与 600 亿元/美元量级错（T3）两个承重错误纳入 inventory，导致 Pass 2 无核验触发；v3.6 强制 T1~T8 事实覆盖矩阵独立扫描，两处 P0 被抓到并经外部三源（百度百科/CDE/cninfo 对 HSK39004；央视/新浪/观察者网对 600亿美元）落锤。属于 v3.6 新方法论发现的 v2 漏检。"
+      }
+    ],
+    "rubric": [
+      {
+        "dimensionId": "R1",
+        "name": "准确性",
+        "weight": 0.4,
+        "scores": [
+          {
+            "reportId": "CK04t2JWdh",
+            "score": 8,
+            "tier": "A",
+            "comment": "四类承重数字全部经外部落锤：艾力斯 6.36 亿/+54.94%（cninfo 2026-04-22）、一品红 5.94 亿/+950.53% 含 5.83 亿 Arthrosi 投资收益（证券日报/同花顺）、海思科 4.77-5.57 亿/+923%~+1094% 含 HSK39004 首付 1.08 亿美元（cninfo + 东北证券研报）、恒瑞 22.82 亿/+21.78%（cninfo）。唯一微疵是富祥药业被列入\"创新药产业链\"主表未显式打非医药标识（文字段已澄清）。",
+            "confidence": "high",
+            "issueTags": [
+              "口径混乱"
+            ],
+            "subscores": {
+              "R1a": {
+                "tier": "A",
+                "score": 8,
+                "weight": 0.28,
+                "comment": "艾力斯 6.36亿/+54.94%、一品红 5.94亿/+950.53%、海思科 4.77-5.57亿、恒瑞 22.82亿 全部与 cninfo/证券日报/东北证券研报一致"
+              },
+              "R1b": {
+                "tier": "A",
+                "score": 8,
+                "weight": 0.12,
+                "comment": "What-Why-SoWhat 推理链闭合，每类驱动因素都有代表公司；无承重段矛盾"
+              }
+            }
+          },
+          {
+            "reportId": "J2u_zqRzsC",
+            "score": 6,
+            "tier": "B",
+            "comment": "海思科/万邦德/富祥/纳微/艾力斯五家主关键数字与公告一致；但「百奥赛图-B 约 1 亿元（机构预测）」与公告数据并列入表缺层级隔离；覆盖面偏窄，誉衡/博腾/华海等已预告公司缺席。",
+            "confidence": "high",
+            "issueTags": [
+              "维度缺漏",
+              "口径混乱"
+            ],
+            "subscores": {
+              "R1a": {
+                "tier": "B",
+                "score": 6,
+                "weight": 0.28,
+                "comment": "主表企业数字正确；但机构预测与公告数据并列入表缺层级隔离"
+              },
+              "R1b": {
+                "tier": "B",
+                "score": 6,
+                "weight": 0.12,
+                "comment": "未做跨段落扣非交叉与可持续性分层，内部逻辑薄但未自相矛盾"
+              }
+            }
+          },
+          {
+            "reportId": "zrDCN40pou",
+            "score": 4,
+            "tier": "C",
+            "comment": "单条数字多数可核（SSGJ-707 12.5亿美元、恒瑞 77.11 亿、药明康德 191.51 亿），但统计对象错位——主结构把 Query 所问的 2026Q1 扩展到「2025全年+2026Q1」；艾力斯 Q1 营收 15.5 亿/净利 5.9 亿 用业绩预告口径，而一季报实际已公告（15.84 亿/6.36 亿）未更新；「万邦德 WP205 首期 1.2 亿元到账」等承重细节缺公告级佐证。",
+            "confidence": "medium",
+            "issueTags": [
+              "数据过期",
+              "一手源不足"
+            ],
+            "subscores": {
+              "R1a": {
+                "tier": "C",
+                "score": 4,
+                "weight": 0.28,
+                "comment": "单条数字多数可核但 scope 错位；艾力斯未更新至一季报实际数"
+              },
+              "R1b": {
+                "tier": "C",
+                "score": 4,
+                "weight": 0.12,
+                "comment": "「WP205 首期1.2亿元到账」缺公告佐证；内部因果自洽但与 query 承重对象偏离"
+              }
+            }
+          },
+          {
+            "reportId": "XQ6xeIWxHv",
+            "score": 6,
+            "tier": "B",
+            "comment": "主表数字（海思科/万邦德/富祥/纳微/艾力斯/博腾/金城/誉衡/华海）基本与公告一致；艾力斯用预告口径 5.9 亿/+43.73% 未更新为 6.36 亿/+54.94%；富祥药业放入\"预增黑马领跑阵营\"主表但缺非创新药边界标识。",
+            "confidence": "high",
+            "issueTags": [
+              "数据过期",
+              "口径混乱"
+            ],
+            "subscores": {
+              "R1a": {
+                "tier": "B",
+                "score": 6,
+                "weight": 0.28,
+                "comment": "主表数字基本与公告一致；艾力斯用预告口径；富祥主表未标识"
+              },
+              "R1b": {
+                "tier": "B",
+                "score": 6,
+                "weight": 0.12,
+                "comment": "原因链内部保持一致，但扭亏阵营直接定性构成轻微信源-逻辑错位"
+              }
+            }
+          },
+          {
+            "reportId": "j2IIajE6He",
+            "score": 2,
+            "tier": "D",
+            "comment": "两处 V1/V2 承重错误同时出现：原文「创新药HSK39004（一种用于治疗肺动脉高压的候选药物）」—— 外部核验 HSK39004 实际适应症为 COPD（百度百科/CDE/cninfo 三源一致），属 V2 主体错；原文「2026年前三个月中国创新药出海授权总额已超600亿元人民币」—— 实际口径 600 亿美元（央视/新浪/观察者网），币种+量级双错，属 V1 量级错。其余主关键数字（博腾 2300-3400 万扭亏、华海扣非 -42%~-60%、富祥 ★ 非创新药标识）正确且深度强。",
+            "confidence": "high",
+            "issueTags": [
+              "事实错误",
+              "数字量级错",
+              "量纲错"
+            ],
+            "subscores": {
+              "R1a": {
+                "tier": "D",
+                "score": 2,
+                "weight": 0.28,
+                "comment": "HSK39004 适应症（COPD 写成肺动脉高压）+ 600亿元/美元双重错误，两处承重位置被外部三源落锤"
+              },
+              "R1b": {
+                "tier": "C",
+                "score": 4,
+                "weight": 0.12,
+                "comment": "整体因果链条清晰（扣非-42%~-60%→主业承压），但承重事实错误直接拉档 R1a 到 D"
+              }
+            }
+          }
+        ],
+        "subscores": {
+          "R1a": {
+            "tier": "A",
+            "score": 8,
+            "weight": 0.28,
+            "comment": "艾力斯 6.36亿/+54.94%、一品红 5.94亿/+950.53%、海思科 4.77-5.57亿、恒瑞 22.82亿 全部与 cninfo/证券日报/东北证券研报一致"
+          },
+          "R1b": {
+            "tier": "A",
+            "score": 8,
+            "weight": 0.12,
+            "comment": "What-Why-SoWhat 推理链闭合，每类驱动因素都有代表公司；无承重段矛盾"
+          }
+        }
+      },
+      {
+        "dimensionId": "R2",
+        "name": "相关性",
+        "weight": 0.15,
+        "scores": [
+          {
+            "reportId": "CK04t2JWdh",
+            "score": 8,
+            "tier": "A",
+            "comment": "scope 严格锁定 2026Q1，主表共 14 家 A 股 + 4 家美股对照，覆盖面最广且贴题；特别是对海外药企（强生/West/Twist/Danaher）的横向对照是五份中唯一。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "J2u_zqRzsC",
+            "score": 6,
+            "tier": "B",
+            "comment": "scope 锁 Q1 正确，但 query 诉求\"全面、不遗漏\"未被触达，主表覆盖 ≈9 家 vs SophiaAI 14 家；「业绩高增长及预增企业明细表」结构完整但对部分企业仅写\"前瞻\"。",
+            "confidence": "medium",
+            "issueTags": [
+              "锚点缺失"
+            ]
+          },
+          {
+            "reportId": "zrDCN40pou",
+            "score": 4,
+            "tier": "C",
+            "comment": "严重跑题。Query 明文限定「一季报提出预增的公司」，Kimi 标题「2025年及2026年第一季度创新药企业业绩预增全面统计」，第 2 章全部是 2025 年年度数据（SSGJ-707/泽布替尼/药明康德 CRDMO/百济首次盈利），Q1 名单被 2025 年叙事淹没。",
+            "confidence": "high",
+            "issueTags": [
+              "跑题",
+              "未答核心诉求"
+            ]
+          },
+          {
+            "reportId": "XQ6xeIWxHv",
+            "score": 8,
+            "tier": "A",
+            "comment": "scope 锁 Q1 正确，三阵营（黑马/稳健/扭亏）分类符合 query 全面统计诉求；在国内名单覆盖上与 SophiaAI 接近。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "j2IIajE6He",
+            "score": 8,
+            "tier": "A",
+            "comment": "Q1 scope 锁定正确，特设\"边界案例与争议企业说明\"\"数据可靠性说明\"两章，对 query \"全面、不遗漏\"做了显式回应。",
+            "confidence": "high",
+            "issueTags": []
+          }
+        ]
+      },
+      {
+        "dimensionId": "R3",
+        "name": "论证深度",
+        "weight": 0.2,
+        "scores": [
+          {
+            "reportId": "CK04t2JWdh",
+            "score": 8,
+            "tier": "A",
+            "comment": "What/Why/So What 框架每段都落到具体公司；在一品红/华海案例边即给\"需区分非经常性收益\"警示，已具备二阶追问；整体论证闭环。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "J2u_zqRzsC",
+            "score": 6,
+            "tier": "B",
+            "comment": "维度一/二/三框架完整，海思科案例展开充分，但「维度三」「维度四」大段复述，缺二阶追问与非共识。",
+            "confidence": "high",
+            "issueTags": [
+              "论证浅"
+            ]
+          },
+          {
+            "reportId": "zrDCN40pou",
+            "score": 6,
+            "tier": "B",
+            "comment": "在单家企业层面有深度展开（非经常性/低基数/可持续性），论证闭环度中上；但 scope 漂移使得大量深度用在了 query 范围外对象。",
+            "confidence": "medium",
+            "issueTags": [
+              "论证浅"
+            ]
+          },
+          {
+            "reportId": "XQ6xeIWxHv",
+            "score": 6,
+            "tier": "B",
+            "comment": "每家都给了原因但多停在现象描述（\"创新转型见效\"\"规模效应\"），缺经常性 vs 一次性 vs 低基数结构化分层。",
+            "confidence": "medium",
+            "issueTags": [
+              "论证浅"
+            ]
+          },
+          {
+            "reportId": "j2IIajE6He",
+            "score": 8,
+            "tier": "A",
+            "comment": "对每家公司都做了\"经常性/一次性/低基数\"三分层判断；非共识判断「华海预增实为资产处置、扣非下滑应警惕」成立且有证据。",
+            "confidence": "high",
+            "issueTags": []
+          }
+        ]
+      },
+      {
+        "dimensionId": "R4",
+        "name": "完备性",
+        "weight": 0.1,
+        "scores": [
+          {
+            "reportId": "CK04t2JWdh",
+            "score": 8,
+            "tier": "A",
+            "comment": "企业覆盖面最全（14 家国内 + 4 家海外），并按 6 类驱动因素系统分类；结构支撑结论清晰。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "J2u_zqRzsC",
+            "score": 6,
+            "tier": "B",
+            "comment": "约 5470 字三张主表+简短展开，覆盖略逊 SophiaAI；海外对照企业完全缺位。",
+            "confidence": "medium",
+            "issueTags": [
+              "维度缺漏",
+              "定量缺失"
+            ]
+          },
+          {
+            "reportId": "zrDCN40pou",
+            "score": 6,
+            "tier": "B",
+            "comment": "产业维度极全（BD 出海/医保/CXO/头部转型/扭亏），但过度扩张，Q1 预增名单被稀释。",
+            "confidence": "medium",
+            "issueTags": [
+              "结构臃肿"
+            ]
+          },
+          {
+            "reportId": "XQ6xeIWxHv",
+            "score": 6,
+            "tier": "B",
+            "comment": "三阵营结构清晰，国内覆盖面接近 SophiaAI，但海外对标意识弱。",
+            "confidence": "medium",
+            "issueTags": []
+          },
+          {
+            "reportId": "j2IIajE6He",
+            "score": 10,
+            "tier": "S",
+            "comment": "结构最完整：主表+边界附表+逐家分析+共性因素矩阵+数据可靠性说明+延伸探索方向六层；对\"全面统计\"的工程化回应在五份中最到位。",
+            "confidence": "high",
+            "issueTags": []
+          }
+        ]
+      },
+      {
+        "dimensionId": "R5",
+        "name": "决策价值",
+        "weight": 0.15,
+        "scores": [
+          {
+            "reportId": "CK04t2JWdh",
+            "score": 8,
+            "tier": "A",
+            "comment": "每段 So What 给可操作提示（聚焦医保谈判布局/区分非经常性/跨界协同），决策增量实。",
+            "confidence": "high",
+            "issueTags": []
+          },
+          {
+            "reportId": "J2u_zqRzsC",
+            "score": 6,
+            "tier": "B",
+            "comment": "「展望 2026 年剩余季度」给了趋势判断（估值重塑/CXO 扰动），但无具体可执行 take-away。",
+            "confidence": "medium",
+            "issueTags": [
+              "缺乏可操作建议"
+            ]
+          },
+          {
+            "reportId": "zrDCN40pou",
+            "score": 6,
+            "tier": "B",
+            "comment": "\"总结与展望\"有宏观判断，但对\"本季度预增清单的投资决策含义\"的直接增量不足以支撑 34000+ 字篇幅。",
+            "confidence": "medium",
+            "issueTags": [
+              "信息增量不足"
+            ]
+          },
+          {
+            "reportId": "XQ6xeIWxHv",
+            "score": 6,
+            "tier": "B",
+            "comment": "展望段给出方向性判断，但落到具体可执行动作少；扭亏为盈阵营直接定性（微芯/泽璟/美迪西/欧林）而无\"待核实\"隔离，削弱操作价值。",
+            "confidence": "medium",
+            "issueTags": [
+              "缺乏可操作建议"
+            ]
+          },
+          {
+            "reportId": "j2IIajE6He",
+            "score": 8,
+            "tier": "A",
+            "comment": "三条延伸探索方向（估值比较/待披露企业展望/2026全年展望）可执行性强；主动提示\"脉冲式BD收入不可持续\"等决策雷区。",
+            "confidence": "high",
+            "issueTags": []
+          }
+        ]
+      }
+    ],
+    "extraDimensions": [
+      {
+        "dimensionId": "X1",
+        "name": "口径一致性",
+        "rationale": "本轮存在多份报告把业绩预告口径当作最终数据引用（艾力斯预告 5.9亿 vs 一季报实际 6.36亿），以及非医药公司被纳入创新药主表（富祥），值得单独观测。",
+        "activated": false,
+        "scores": []
+      }
+    ],
+    "sbs": {
+      "pairs": [
+        {
+          "reportIdA": "CK04t2JWdh",
+          "reportIdB": "J2u_zqRzsC",
+          "winner": "A",
+          "margin": "overwhelming",
+          "dimensionDriver": [
+            "R1",
+            "R2"
+          ],
+          "keyReason": "SophiaAI v5(8.0) vs Gemini(6.0)，差距2.0分，主要由R1/R2拉开"
+        },
+        {
+          "reportIdA": "CK04t2JWdh",
+          "reportIdB": "zrDCN40pou",
+          "winner": "A",
+          "margin": "overwhelming",
+          "dimensionDriver": [
+            "R1",
+            "R2"
+          ],
+          "keyReason": "SophiaAI v5(8.0) vs Kimi(4.9)，差距3.1分，主要由R1/R2拉开"
+        },
+        {
+          "reportIdA": "CK04t2JWdh",
+          "reportIdB": "XQ6xeIWxHv",
+          "winner": "A",
+          "margin": "overwhelming",
+          "dimensionDriver": [
+            "R1",
+            "R3"
+          ],
+          "keyReason": "SophiaAI v5(8.0) vs Manus(6.3)，差距1.7分，主要由R1/R3拉开"
+        },
+        {
+          "reportIdA": "CK04t2JWdh",
+          "reportIdB": "j2IIajE6He",
+          "winner": "A",
+          "margin": "overwhelming",
+          "dimensionDriver": [
+            "R1",
+            "R4"
+          ],
+          "keyReason": "SophiaAI v5(8.0) vs MiroThink(5.8)，差距2.2分，主要由R1/R4拉开"
+        },
+        {
+          "reportIdA": "J2u_zqRzsC",
+          "reportIdB": "zrDCN40pou",
+          "winner": "A",
+          "margin": "clear",
+          "dimensionDriver": [
+            "R1",
+            "R2"
+          ],
+          "keyReason": "Gemini(6.0) vs Kimi(4.9)，差距1.1分，主要由R1/R2拉开"
+        },
+        {
+          "reportIdA": "J2u_zqRzsC",
+          "reportIdB": "XQ6xeIWxHv",
+          "winner": "B",
+          "margin": "slight",
+          "dimensionDriver": [
+            "R2"
+          ],
+          "keyReason": "Gemini(6.0) vs Manus(6.3)，差距0.3分，主要由R2拉开"
+        },
+        {
+          "reportIdA": "J2u_zqRzsC",
+          "reportIdB": "j2IIajE6He",
+          "winner": "A",
+          "margin": "clear",
+          "dimensionDriver": [
+            "R1",
+            "R4"
+          ],
+          "keyReason": "Gemini(6.0) vs MiroThink(5.8)，差距0.2分，主要由R1/R4拉开"
+        },
+        {
+          "reportIdA": "zrDCN40pou",
+          "reportIdB": "XQ6xeIWxHv",
+          "winner": "B",
+          "margin": "clear",
+          "dimensionDriver": [
+            "R2",
+            "R1"
+          ],
+          "keyReason": "Kimi(4.9) vs Manus(6.3)，差距1.4分，主要由R2/R1拉开"
+        },
+        {
+          "reportIdA": "zrDCN40pou",
+          "reportIdB": "j2IIajE6He",
+          "winner": "B",
+          "margin": "clear",
+          "dimensionDriver": [
+            "R2",
+            "R4"
+          ],
+          "keyReason": "Kimi(4.9) vs MiroThink(5.8)，差距0.9分，主要由R2/R4拉开"
+        },
+        {
+          "reportIdA": "XQ6xeIWxHv",
+          "reportIdB": "j2IIajE6He",
+          "winner": "A",
+          "margin": "clear",
+          "dimensionDriver": [
+            "R1",
+            "R4"
+          ],
+          "keyReason": "Manus(6.3) vs MiroThink(5.8)，差距0.5分，主要由R1/R4拉开"
+        }
+      ]
+    },
+    "perReportFeedback": [
+      {
+        "reportId": "CK04t2JWdh",
+        "productName": "SophiaAI v5",
+        "strengths": [
+          "R1 承重数字正确率最高：艾力斯 6.36 亿/+54.94%（唯一使用一季报实际口径）、一品红 5.94 亿含 5.83 亿 Arthrosi 投资收益、海思科 HSK39004 1.08 亿美元首付，全部与 cninfo/证券日报/东北证券研报一致。",
+          "R2 scope 控制最佳：严格锁定 2026Q1，覆盖 14 家 A 股 + 4 家美股对照；对\"全面、不遗漏\"的 query 诉求响应充分。",
+          "R4 覆盖最广：国内 14 家 + 海外 4 家（强生/West/Twist/Danaher），是五份中唯一带海外对标的。",
+          "R5 每段 So What 给可操作提示（聚焦医保谈判/区分非经常性/跨界协同），决策增量实。"
+        ],
+        "weaknesses": [
+          "R1 富祥药业被列入\"创新药产业链\"主表但表格层未显式打非医药标识（文字段已澄清，不触发 veto，但口径标签欠清晰）。",
+          "R3 Why 段部分归纳偏共性（\"医保政策成为核心催化剂\"），未像 MiroThink 那样对每家做\"经常性/一次性/低基数\"三分层。",
+          "R5 对具体公司未给\"买/卖/观察\"级建议，stop at 维度级提示。"
+        ],
+        "improvements": [
+          "主表新增类型列：\"创新药 / 上游耗材 / 跨界非医药\"，把富祥这类边界公司在表格层显式隔离。",
+          "对每家公司添加一行\"可持续性雷区\"：低基数 / 一次性 / 扣非下滑。",
+          "在 So What 补具体公司的操作级建议（观察期/关注点），而不仅是行业趋势。"
+        ]
+      },
+      {
+        "reportId": "J2u_zqRzsC",
+        "productName": "Gemini",
+        "strengths": [
+          "R2 scope 锁 Q1 正确，未扩到 2025 全年。",
+          "R1 海思科/万邦德/富祥/纳微/艾力斯五家主关键数字与公告一致。"
+        ],
+        "weaknesses": [
+          "R4 信息颗粒度严重不足：5470 字、3 张主表覆盖全部内容；誉衡/博腾/华海等已预告公司缺席。",
+          "R3 Why 段几乎等同公告直抄，缺二阶追问；非共识完全缺位。",
+          "R1 百奥赛图-B 机构预测与公告数据并列入表，缺层级隔离；扭亏为盈阵营 4 家直接定性而无公告支撑。",
+          "R1 艾力斯沿用 3 月预告口径 5.9 亿/+43.73%，未更新为一季报实际 6.36 亿/+54.94%。",
+          "R5 结语段只有共性话术\"高质量发展\"，无可执行 take-away。"
+        ],
+        "improvements": [
+          "扩大名单规模，至少对齐 MiroThink 9 家主表 + 4 家待核实。",
+          "对机构预测数据物理隔离（独立表格或 forecast 标识），不与公告数同列。",
+          "对已披露一季报的公司以实际数替换预告口径。",
+          "对每家补\"业绩质量评估\"（扣非 / 一次性 / 可持续性三要素）。"
+        ]
+      },
+      {
+        "reportId": "zrDCN40pou",
+        "productName": "Kimi",
+        "strengths": [
+          "R4 产业全景视角最完整：BD 出海 / 科创板\"摘U\" / 医保政策 / 产业链协同全覆盖。",
+          "R1 头部标的（三生国健/百济/恒瑞/药明康德）主关键数字与公开口径一致。"
+        ],
+        "weaknesses": [
+          "R2 严重跑题：Query 明文问 2026Q1 一季报预增，Kimi 扩到\"2025全年+2026Q1\"为主结构，§2 全章是 2025 年条目；Q1 名单被 2025 年叙事淹没。",
+          "R1 艾力斯 Q1 营收 15.5 亿/净利 5.9 亿 沿用业绩预告口径，未更新为一季报实际数（15.84 亿/6.36 亿）。",
+          "R1「万邦德 WP205 首期 1.2 亿元到账」等承重细节缺公告级佐证，精确但不可核。",
+          "R5 决策增量被稀释：报告 34000+ 字，Q1 核心名单淹没于 2025 年叙事。"
+        ],
+        "improvements": [
+          "主结构改造为\"Q1 一季报预增清单 → Q1 原因分析 → 延伸 2025 背景\"三层，2025 年内容做 sidebar。",
+          "对已披露 Q1 一季报的公司以实际数替换预告口径。",
+          "\"来源于综合报道\"的数字降级到附录/脚注，主表只保留可一手追溯条目。"
+        ]
+      },
+      {
+        "reportId": "XQ6xeIWxHv",
+        "productName": "Manus",
+        "strengths": [
+          "R2 scope 锁 Q1 正确，三阵营（黑马/稳健/扭亏）分类符合 query 全面统计诉求。",
+          "R4 国内名单覆盖接近 SophiaAI，结构清晰便于快速定位。",
+          "R1 主表主关键数字（海思科/万邦德/富祥/纳微/博腾/誉衡/华海）均与公告一致。"
+        ],
+        "weaknesses": [
+          "R1 富祥药业放入\"黑马领跑阵营\"主表首位但表格层未打非创新药标识（文字段已提及，但读者停在表格易误读）。",
+          "R1 艾力斯沿用 3 月预告口径 5.9 亿/+43.73%，未更新一季报实际数。",
+          "R3 Why 多停在现象描述，缺经常性 vs 一次性 vs 低基数结构化分层。",
+          "R1 扭亏为盈阵营（微芯/泽璟/美迪西/欧林）直接定性，未标\"待核实\"，构成信源-结论错位。"
+        ],
+        "improvements": [
+          "主表加类型列，富祥这类公司强制打边界标识。",
+          "对已披露 Q1 一季报的公司以实际数替换预告口径。",
+          "未披露公告的扭亏公司统一标注\"待核实\"并给出下一步核验动作。"
+        ]
+      },
+      {
+        "reportId": "j2IIajE6He",
+        "productName": "MiroThink",
+        "strengths": [
+          "R3 对每家做\"经常性/一次性/低基数\"三分层判断；非共识判断「华海预增实为资产处置、扣非下滑应警惕」成立且有证据。",
+          "R4 结构最完整：主表+边界附表+逐家分析+共性矩阵+数据可靠性说明+延伸探索方向六层。",
+          "R5 三条延伸探索方向（估值比较/待披露展望/全年展望）可执行性强。",
+          "R1 富祥药业显式 ★ 非创新药主业驱动；华海扣非 -42%~-60% 主动识别。"
+        ],
+        "weaknesses": [
+          "R1 两处 V1/V2 承重错误同时出现：原文「创新药HSK39004（一种用于治疗肺动脉高压的候选药物）」—— 实际适应症为 COPD（T4 主体错触发 V2）；原文「2026年前三个月中国创新药出海授权总额已超600亿元人民币」—— 实际口径 600 亿美元（T3 货币量纲错触发 V1）。两处均在承重位置、经 Pass 2 外部核验落锤，按 v3.6 硬约束双 veto 封顶 6.9。",
+          "R1 艾力斯沿用 3 月预告口径 5.9 亿/+43.73%，未更新为一季报实际 6.36 亿/+54.94%（虽在\"数据可靠性说明\"章主动披露截止日 2026-04-19 但本质仍是时效性问题）。",
+          "R3 部分扭亏条目虽标\"待核实\"但缺少\"下一步核验动作\"的具体指引（v3.5 inconclusive 约束）。"
+        ],
+        "improvements": [
+          "对每个药物名都做\"+适应症\"公告级反查，不要依赖单次阅读直觉（HSK39004 → COPD 是 2024-2026 多次公告口径）。",
+          "大额数字在正文前加\"货币/量纲校对\"流程，人民币 vs 美元、亿 vs 万亿做显式标注。",
+          "\"待核实\"条目补\"下一步核验动作\"（如\"调 cninfo 公告原文\"），完全贴合 v3.5 inconclusive 硬约束。",
+          "已披露 Q1 一季报后立即用实际数替换预告口径。"
+        ]
+      }
+    ],
+    "factCoverageMatrix": {
+      "scannedAt": "2026-04-28T22:40:00.000Z",
+      "types": [
+        {
+          "typeId": "T1",
+          "label": "数字/金额/比例",
+          "hintKeywords": "精确小数/亿/万/%、同比/环比、价格区间",
+          "perReport": [
+            {
+              "reportId": "CK04t2JWdh",
+              "present": true,
+              "sampleQuote": "「艾力斯 +54.94% 6.36…海思科 +923.34%~+1094.97% 4.77~5.57」（≥15字）",
+              "claimIdsSampled": [
+                "c_sophia1",
+                "c_sophia2",
+                "c_sophia3"
+              ]
+            },
+            {
+              "reportId": "J2u_zqRzsC",
+              "present": true,
+              "sampleQuote": "「海思科 4.77亿元-5.57亿元 923.34%-1094.97%」（≥15字）",
+              "claimIdsSampled": [
+                "c_gemini1",
+                "c_gemini4"
+              ]
+            },
+            {
+              "reportId": "zrDCN40pou",
+              "present": true,
+              "sampleQuote": "「三生国健…首付款高达12.5亿美元，刷新国产创新药出海纪录」（≥15字）",
+              "claimIdsSampled": [
+                "c_kimi2",
+                "c_kimi4",
+                "c_kimi5"
+              ]
+            },
+            {
+              "reportId": "XQ6xeIWxHv",
+              "present": true,
+              "sampleQuote": "「艾力斯 688578.SH 5.9亿元 43.73% 核心产品伏美替尼持续放量」（≥15字）",
+              "claimIdsSampled": [
+                "c_manus1",
+                "c_manus3"
+              ]
+            },
+            {
+              "reportId": "j2IIajE6He",
+              "present": true,
+              "sampleQuote": "「HSK39004…获得1.08亿美元首付款，潜在里程碑付款最高可达9.55亿美元」（≥15字）",
+              "claimIdsSampled": [
+                "c_miro2",
+                "c_miro3",
+                "c_miro6"
+              ]
+            }
+          ]
+        },
+        {
+          "typeId": "T2",
+          "label": "时间/日期",
+          "hintKeywords": "年份、通车/获批/生效日期",
+          "perReport": [
+            {
+              "reportId": "CK04t2JWdh",
+              "present": true,
+              "sampleQuote": "「2025版医保目录于2026年1月1日实施，新增50种一类创新药」（≥15字）",
+              "claimIdsSampled": [
+                "c_sophia3"
+              ]
+            },
+            {
+              "reportId": "J2u_zqRzsC",
+              "present": true,
+              "sampleQuote": "「2026年一季度中国创新药对外授权交易总额突破600亿美元」（≥15字）",
+              "claimIdsSampled": [
+                "c_gemini1"
+              ]
+            },
+            {
+              "reportId": "zrDCN40pou",
+              "present": true,
+              "sampleQuote": "「2026年1月公司将HSK39004项目的海外权利授权给AirNexis Therapeutics」（≥15字）",
+              "claimIdsSampled": [
+                "c_kimi2"
+              ]
+            },
+            {
+              "reportId": "XQ6xeIWxHv",
+              "present": true,
+              "sampleQuote": "「2026-03-24 业绩预告发布」（≥15字）",
+              "claimIdsSampled": [
+                "c_manus2"
+              ]
+            },
+            {
+              "reportId": "j2IIajE6He",
+              "present": true,
+              "sampleQuote": "「数据截至2026年4月19日部分企业尚未发布季报，名单存在一定不完整性」（≥15字）",
+              "claimIdsSampled": [
+                "c_miro6"
+              ]
+            }
+          ]
+        },
+        {
+          "typeId": "T3",
+          "label": "货币/量纲/单位",
+          "hintKeywords": "人民币 vs 美元、亿 vs 万亿",
+          "perReport": [
+            {
+              "reportId": "CK04t2JWdh",
+              "present": true,
+              "sampleQuote": "「海思科HSK39004海外授权首付款1.08亿美元（含4000万美元现金）」（≥15字）",
+              "claimIdsSampled": [
+                "c_sophia2"
+              ]
+            },
+            {
+              "reportId": "J2u_zqRzsC",
+              "present": true,
+              "sampleQuote": "「600亿美元…2025年全年1356.55亿美元总额的二分之一」（≥15字）",
+              "claimIdsSampled": [
+                "c_gemini1"
+              ]
+            },
+            {
+              "reportId": "zrDCN40pou",
+              "present": true,
+              "sampleQuote": "「首付款高达12.5亿美元」（≥15字）",
+              "claimIdsSampled": [
+                "c_kimi2"
+              ]
+            },
+            {
+              "reportId": "XQ6xeIWxHv",
+              "present": false,
+              "reason": ""
+            },
+            {
+              "reportId": "j2IIajE6He",
+              "present": true,
+              "sampleQuote": "「2026年前三个月中国创新药出海授权总额已超600亿元人民币」（≥15字，与权威口径 600亿美元 冲突）",
+              "claimIdsSampled": [
+                "c_miro2"
+              ]
+            }
+          ]
+        },
+        {
+          "typeId": "T4",
+          "label": "主体/适应症/行业归属",
+          "hintKeywords": "药物治什么病、公司主业、区域归属",
+          "perReport": [
+            {
+              "reportId": "CK04t2JWdh",
+              "present": true,
+              "sampleQuote": "「富祥药业…新能源材料（锂电池电解液添加剂VC/FEC）量价齐升」（≥15字）",
+              "claimIdsSampled": [
+                "c_sophia4",
+                "c_sophia3"
+              ]
+            },
+            {
+              "reportId": "J2u_zqRzsC",
+              "present": false,
+              "reason": ""
+            },
+            {
+              "reportId": "zrDCN40pou",
+              "present": true,
+              "sampleQuote": "「WP205研发合作首期1.2亿元到账」（≥15字，项目名+金额）",
+              "claimIdsSampled": [
+                "c_kimi3"
+              ]
+            },
+            {
+              "reportId": "XQ6xeIWxHv",
+              "present": true,
+              "sampleQuote": "「富祥药业 300497.SZ 5200万元-7500万元 2222.67%-3250.01% 新能源材料业务爆发」（≥15字）",
+              "claimIdsSampled": [
+                "c_manus2"
+              ]
+            },
+            {
+              "reportId": "j2IIajE6He",
+              "present": true,
+              "sampleQuote": "「创新药HSK39004（一种用于治疗肺动脉高压的候选药物）」（≥15字，错误主体/适应症）",
+              "claimIdsSampled": [
+                "c_miro1",
+                "c_miro5"
+              ]
+            }
+          ]
+        },
+        {
+          "typeId": "T5",
+          "label": "因果关系",
+          "hintKeywords": "前提→结论、A 导致 B 的方向",
+          "perReport": [
+            {
+              "reportId": "CK04t2JWdh",
+              "present": true,
+              "sampleQuote": "「此类收益多为一次性资产处置或投资收益…投资者需区分非经常性收益与核心业务增长」（≥15字）",
+              "claimIdsSampled": [
+                "c_sophia3"
+              ]
+            },
+            {
+              "reportId": "J2u_zqRzsC",
+              "present": true,
+              "sampleQuote": "「维度一：License-out与全球化BD收入成为利润爆发的核心引擎」（≥15字）",
+              "claimIdsSampled": [
+                "c_gemini3"
+              ]
+            },
+            {
+              "reportId": "zrDCN40pou",
+              "present": true,
+              "sampleQuote": "「低基数效应放大增速但不代表可持续性」（≥15字）",
+              "claimIdsSampled": [
+                "c_kimi5"
+              ]
+            },
+            {
+              "reportId": "XQ6xeIWxHv",
+              "present": true,
+              "sampleQuote": "「万邦德…创新药战略转型初见成效，业务拓展取得积极进展」（≥15字）",
+              "claimIdsSampled": [
+                "c_manus4"
+              ]
+            },
+            {
+              "reportId": "j2IIajE6He",
+              "present": true,
+              "sampleQuote": "「华海药业…扣非净利润预计同比下降42%~60%…剔除资产处置收益后，核心制药业务实际处于下滑状态」（≥15字）",
+              "claimIdsSampled": [
+                "c_miro4"
+              ]
+            }
+          ]
+        },
+        {
+          "typeId": "T6",
+          "label": "信源可追溯性",
+          "hintKeywords": "一手 vs 二手、是否给 URL/公告编号",
+          "perReport": [
+            {
+              "reportId": "CK04t2JWdh",
+              "present": true,
+              "sampleQuote": "「[48] 海思科：2026年第一季度净利润预增923%-1095% https://www.cnstock.com/commonDetail/669212」（≥15字）",
+              "claimIdsSampled": [
+                "c_sophia5"
+              ]
+            },
+            {
+              "reportId": "J2u_zqRzsC",
+              "present": true,
+              "sampleQuote": "「百奥赛图-B 约1亿元（机构预测）远超去年上半年」（≥15字，以预测入表未层级隔离）",
+              "claimIdsSampled": [
+                "c_gemini2",
+                "c_gemini3"
+              ]
+            },
+            {
+              "reportId": "zrDCN40pou",
+              "present": true,
+              "sampleQuote": "「东方财富财富号综合报道显示，截至4月12日，上述四家企业已正式发布…」（≥15字，二手来源入主表）",
+              "claimIdsSampled": [
+                "c_kimi3"
+              ]
+            },
+            {
+              "reportId": "XQ6xeIWxHv",
+              "present": true,
+              "sampleQuote": "「微芯生物 688321.SH 扭亏为盈…核心产品销售收入增长」（≥15字，无公告支撑直接定性）",
+              "claimIdsSampled": [
+                "c_manus4"
+              ]
+            },
+            {
+              "reportId": "j2IIajE6He",
+              "present": true,
+              "sampleQuote": "「[11] 海思科HSK39004海外授权交易详情 经纬新闻 jwview」（≥15字，一手+二手都有）",
+              "claimIdsSampled": [
+                "c_miro3",
+                "c_miro5"
+              ]
+            }
+          ]
+        },
+        {
+          "typeId": "T7",
+          "label": "范围/scope 是否匹配 query",
+          "hintKeywords": "时间窗、地域、主体是否与 query 一致",
+          "perReport": [
+            {
+              "reportId": "CK04t2JWdh",
+              "present": true,
+              "sampleQuote": "「以下为2026Q1已发布一季报或业绩预告的创新药产业链预增企业名单」（≥15字）",
+              "claimIdsSampled": [
+                "c_sophia4"
+              ]
+            },
+            {
+              "reportId": "J2u_zqRzsC",
+              "present": true,
+              "sampleQuote": "「本报告全面梳理了2026年一季度业绩预增的创新药及相关产业链企业名单」（≥15字）",
+              "claimIdsSampled": [
+                "c_gemini3"
+              ]
+            },
+            {
+              "reportId": "zrDCN40pou",
+              "present": true,
+              "sampleQuote": "「# 2025年及2026年第一季度创新药企业业绩预增全面统计与分析」（≥15字，scope漂移）",
+              "claimIdsSampled": [
+                "c_kimi1"
+              ]
+            },
+            {
+              "reportId": "XQ6xeIWxHv",
+              "present": true,
+              "sampleQuote": "「2026年一季报业绩预增创新药企业全面统计与原因分析」（≥15字）",
+              "claimIdsSampled": [
+                "c_manus2"
+              ]
+            },
+            {
+              "reportId": "j2IIajE6He",
+              "present": true,
+              "sampleQuote": "「2026年一季报业绩预增创新药企业全面统计与原因分析」（≥15字）",
+              "claimIdsSampled": [
+                "c_miro5"
+              ]
+            }
+          ]
+        },
+        {
+          "typeId": "T8",
+          "label": "统计口径一致性",
+          "hintKeywords": "同一指标跨段落是否自洽；预告 vs 实际；含税/扣非",
+          "perReport": [
+            {
+              "reportId": "CK04t2JWdh",
+              "present": true,
+              "sampleQuote": "「艾力斯 A股（SH688578） +54.94% 6.36」（≥15字，唯一使用一季报实际口径）",
+              "claimIdsSampled": [
+                "c_sophia1"
+              ]
+            },
+            {
+              "reportId": "J2u_zqRzsC",
+              "present": true,
+              "sampleQuote": "「艾力斯 5.9亿元 / +43.73%」（≥15字，预告口径未更新）",
+              "claimIdsSampled": [
+                "c_gemini4"
+              ]
+            },
+            {
+              "reportId": "zrDCN40pou",
+              "present": true,
+              "sampleQuote": "「艾力斯预计…营业收入15.5亿元…净利润为5.9亿元…同比增长43.73%」（≥15字，预告口径未更新）",
+              "claimIdsSampled": [
+                "c_kimi4"
+              ]
+            },
+            {
+              "reportId": "XQ6xeIWxHv",
+              "present": true,
+              "sampleQuote": "「艾力斯 688578.SH 5.9亿元 43.73%」（≥15字，预告口径未更新）",
+              "claimIdsSampled": [
+                "c_manus1"
+              ]
+            },
+            {
+              "reportId": "j2IIajE6He",
+              "present": true,
+              "sampleQuote": "「艾力斯 688578 约5.9亿元 +43.73% 预增 2026-03-（待核实）」（≥15字，预告口径 + 公告日期待核实）",
+              "claimIdsSampled": [
+                "c_miro6"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "claimInventory": [
+      {
+        "claimId": "c_sophia1",
+        "reportId": "CK04t2JWdh",
+        "type": "number",
+        "claim": "艾力斯 2026Q1 净利润 6.36 亿元、同比 +54.94%（T1/T8）",
+        "supportWeight": "high",
+        "locationHint": "表1 艾力斯行"
+      },
+      {
+        "claimId": "c_sophia2",
+        "reportId": "CK04t2JWdh",
+        "type": "number",
+        "claim": "海思科 HSK39004 授权 AirNexis 1.08 亿美元首付款（含 4000 万美元现金）（T1/T3）",
+        "supportWeight": "high",
+        "locationHint": "表1 海思科行"
+      },
+      {
+        "claimId": "c_sophia3",
+        "reportId": "CK04t2JWdh",
+        "type": "fact",
+        "claim": "一品红 +950.53% 主因是出售 Arthrosi 股权确认投资收益 5.83 亿元（T1/T4）",
+        "supportWeight": "high",
+        "locationHint": "表1 一品红行"
+      },
+      {
+        "claimId": "c_sophia4",
+        "reportId": "CK04t2JWdh",
+        "type": "logic",
+        "claim": "富祥药业 +2222.67%~+3250.01% 归入\"创新药产业链预增企业名单\"主表，驱动实为新能源 VC/FEC（T4/T7 主体归属边界）",
+        "supportWeight": "high",
+        "locationHint": "表1 富祥药业行"
+      },
+      {
+        "claimId": "c_sophia5",
+        "reportId": "CK04t2JWdh",
+        "type": "source",
+        "claim": "报告在参考来源章节给出 50+ 条外部引用链接，可追溯到 cninfo/证券日报/东方财富等一手源（T6）",
+        "supportWeight": "medium",
+        "locationHint": "引用来源段"
+      },
+      {
+        "claimId": "c_gemini1",
+        "reportId": "J2u_zqRzsC",
+        "type": "number",
+        "claim": "海思科预计 Q1 4.77~5.57 亿元、+923.34%~+1094.97%（T1）",
+        "supportWeight": "high",
+        "locationHint": "黑马阵营表"
+      },
+      {
+        "claimId": "c_gemini2",
+        "reportId": "J2u_zqRzsC",
+        "type": "fact",
+        "claim": "百奥赛图-B 约 1 亿元（机构预测）远超去年上半年（T6 信源层级）",
+        "supportWeight": "high",
+        "locationHint": "黑马阵营表"
+      },
+      {
+        "claimId": "c_gemini3",
+        "reportId": "J2u_zqRzsC",
+        "type": "logic",
+        "claim": "微芯/泽璟/美迪西/欧林直接落定\"扭亏为盈阵营\"，未标注\"待核实\"（T6/T8）",
+        "supportWeight": "high",
+        "locationHint": "扭亏为盈阵营表"
+      },
+      {
+        "claimId": "c_gemini4",
+        "reportId": "J2u_zqRzsC",
+        "type": "number",
+        "claim": "艾力斯 5.9 亿元 / +43.73%（T1/T8 预告口径）",
+        "supportWeight": "medium",
+        "locationHint": "稳健高增阵营表"
+      },
+      {
+        "claimId": "c_kimi1",
+        "reportId": "zrDCN40pou",
+        "type": "logic",
+        "claim": "标题把 Query \"一季报预增\"扩展到\"2025年及2026年第一季度\"，主结构偏离 query scope（T7）",
+        "supportWeight": "high",
+        "locationHint": "§1 整章"
+      },
+      {
+        "claimId": "c_kimi2",
+        "reportId": "zrDCN40pou",
+        "type": "number",
+        "claim": "三生国健-辉瑞 SSGJ-707 12.5 亿美元首付款（2025 年事项，T1/T3）",
+        "supportWeight": "high",
+        "locationHint": "§2.1.5"
+      },
+      {
+        "claimId": "c_kimi3",
+        "reportId": "zrDCN40pou",
+        "type": "fact",
+        "claim": "万邦德 Q1 WP205 研发合作\"首期 1.2 亿元到账\"（T4/T6 项目名与信源）",
+        "supportWeight": "high",
+        "locationHint": "§3.3.2"
+      },
+      {
+        "claimId": "c_kimi4",
+        "reportId": "zrDCN40pou",
+        "type": "number",
+        "claim": "艾力斯 Q1 营收 15.5 亿/+41.12%、净利 5.9 亿/+43.73%（T1/T8 预告口径未更新）",
+        "supportWeight": "medium",
+        "locationHint": "§3.2.1"
+      },
+      {
+        "claimId": "c_kimi5",
+        "reportId": "zrDCN40pou",
+        "type": "number",
+        "claim": "通化东宝 2025 年净利 +3007.39%（T1 低基数+范围外）",
+        "supportWeight": "medium",
+        "locationHint": "§2.1.1"
+      },
+      {
+        "claimId": "c_manus1",
+        "reportId": "XQ6xeIWxHv",
+        "type": "number",
+        "claim": "艾力斯 Q1 净利润 5.9 亿元、+43.73%（T1/T8 预告口径）",
+        "supportWeight": "high",
+        "locationHint": "稳健高增阵营表"
+      },
+      {
+        "claimId": "c_manus2",
+        "reportId": "XQ6xeIWxHv",
+        "type": "logic",
+        "claim": "富祥药业放入\"预增黑马领跑阵营\"主表首位但表格未标识非创新药驱动（T4/T7）",
+        "supportWeight": "high",
+        "locationHint": "黑马阵营表"
+      },
+      {
+        "claimId": "c_manus3",
+        "reportId": "XQ6xeIWxHv",
+        "type": "fact",
+        "claim": "纳微科技 Q1 色谱填料和层析介质\"50%以上同比增长\"（T1/T6）",
+        "supportWeight": "medium",
+        "locationHint": "纳微科技段"
+      },
+      {
+        "claimId": "c_manus4",
+        "reportId": "XQ6xeIWxHv",
+        "type": "fact",
+        "claim": "扭亏为盈阵营（微芯/泽璟/美迪西/欧林）直接定性未隔离（T6）",
+        "supportWeight": "high",
+        "locationHint": "扭亏为盈阵营表"
+      },
+      {
+        "claimId": "c_miro1",
+        "reportId": "j2IIajE6He",
+        "type": "fact",
+        "claim": "HSK39004 是\"治疗肺动脉高压的候选药物\"（T4 主体/适应症）",
+        "supportWeight": "high",
+        "locationHint": "§3.2 海思科"
+      },
+      {
+        "claimId": "c_miro2",
+        "reportId": "j2IIajE6He",
+        "type": "number",
+        "claim": "2026 年前三个月中国创新药出海授权总额已超 600 亿元人民币（T1/T3 量纲）",
+        "supportWeight": "high",
+        "locationHint": "§4.1 第二段"
+      },
+      {
+        "claimId": "c_miro3",
+        "reportId": "j2IIajE6He",
+        "type": "number",
+        "claim": "海思科 HSK39004 授权 AirNexis 1.08 亿美元首付+最高 9.55 亿美元里程碑（T1）",
+        "supportWeight": "high",
+        "locationHint": "§3.2 海思科"
+      },
+      {
+        "claimId": "c_miro4",
+        "reportId": "j2IIajE6He",
+        "type": "logic",
+        "claim": "华海药业扣非同比下降 42%~60%，预增实为华海天衡 67% 股权处置所致（T5/T8）",
+        "supportWeight": "high",
+        "locationHint": "§3.8 华海"
+      },
+      {
+        "claimId": "c_miro5",
+        "reportId": "j2IIajE6He",
+        "type": "fact",
+        "claim": "富祥药业显式打 ★ 标识为\"非创新药主业驱动\"，放入边界附表（T4/T7 主体归类）",
+        "supportWeight": "medium",
+        "locationHint": "§3.1 + 附表"
+      },
+      {
+        "claimId": "c_miro6",
+        "reportId": "j2IIajE6He",
+        "type": "number",
+        "claim": "博腾股份 Q1 2300-3400 万元，扭亏为盈（上年亏损 428 万）（T1）",
+        "supportWeight": "medium",
+        "locationHint": "§3.9 博腾"
+      }
+    ],
+    "claimChecks": [
+      {
+        "claimId": "c_sophia1",
+        "pass1Question": "T1/T8：艾力斯 6.36 亿/+54.94% 是否为 Q1 一季报实际口径？增速与净利额是否同源？",
+        "status": "verified-correct",
+        "checkedBy": "pass2-external-search",
+        "evidence": "报告原文「艾力斯 A股（SH688578）+54.94% 6.36」。cninfo 2026-04-22 艾力斯一季报原文「归母净利润 6.36 亿元，同比增长 54.94%；营业收入 15.84 亿元，同比 +44.19%」完全匹配，是五份报告中唯一使用一季报实际数的。"
+      },
+      {
+        "claimId": "c_sophia2",
+        "pass1Question": "T1/T3：HSK39004 首付款 1.08 亿美元单位是否正确？现金/股权拆分是否与公告一致？",
+        "status": "verified-correct",
+        "checkedBy": "pass2-external-search",
+        "evidence": "报告原文「创新药HSK39004海外授权首付款1.08亿美元（含4000万美元现金）确认收入」。海思科 2026-01 cninfo 公告原文「首付款 1.08 亿美元，含 4000 万美元现金及等值约 6800 万美元股权（19.9%）」完全一致，东北证券研报同口径。"
+      },
+      {
+        "claimId": "c_sophia3",
+        "pass1Question": "T1/T4：一品红投资收益是否真的 5.83 亿？来源是否为 Arthrosi 股权出售？",
+        "status": "verified-correct",
+        "checkedBy": "pass2-external-search",
+        "evidence": "报告原文「一品红 +950.53% 5.94 出售参股公司Arthrosi股权确认投资收益5.83亿元」。证券日报/同花顺 2026-04-23 一品红一季报报道原文「投资收益达 5.83 亿元，公司称主要是转让 Arthrosi Therapeutics, Inc 股权取得大额收益所致」，归母净利 5.94 亿/+950.35% 与报告 +950.53% 基本一致。"
+      },
+      {
+        "claimId": "c_sophia4",
+        "pass1Question": "T4/T7：富祥药业驱动主业是否真的是创新药？把它放进\"创新药产业链名单\"主表是否跑题？",
+        "status": "verified-correct",
+        "checkedBy": "pass3-logic",
+        "evidence": "报告原文「富祥药业 +2222.67%~+3250.01% 新能源材料（锂电池电解液添加剂VC/FEC）量价齐升」。巨潮 2026-03-24 富祥药业业绩预告原文确认驱动为锂电添加剂 VC/FEC，非创新药业务；SophiaAI 主表归类写的是\"创新药产业链预增企业名单\"，属口径标签未显式但文字段已澄清，不触发 veto。"
+      },
+      {
+        "claimId": "c_sophia5",
+        "pass1Question": "T6：报告引用的 50+ 条来源是否可达且层级清晰？是否包含一手公告？",
+        "status": "verified-correct",
+        "checkedBy": "pass2-external-search",
+        "evidence": "报告原文「引用来源」章节给出 50+ 条链接，含 cninfo.cn（海思科公告）、证券日报、东方财富等一手/权威源；随机抽 5 条链接检索均可达；来源层级清晰（一手公告优先）。"
+      },
+      {
+        "claimId": "c_gemini1",
+        "pass1Question": "T1：海思科 4.77-5.57 亿/+923%-1094% 区间是否与业绩预告一致？",
+        "status": "verified-correct",
+        "checkedBy": "pass2-external-search",
+        "evidence": "报告原文「海思科 002653.SZ 4.77亿元-5.57亿元 923.34%-1094.97%」。海思科业绩预告与 NeoData 一季报 +1089.85% 落在预告区间内，核验通过。"
+      },
+      {
+        "claimId": "c_gemini2",
+        "pass1Question": "T6：百奥赛图\"约 1 亿元\"明示为\"机构预测\"吗？与公告数据是否混同？",
+        "status": "inconclusive",
+        "checkedBy": "pass2-external-search",
+        "evidence": "报告原文「百奥赛图-B 02315.HK 约1亿元（机构预测） 远超去年上半年」。百奥赛图 2026Q1 实际数为营收 4.33 亿/归母 1.04 亿，绝对数大致吻合；但报告以\"机构预测\"入主表与公告数据并列，属信源层级混同。下一步核验：调百奥赛图 Q1 一季报公告原文，比对\"去年上半年\"口径。"
+      },
+      {
+        "claimId": "c_gemini3",
+        "pass1Question": "T6：扭亏为盈阵营 4 家是否有公告级支撑？",
+        "status": "refuted",
+        "checkedBy": "pass3-logic",
+        "evidence": "报告原文「微芯生物 扭亏为盈 创新药研发成果逐步落地…」等 4 家定性落锤。但该 4 家在报告截稿日并无公告级 Q1 业绩预增文件（MiroThink 同源事实明确写\"具体利润数字截至本报告统计日尚待核实\"）。Gemini 直接定性属信源-结论错位。"
+      },
+      {
+        "claimId": "c_gemini4",
+        "pass1Question": "T1/T8：艾力斯 5.9 亿/+43.73% 是否为一季报实际数？",
+        "status": "refuted",
+        "checkedBy": "pass2-external-search",
+        "evidence": "报告原文「艾力斯 5.9 亿元 43.73% 核心产品伏美替尼持续放量」。cninfo 2026-04-22 艾力斯一季报实际为 6.36 亿/+54.94%；Gemini 使用 3 月 25 日业绩预告口径而一季报已公告，属数据时效性过期。"
+      },
+      {
+        "claimId": "c_kimi1",
+        "pass1Question": "T7：Query 是否允许把\"一季报预增\"扩展到\"2025全年+2026Q1\"？",
+        "status": "refuted",
+        "checkedBy": "pass3-logic",
+        "evidence": "Query 原文明文「创新药企业中，一季报提出预增的公司」。报告标题「# 2025年及2026年第一季度创新药企业业绩预增全面统计与分析」，§2 全章是 2025 年年度事项（SSGJ-707/泽布替尼/药明康德 CRDMO/百济首次盈利）；scope 漂移，可直接与 query 原文对照证伪。"
+      },
+      {
+        "claimId": "c_kimi2",
+        "pass1Question": "T1/T3：SSGJ-707 首付款 12.5 亿美元单位是否正确？是否 2026Q1 事项？",
+        "status": "verified-correct",
+        "checkedBy": "pass2-external-search",
+        "evidence": "报告原文「三生国健…首付款高达12.5亿美元，刷新国产创新药出海纪录」。三生制药官网 2025-05-20 签约公告确认 12.5 亿美元首付+总额 60.5 亿美元；但交易发生于 2025 年 5 月，属 2025 年度事项，纳入 2026Q1 报告本身构成 scope 偏离，数字本身对。"
+      },
+      {
+        "claimId": "c_kimi3",
+        "pass1Question": "T4/T6：WP205 是否是万邦德 Q1 驱动项目？\"首期 1.2 亿元到账\"是否有公告？",
+        "status": "inconclusive",
+        "checkedBy": "pass2-external-search",
+        "evidence": "报告原文「万邦德…WP205研发合作首期1.2亿元到账」。万邦德 2026-03-06 业绩预告原文归因为\"仿制药向创新药战略转型初见成效\"，未具体说 WP205；雪球分析提到\"与海翔药业合作款项计入收入\"。Kimi 的项目名与金额精确但外部无公告级佐证。下一步：调万邦德 Q1 预告公告全文或投资者关系纪要。"
+      },
+      {
+        "claimId": "c_kimi4",
+        "pass1Question": "T1/T8：艾力斯是否已披露一季报实际数？应以实际还是预告口径入表？",
+        "status": "refuted",
+        "checkedBy": "pass2-external-search",
+        "evidence": "报告原文「艾力斯预计2026年第一季度实现营业收入15.5亿元…同比增长41.12%；预计实现归属于母公司所有者的净利润为5.9亿元…同比增长43.73%」。但 cninfo 2026-04-22 一季报已公告为 15.84 亿/+44.19%、6.36 亿/+54.94%；Kimi 报告发布时实际一季报已出，未更新。"
+      },
+      {
+        "claimId": "c_kimi5",
+        "pass1Question": "T1/T7：通化东宝 +3007.39% 是否在 Q1 query 范围内？是否为低基数放大？",
+        "status": "inconclusive",
+        "checkedBy": "pass3-logic",
+        "evidence": "报告原文「通化东宝2025年归母净利润12.19亿元…同比增长约3007.39%」。数据本身与通化东宝 2025 年年报量级一致，但属于 2025 全年数据非 Q1；且 3007% 是低基数放大效应。本任务范围不对通化东宝 2025 全年做穷尽核验，列 inconclusive。下一步：若继续追，调通化东宝 2025 年报扣非细项。"
+      },
+      {
+        "claimId": "c_manus1",
+        "pass1Question": "T1/T8：艾力斯 5.9 亿/+43.73% 是否已被一季报实际数替代？",
+        "status": "refuted",
+        "checkedBy": "pass2-external-search",
+        "evidence": "报告原文「艾力斯 688578.SH 5.9 亿元 43.73% 核心产品伏美替尼持续放量，市场需求提升」。与 c_kimi4/c_gemini4 同口径问题：一季报实际为 6.36 亿/+54.94%，Manus 未更新。"
+      },
+      {
+        "claimId": "c_manus2",
+        "pass1Question": "T4/T7：富祥药业被放在\"黑马领跑阵营\"首位，是否在表格层对非创新药驱动做标识？",
+        "status": "verified-correct",
+        "checkedBy": "pass3-logic",
+        "evidence": "报告原文主表「富祥药业 300497.SZ 5200万元-7500万元 2222.67%-3250.01% 扭亏为盈 新能源材料业务爆发，医药与合成生物协同发力」。表格头为\"预增黑马领跑阵营\"，分析段已提及新能源但表格层无边界标识；对比 MiroThink 显式 ★ 标记并入附表，Manus 边界识别逻辑欠缺。"
+      },
+      {
+        "claimId": "c_manus3",
+        "pass1Question": "T1/T6：纳微\"色谱填料 50%+ 同比增长\"是否有公告支持？",
+        "status": "inconclusive",
+        "checkedBy": "pass2-external-search",
+        "evidence": "报告原文「纳微科技…色谱填料和层析介质产品销售收入实现50%以上的同比增长」。纳微 Q1 预告公告为营收 +34.03%/归母 +123.69%，未直接披露\"色谱填料 50%+\"细分口径；可能来自投资者交流纪要。下一步：调纳微科技投资者关系活动记录。"
+      },
+      {
+        "claimId": "c_manus4",
+        "pass1Question": "T6：扭亏阵营 4 家是否有公告支持？未标\"待核实\"是否恰当？",
+        "status": "refuted",
+        "checkedBy": "pass3-logic",
+        "evidence": "报告原文「微芯生物 688321.SH 扭亏为盈 创新药研发成果逐步落地商业化…」等 4 家定性落锤。该 4 家在报告截稿日无 Q1 业绩公告（MiroThink 同一组条目明确写\"待核实\"）；Manus 直接定性，信源-结论错位。"
+      },
+      {
+        "claimId": "c_miro1",
+        "pass1Question": "T4：HSK39004 的适应症到底是什么？\"肺动脉高压\"是否与公开口径一致？",
+        "status": "refuted",
+        "vetoMode": "V2",
+        "checkedBy": "pass2-external-search",
+        "evidence": "报告原文「创新药HSK39004（一种用于治疗肺动脉高压的候选药物）的海外开发、生产和商业化权利授权给AirNexis」。外部核验（百度百科 + CDE 官网 2026-04-08 突破性疗法名单 + cninfo 海思科公告 + 东北证券研报）一致确认 HSK39004 是 PDE3/4 双重抑制剂，适应症为慢性阻塞性肺病（COPD），非肺动脉高压（PAH）。两种疾病分属不同治疗领域，T4 主体/适应症错，触发 V2 主体错一票否决。"
+      },
+      {
+        "claimId": "c_miro2",
+        "pass1Question": "T3：600 亿的单位到底是人民币还是美元？是否与权威口径一致？",
+        "status": "refuted",
+        "vetoMode": "V1",
+        "checkedBy": "pass2-external-search",
+        "evidence": "报告原文「据报道，2026年前三个月中国创新药出海授权总额已超600亿元人民币[20]，显示出海BD交易正从偶发事件演变为行业性趋势」。外部核验（央视新闻 2026-03-29 国家药监局通告 + 新浪财经 + 观察者网 + 今日头条）一致口径为 600 亿美元；人民币与美元换算约 7 倍量级差，T3 货币/量纲错，触发 V1 量级错一票否决。"
+      },
+      {
+        "claimId": "c_miro3",
+        "pass1Question": "T1：HSK39004 1.08 亿美元首付+9.55 亿美元里程碑是否与公告一致？",
+        "status": "verified-correct",
+        "checkedBy": "pass2-external-search",
+        "evidence": "报告原文「HSK39004…获得1.08亿美元首付款，潜在里程碑付款最高可达9.55亿美元」。海思科 2026-01 cninfo 公告 + 东北证券研报一致，首付款 1.08 亿美元（含 4000 万现金 + 6800 万股权）+ 最高 9.55 亿美元里程碑。"
+      },
+      {
+        "claimId": "c_miro4",
+        "pass1Question": "T5/T8：华海药业扣非下滑 42%-60% 是否与公告一致？归母+30%-48% 与扣非方向相反的成因是否为资产处置？",
+        "status": "verified-correct",
+        "checkedBy": "pass3-logic",
+        "evidence": "报告原文「华海药业…扣非净利润预计同比下降42%~60%…剔除资产处置收益后，核心制药业务实际处于下滑状态」。新浪财经 2026-04-15 + 巨潮公告华海药业 Q1 业绩预告原文确认扣非同比下降 42%~60%，资产处置为华海天衡 67% 股权；归母 +30%-48% 与扣非方向相反的因果链成立，非共识判断成立。"
+      },
+      {
+        "claimId": "c_miro5",
+        "pass1Question": "T4/T7：富祥药业是否被显式打上\"非创新药主业\"边界标识？",
+        "status": "verified-correct",
+        "checkedBy": "pass3-logic",
+        "evidence": "报告原文主表「富祥药业 300497 5,200万～7,500万元 +2,222.67%～+3,250.01% 扭亏为盈 2026-03-24 否（新能源材料为主驱动）」+ §3.1 详细说明「2026年Q1业绩爆发的核心驱动力来自新能源材料板块…严格而言不属于本报告核心统计范围…纳入本统计是基于\"业务范围更广但拥有医药相关业务\"的广义标准」。五份中唯一在表格层和正文层都做了边界标识。"
+      },
+      {
+        "claimId": "c_miro6",
+        "pass1Question": "T1：博腾股份 2300-3400 万元扭亏口径是否与公告一致？",
+        "status": "verified-correct",
+        "checkedBy": "pass2-external-search",
+        "evidence": "报告原文「博腾股份预计Q1归母净利润2,300万～3,400万元，同比扭亏为盈（上年同期亏损428万元）」。东方财富 + 巨潮资讯博腾股份业绩预告原文一致，扭亏口径、绝对值、营业收入 +8%~+12% 均匹配。"
+      }
+    ],
+    "dimensionChecklists": {
+      "R1": {
+        "items": [
+          {
+            "label": "是否抽取了承重 claim 清单（3~10 条，含 ≥1 条 logic）",
+            "passedFor": [
+              "CK04t2JWdh",
+              "J2u_zqRzsC",
+              "zrDCN40pou",
+              "XQ6xeIWxHv",
+              "j2IIajE6He"
+            ]
+          },
+          {
+            "label": "承重 claim 核验覆盖率是否 ≥85%",
+            "passedFor": [
+              "CK04t2JWdh",
+              "J2u_zqRzsC",
+              "zrDCN40pou",
+              "XQ6xeIWxHv",
+              "j2IIajE6He"
+            ]
+          },
+          {
+            "label": "每份报告是否选了 3~5 条\"精确承重数字\"对一手源核验",
+            "passedFor": [
+              "CK04t2JWdh",
+              "J2u_zqRzsC",
+              "zrDCN40pou",
+              "XQ6xeIWxHv",
+              "j2IIajE6He"
+            ]
+          },
+          {
+            "label": "所有 veto 候选是否完成至少一次外部验证后才下结论",
+            "passedFor": [
+              "CK04t2JWdh",
+              "J2u_zqRzsC",
+              "zrDCN40pou",
+              "XQ6xeIWxHv",
+              "j2IIajE6He"
+            ]
+          },
+          {
+            "label": "关键量纲/占比/汇率是否都动手算过一遍",
+            "passedFor": [
+              "CK04t2JWdh",
+              "J2u_zqRzsC",
+              "zrDCN40pou",
+              "XQ6xeIWxHv",
+              "j2IIajE6He"
+            ]
+          },
+          {
+            "label": "跨段落是否做了至少 1 处口径一致性交叉检查",
+            "passedFor": [
+              "CK04t2JWdh",
+              "j2IIajE6He",
+              "XQ6xeIWxHv"
+            ]
+          },
+          {
+            "label": "核验过程是否都落到 report 正文「事实核验记录」章节",
+            "passedFor": [
+              "CK04t2JWdh",
+              "j2IIajE6He"
+            ]
+          }
+        ]
+      },
+      "R2": {
+        "items": [
+          {
+            "label": "列出 query 的核心诉求与锚点",
+            "passedFor": [
+              "CK04t2JWdh",
+              "J2u_zqRzsC",
+              "zrDCN40pou",
+              "XQ6xeIWxHv",
+              "j2IIajE6He"
+            ]
+          },
+          {
+            "label": "每个核心诉求是否都能在报告里找到正面回应段落",
+            "passedFor": [
+              "CK04t2JWdh",
+              "XQ6xeIWxHv",
+              "j2IIajE6He",
+              "J2u_zqRzsC"
+            ]
+          },
+          {
+            "label": "每个锚点是否都被报告正确识别与响应",
+            "passedFor": [
+              "CK04t2JWdh",
+              "XQ6xeIWxHv",
+              "j2IIajE6He"
+            ]
+          },
+          {
+            "label": "是否识别并回应 query 的\"全面、不遗漏\"潜在诉求",
+            "passedFor": [
+              "CK04t2JWdh",
+              "XQ6xeIWxHv",
+              "j2IIajE6He"
+            ]
+          },
+          {
+            "label": "正文是否存在跑题或无关填充段（>10% 篇幅）",
+            "passedFor": [
+              "CK04t2JWdh",
+              "J2u_zqRzsC",
+              "XQ6xeIWxHv",
+              "j2IIajE6He"
+            ]
+          }
+        ]
+      },
+      "R3": {
+        "items": [
+          {
+            "label": "随机抽 3 个核心判断是否都能找到支撑证据/推导",
+            "passedFor": [
+              "CK04t2JWdh",
+              "j2IIajE6He",
+              "XQ6xeIWxHv",
+              "zrDCN40pou"
+            ]
+          },
+          {
+            "label": "是否有 ≥1 处超越\"是什么\"的二阶/三阶追问",
+            "passedFor": [
+              "CK04t2JWdh",
+              "j2IIajE6He"
+            ]
+          },
+          {
+            "label": "是否有非共识但有据的观点",
+            "passedFor": [
+              "j2IIajE6He",
+              "CK04t2JWdh"
+            ]
+          },
+          {
+            "label": "关键争议点是否呈现对立视角或反方证据",
+            "passedFor": [
+              "j2IIajE6He",
+              "CK04t2JWdh"
+            ]
+          },
+          {
+            "label": "论据→结论链条是否存在明显跳跃",
+            "passedFor": [
+              "CK04t2JWdh",
+              "j2IIajE6He",
+              "XQ6xeIWxHv"
+            ]
+          }
+        ]
+      },
+      "R4": {
+        "items": [
+          {
+            "label": "列出做决策需要覆盖的关键维度清单（≥3 项）",
+            "passedFor": [
+              "CK04t2JWdh",
+              "j2IIajE6He",
+              "XQ6xeIWxHv",
+              "zrDCN40pou"
+            ]
+          },
+          {
+            "label": "每个关键维度是否都在报告里找到对应段落",
+            "passedFor": [
+              "CK04t2JWdh",
+              "j2IIajE6He",
+              "XQ6xeIWxHv",
+              "zrDCN40pou"
+            ]
+          },
+          {
+            "label": "章节结构是否支撑结论",
+            "passedFor": [
+              "CK04t2JWdh",
+              "j2IIajE6He",
+              "XQ6xeIWxHv"
+            ]
+          },
+          {
+            "label": "适用场景下是否有必要的数据表/测算/模型",
+            "passedFor": [
+              "CK04t2JWdh",
+              "J2u_zqRzsC",
+              "zrDCN40pou",
+              "XQ6xeIWxHv",
+              "j2IIajE6He"
+            ]
+          },
+          {
+            "label": "是否存在\"虚假覆盖\"",
+            "passedFor": [
+              "CK04t2JWdh",
+              "j2IIajE6He"
+            ]
+          }
+        ]
+      },
+      "R5": {
+        "items": [
+          {
+            "label": "列出 take-away / 建议条目（≥2 条）",
+            "passedFor": [
+              "CK04t2JWdh",
+              "j2IIajE6He",
+              "XQ6xeIWxHv"
+            ]
+          },
+          {
+            "label": "take-away 是否具体可执行",
+            "passedFor": [
+              "CK04t2JWdh",
+              "j2IIajE6He",
+              "XQ6xeIWxHv"
+            ]
+          },
+          {
+            "label": "是否给出用户自己公开搜索难以得到的信息/观察",
+            "passedFor": [
+              "CK04t2JWdh",
+              "j2IIajE6He"
+            ]
+          },
+          {
+            "label": "是否提供了让用户\"换角度\"的新框架",
+            "passedFor": [
+              "CK04t2JWdh",
+              "j2IIajE6He"
+            ]
+          },
+          {
+            "label": "对明显不确定的事项是否主动标了 caveat",
+            "passedFor": [
+              "CK04t2JWdh",
+              "j2IIajE6He"
+            ]
+          }
+        ]
+      }
+    },
+    "verificationBudget": {
+      "targetMinutes": 45,
+      "actualMinutes": 120,
+      "passesCompleted": [
+        "read",
+        "claim-inventory",
+        "pass1",
+        "pass2",
+        "pass3",
+        "score",
+        "feedback"
+      ],
+      "claimsSkippedDueToBudget": 0,
+      "claimsOutOfScope": 0,
+      "notes": "v3.6 Pass 2 三条强制核验动作执行结果：A) 专有名词+分类词反查：HSK39004+适应症 → COPD（百度百科/CDE/cninfo）；Arthrosi+公司+业务 → AR882 痛风药；富祥药业+主业 → 锂电添加剂 VC/FEC；WP205+万邦德 → 无公告级证据（inconclusive）。B) 大额数字货币量纲对照：1.08 亿美元、12.5 亿美元、600 亿（MiroThink 写\"元人民币\"与央视/新浪口径 600 亿美元冲突 7 倍）。C) scope 词对齐 query：\"一季报\"==2026Q1：Kimi 把 scope 扩到 2025 年，refuted；其余四家均对齐。同源证据复用：艾力斯一季报实际数覆盖 c_sophia1/c_gemini4/c_kimi4/c_manus1/c_miro6；HSK39004 首付款覆盖 c_sophia2/c_miro3；HSK39004 适应症覆盖 c_miro1。"
+    },
+    "crossProductInsights": {
+      "focusProductName": "SophiaAI v5",
+      "strongerThan": [
+        {
+          "dimension": "R1",
+          "vsProducts": [
+            "Gemini",
+            "Kimi",
+            "Manus",
+            "MiroThink"
+          ],
+          "gapSummary": "v5 在艾力斯口径上是五份中唯一使用一季报实际数（6.36 亿/+54.94%），其他四家都停留在 3 月预告口径；且海外大型药企横向对照只有 v5 做到。",
+          "evidenceQuotes": [
+            {
+              "product": "SophiaAI v5",
+              "quote": "「艾力斯 A股（SH688578） +54.94% 6.36 三款产品医保覆盖扩容后销售增长」（一季报实际数）"
+            },
+            {
+              "product": "MiroThink",
+              "quote": "「艾力斯 688578 约5.9亿元 +43.73% 预增 2026-03-（待核实）」（业绩预告口径，未更新）"
+            }
+          ],
+          "claimRefs": [
+            "c_sophia1",
+            "c_miro6",
+            "c_gemini4",
+            "c_kimi4",
+            "c_manus1"
+          ]
+        },
+        {
+          "dimension": "R4",
+          "vsProducts": [
+            "Gemini",
+            "Manus",
+            "MiroThink"
+          ],
+          "gapSummary": "v5 是五份中唯一做海外大型药企（强生/West/Twist/Danaher）横向对照的；其他四家全部聚焦 A/H 股，缺全球视角。",
+          "evidenceQuotes": [
+            {
+              "product": "SophiaAI v5",
+              "quote": "「强生（JNJ.US） 美股 调整后EPS+9.6% 创新药业务增长11.2%，Darzalex（+22.5%）、Carvykti（+62.1%）等产品放量」"
+            },
+            {
+              "product": "MiroThink",
+              "quote": "主表仅 9 家 A 股，边界附表与数据可靠性章节都未提海外对照"
+            }
+          ],
+          "claimRefs": [
+            "c_sophia4"
+          ]
+        }
+      ],
+      "weakerThan": [
+        {
+          "dimension": "R3",
+          "vsProducts": [
+            "MiroThink"
+          ],
+          "gapSummary": "v5 虽给了共性警示（\"区分非经常性收益\"），但未像 MiroThink 那样对每家做\"经常性/一次性/低基数\"三分层；MiroThink 在 R3 仍保持 A 档非共识判断质量（华海扣非 -42%~-60%）即便有 veto 也未破坏。",
+          "evidenceQuotes": [
+            {
+              "product": "SophiaAI v5",
+              "quote": "「此类收益多为一次性资产处置或投资收益，与企业核心创新业务无关，属于短期业绩增厚因素」（点到即止，未做结构化分层）"
+            },
+            {
+              "product": "MiroThink",
+              "quote": "「华海药业式的\"一次性收益驱动预增\"在Q2及以后将形成高基数压力，而富祥药业的新能源材料业务受锂电市场周期影响，持续性存在不确定性」（逐家可持续性评估）"
+            }
+          ],
+          "claimRefs": [
+            "c_miro4"
+          ]
+        }
+      ],
+      "sharedWeakness": [
+        {
+          "dimension": "R1",
+          "acrossProducts": [
+            "Gemini",
+            "Kimi",
+            "Manus",
+            "MiroThink"
+          ],
+          "gapSummary": "四份报告（除 SophiaAI v5）对艾力斯口径都停留在 3 月业绩预告（5.9 亿/+43.73%），4 月 22 日一季报实际数（6.36 亿/+54.94%）未被替换；体现出一个共性工程缺陷——报告发布日晚于一季报披露日，但评测官/编辑未做\"白名单替换\"。",
+          "suggestion": "建立\"已披露一季报白名单\"规则：对已发布正式一季报的公司，强制以 cninfo/巨潮一季报原文为唯一口径，业绩预告不再进入最终数值。"
+        },
+        {
+          "dimension": "R2",
+          "acrossProducts": [
+            "SophiaAI v5",
+            "Gemini",
+            "Kimi",
+            "Manus",
+            "MiroThink"
+          ],
+          "gapSummary": "五份对\"全面、不遗漏\"的 query 诉求响应度差异显著（SophiaAI 14 家 vs Gemini 9 家 vs Kimi 扩到 2025 全年）；\"是否纳入 CDMO/CXO/上游耗材/非医药跨界\"等口径均未事先声明。",
+          "suggestion": "每份报告首段加一条\"口径宣言\"：显式声明是否纳入 CDMO/CXO/上游耗材/非医药跨界主业，以及是否把业绩预告与正式一季报一并收口。"
+        }
+      ]
+    }
+  },
+  "report": "# EV-0007 评测报告（v3.6 · 独立重评）\n\n## 一、评测结论\n\n**本轮最终排序**：**SophiaAI v5（8.0 优秀） > Manus（6.3 合格） > Gemini（6.0 合格） > Kimi（4.9 待改进） > MiroThink（5.8 → 封顶 6.9，触发双 veto 合格）**\n\n本轮使用 v3.6 新方法论独立重评（不参考 v1/v2）。MiroThink 在事实覆盖矩阵 T4 主体类（HSK39004 适应症）与 T3 货币量纲类（600 亿元/美元）两个承重位置各有一处 P0 错误，经外部核验分别落锤为 V2 主体错与 V1 量级错，按契约双 veto 封顶 6.9；虽然 MiroThink 在 R3/R4/R5 仍保持 A 档水准（非共识判断质量和结构完整度五份最强），但 R1 两处承重错误必须按硬约束处罚。SophiaAI v5 在 R1 数据新鲜度（艾力斯一季报实际数）和 R4 全球对照（强生/West/Twist/Danaher）上独家领先，R2~R5 均达 A，取得本轮最高分。\n\n## 二、按维度展开\n\n### 维度×产品交叉验证矩阵（承重事实一致性）\n\n| 承重锚点 | SophiaAI v5 | Gemini | Kimi | Manus | MiroThink | 外部核验结论 |\n|---|---|---|---|---|---|---|\n| 艾力斯 Q1 净利（实际 6.36 亿/+54.94%） | **唯一正确**（6.36/+54.94%） | 冲突（5.9/+43.73% 预告） | 冲突（5.9/+43.73% 预告） | 冲突（5.9/+43.73% 预告） | 冲突（5.9/+43.73% 预告） | cninfo 2026-04-22 一季报 6.36 亿/+54.94% |\n| 海思科 HSK39004 首付款 1.08 亿美元 | 一致 | 缺 | 一致 | 一致（未写具体金额） | 一致 | cninfo 海思科公告+东北证券研报 |\n| **HSK39004 适应症** | 未出现 | 未出现 | 未出现 | 未出现 | **错**（写成\"肺动脉高压\"） | 百度百科/CDE 2026-04-08 突破性疗法名单/cninfo 均为 COPD |\n| **2026Q1 BD 出海总额 600 亿（单位）** | 未出现 | 一致（美元） | 未出现 | 未出现 | **错**（写成\"人民币\"） | 央视 2026-03-29/新浪/观察者网 均为美元 |\n| 一品红 5.83 亿 Arthrosi 投资收益 | 一致 | 缺 | 缺 | 缺 | 缺 | 证券日报/同花顺一季报报道 |\n| 华海药业扣非 -42%~-60%（预增实为资产处置） | 一致（文字段） | 缺 | 缺 | 一致 | **主动识别并详述** | 新浪财经 2026-04-15/巨潮公告 |\n| 富祥药业归类是否显式标\"非创新药主业\" | 文字段澄清 | 未归类 | 文字段澄清 | **表格未标** | **显式★+边界附表** | 巨潮公告主业为锂电添加剂 |\n| Query scope（2026Q1 一季报） | 严格 | 严格 | **扩到 2025 全年** | 严格 | 严格 | query 原文仅问 2026Q1 |\n\n读法：本轮最大的看点不是\"谁覆盖得全\"，而是\"谁的事实经外部反查仍能站住\"。MiroThink 在结构和深度上五份最强，但在两个承重位置都出现 P0 错误，这正是 v3.6 T4/T3 类扫描要解决的问题。\n\n### R1 准确性（0.40）\n\n- **SophiaAI v5（A/8）**：四条承重数字全部经外部落锤——艾力斯 6.36 亿/+54.94%（cninfo 2026-04-22）、一品红 5.94 亿/+950.53% 含 5.83 亿 Arthrosi 投资收益（证券日报/同花顺）、海思科 1.08 亿美元首付含 4000 万美元现金（cninfo + 东北证券研报）、恒瑞 22.82 亿/+21.78%（cninfo）。五份中唯一使用艾力斯一季报实际口径。\n- **MiroThink（D/2 + veto）**：原文「创新药HSK39004（一种用于治疗肺动脉高压的候选药物）的海外开发、生产和商业化权利授权给AirNexis」—— **why 三联**：引文 + 外部核验（百度百科 + CDE 2026-04-08 突破性疗法名单 + cninfo 海思科公告 + 东北证券研报\"PDE3/4 双重抑制剂治疗 COPD\"）+ 推理（HSK39004 作为承重关键产品被首次提及时就写错适应症，会直接误导读者对海思科业绩来源的判断），触发 V2 主体错。另一处原文「2026年前三个月中国创新药出海授权总额已超600亿元人民币」—— 引文 + 外部核验（央视 2026-03-29 国家药监局通告 + 新浪/观察者网三源一致为\"600 亿美元\"）+ 推理（人民币 vs 美元相差约 7 倍量级，会让读者对出海节奏形成量级误判），触发 V1 量级错。两处均在承重 claimInventory 且经 Pass 2 外部核验落锤，双 veto 叠加，总分封顶 6.9。\n- **Kimi（C/4）**：单条数字多数可核，但 scope 错位——主结构把 Query 所问 2026Q1 扩展到\"2025 全年 + 2026Q1\"，§2 全章是 2025 年年度事项。艾力斯沿用预告口径 5.9 亿/+43.73% 未更新；「万邦德 WP205 首期 1.2 亿元到账」缺公告佐证。\n- **Manus / Gemini（B/6）**：主关键数字基本与公告一致；均未更新艾力斯一季报实际数；Manus 富祥主表未标识，Gemini 百奥赛图机构预测与公告并列入表。\n\n### R2 相关性（0.15）\n\nquery 明文「创新药企业中一季报提出预增的公司全面统计 + 预增原因」。SophiaAI v5（A）覆盖 14 家国内 + 4 家美股，scope 最严格；Manus（A）按三阵营分层贴合\"全面统计\"诉求；MiroThink（A）特设\"边界案例\"和\"数据可靠性说明\"两章显式回应\"不遗漏\"。Gemini（B）scope 对但规模不足。**Kimi（C）严重跑题**：原文「2025年及2026年第一季度创新药企业业绩预增全面统计与分析」，Query 原文只问 2026Q1 一季报，可直接证伪。\n\n### R3 论证深度（0.20）\n\nMiroThink（A）最强——对每家做\"经常性/一次性/低基数\"分层，非共识判断「华海药业扣非下滑 42%~60%，预增实为资产处置，核心制药业务实际下滑」成立且有证据。SophiaAI v5（A）在每段 So What 给二阶追问。Manus/Kimi/Gemini（B）多停在现象描述。\n\n### R4 完备性（0.10）\n\nSophiaAI v5（A）国内 14 家 + 海外 4 家覆盖最广。MiroThink（S/10）结构最完整：主表 + 边界附表 + 逐家分析 + 共性因素矩阵 + 数据可靠性说明 + 延伸探索方向六层；R4 不受 veto 影响（veto 只封顶总分）。Manus/Kimi（B）国内覆盖尚可。Gemini（B）规模偏薄。\n\n### R5 决策价值（0.15）\n\nMiroThink（A）给出三条延伸探索方向（估值比较/待披露展望/全年展望）可执行性强；SophiaAI v5（A）每段 So What 给可操作建议。Manus/Kimi（B）方向性判断到位但具体性不足。Gemini（B）共性话术偏多。\n\n## 三、额外重点问题\n\n### 3.1 MiroThink HSK39004 适应症错（V2 主体错 / T4 类）\n\n- **原文引文（MiroThink §3.2）**：「**2026年1月将创新药HSK39004（一种用于治疗肺动脉高压的候选药物）的海外开发、生产和商业化权利授权给AirNexis，获得1.08亿美元首付款，潜在里程碑付款最高可达9.55亿美元**」\n- **外部核验**：\n  - 百度百科 `HSK39004`：「是海思科医药集团股份有限公司自主研发的1类创新药，是一种 **PDE3/4 双重抑制剂**…用于慢性阻塞性肺病（**COPD**）的辅助维持治疗」\n  - CDE 2026-04-08 cninfo 公告：「HSK39004 吸入粉雾剂正式被国家药品监督管理局药品审评中心纳入《突破性治疗品种名单》」——所有 2024-2026 多次公告口径均为 COPD\n  - 东北证券研报：「HSK39004 系 PDE3/4 双重抑制剂，是 COPD 领域的全新治疗药物」\n- **推理链**：HSK39004 是本批 MiroThink 核心承重事实（贡献海思科 Q1 超 900% 增速的单一事件）→ 首次被提及时就写错主要适应症 → 肺动脉高压（PAH）与慢性阻塞性肺病（COPD）是两种完全不同的疾病分类 → T4 主体错，触发 V2 veto。\n\n### 3.2 MiroThink \"600 亿元人民币\" 量级错（V1 量级错 / T3 类）\n\n- **原文引文（MiroThink §4.1 第二段）**：「**据报道，2026年前三个月中国创新药出海授权总额已超600亿元人民币[20]，显示出海BD交易正从偶发事件演变为行业性趋势**」\n- **外部核验**：\n  - 央视新闻 2026-03-29 国家药监局通告：「今年第一季度，我国创新药对外授权交易额**超过 600 亿美元**，接近 2025 年全年的一半」\n  - 新浪财经、观察者网、今日头条 2026-04 多源一致：**600 亿美元**\n  - Kimi/Gemini/SophiaAI 三份其他报告均写作 \"600 亿美元\"（单位一致）\n- **推理链**：人民币 vs 美元相差 ~7 倍 → 600 亿美元 ≈ 4300 亿人民币 → MiroThink 写 600 亿元人民币会让读者把实际 4300 亿体量误判为 600 亿 → 在\"出海 BD 交易正从偶发事件演变为行业性趋势\"这一关键判断上直接造成量级误读 → T3 货币量纲错，触发 V1 veto。\n\n### 3.3 艾力斯 Q1 口径时效（五份中四份共性失分）\n\n- **引文对比**：\n  - SophiaAI v5 主表：「艾力斯 A 股（SH688578） +54.94% 6.36 三款产品医保覆盖扩容后销售增长」（一季报实际）\n  - Gemini/Manus/MiroThink 主表：「艾力斯 5.9 亿 +43.73%」（3 月预告口径）\n  - Kimi §3.2.1：「预计实现营业收入 15.5 亿元…同比增长 41.12%；…净利润为 5.9 亿元…同比增长 43.73%」（预告口径）\n- **外部核验（cninfo 2026-04-22）**：「艾力斯（688578.SH）归母净利润 6.36 亿元，同比增长 54.94%；营业收入 15.84 亿元，同比 +44.19%」\n- **推理链**：报告发布日均晚于 4-22 → 正式一季报已在公告池可取 → 四份产品均未做\"预告→一季报实际\"替换 → 这是 R1 共性失分点，也是 v3.6 sharedWeakness 的直接证据。\n\n## 四、各主体优缺点与建议\n\n### SophiaAI v5（8.0 优秀，聚焦）\n\n**做得好**：\n1. R1 艾力斯一季报实际口径（6.36 亿/+54.94%），五份中唯一正确——**why 三联**：原文 + cninfo 实际数 + 推理（跟齐一季报实际数是 R1 正确性的底线）。\n2. R4 覆盖最广，含海外 4 家大型药企对标——**why 三联**：原文「强生 Carvykti +62.1%…West Pharmaceutical GLP-1 类药物注射组件需求爆发」+ 外部核验（sahmcapital/投资者报告）+ 推理（给国内投资者一个\"中国 vs 全球\"的参照系）。\n3. R5 So What 都给可操作提示（\"区分非经常性收益\"\"聚焦医保谈判布局\"），决策增量实。\n\n**有问题的地方**：\n1. R1 富祥药业被列入\"创新药产业链\"主表未显式标识非医药驱动——**why 三联**：原文表 1 + 巨潮公告驱动为锂电 VC/FEC + 推理（读者停在表格就会当作创新药强势标的）；但文字段已澄清，不触发 veto。\n2. R3 Why 段部分归纳偏共性（\"医保政策成为核心催化剂\"），未像 MiroThink 那样对每家做\"经常性/一次性/低基数\"三分层。\n\n**建议**：主表加类型列（创新药/上游耗材/跨界非医药）；对每家加\"可持续性雷区\"标签；在 So What 补具体公司操作级建议。\n\n### Gemini（6.0 合格）\n\n**做得好**：scope 锁 Q1 正确；五家主关键数字与公告一致。\n\n**有问题的地方**：\n1. R4 5470 字 3 张主表颗粒度不足，誉衡/博腾/华海等已预告公司缺席。\n2. R3 Why 几乎公告直抄，无二阶追问。\n3. R1 百奥赛图机构预测与公告数据并列入表；扭亏为盈阵营 4 家直接定性无公告支撑；艾力斯未更新至一季报实际数。\n\n**建议**：扩大规模至 9 家主表 + 4 家待核实；机构预测物理隔离；每家补\"业绩质量评估\"三要素。\n\n### Kimi（4.9 待改进）\n\n**做得好**：R4 产业全景完整；头部标的主关键数字可核。\n\n**有问题的地方**：\n1. **R2 严重跑题**：原文「2025 年及 2026 年第一季度创新药企业业绩预增全面统计与分析」——**why 三联**：引文 + query 原文只问 2026Q1 + 推理（scope 漂移导致 Q1 清单被 2025 叙事淹没）。\n2. R1 艾力斯未更新至一季报实际数；「WP205 首期 1.2 亿元到账」缺公告佐证。\n3. R5 34000+ 字篇幅的决策增量不匹配。\n\n**建议**：主结构改造为\"Q1 清单 → Q1 原因 → 延伸 2025 背景\"三层；预告口径替换为实际数；综合报道降级到附录。\n\n### Manus（6.3 合格）\n\n**做得好**：scope 锁 Q1 正确，三阵营分层符合 query 诉求；国内名单覆盖接近 SophiaAI；主表数字基本与公告一致。\n\n**有问题的地方**：\n1. 富祥药业放入\"黑马领跑阵营\"主表首位但表格未标识非创新药驱动——**why 三联**：原文表 + 分析段已提及新能源 + 推理（边界识别藏在分析段而非主表）。\n2. 艾力斯沿用预告口径未更新。\n3. 扭亏为盈阵营直接定性（微芯/泽璟/美迪西/欧林），未标\"待核实\"。\n\n**建议**：主表加类型列；预告口径替换；扭亏公司统一标注\"待核实 + 下一步动作\"。\n\n### MiroThink（6.9 合格，双 veto 封顶）\n\n**做得好**：\n1. R3 五份最强——对每家做\"经常性/一次性/低基数\"三分层——**why 三联**：原文「华海药业…扣非净利润预计同比下降 42%~60%…剔除资产处置收益后，核心制药业务实际处于下滑状态」+ 新浪财经 2026-04-15 原始公告核验 + 推理（归母与扣非方向相反 → 主业承压 → 预增反而是卖点）；非共识判断成立。\n2. R4 结构完整度最高，六层结构（主表+边界附表+逐家分析+共性矩阵+数据可靠性说明+延伸探索）。\n3. R5 三条延伸探索方向决策可操作性强。\n4. R1 富祥药业显式 ★ 标识为\"非创新药主业\"，是五份中唯一在表格层做边界隔离的。\n\n**有问题的地方**（R1 两处承重错误同时触发 veto）：\n1. **HSK39004 适应症错**（T4/V2）：原文「治疗肺动脉高压的候选药物」—— 外部核验三源一致（百度百科+CDE+cninfo）为 COPD；推理：作为本批核心承重产品首次被提及即写错适应症，直接扭曲读者对海思科业绩来源的判断。\n2. **600 亿元人民币量级错**（T3/V1）：原文「2026 年前三个月中国创新药出海授权总额已超 600 亿元人民币」—— 权威口径为 600 亿美元；推理：~7 倍量级差会让读者把 4300 亿体量误判为 600 亿。\n3. R1 艾力斯沿用预告口径（虽然\"数据可靠性说明\"章主动披露截止日 2026-04-19，但本质仍是时效性问题）。\n\n**建议**：\n1. 对每个药物名都做\"+适应症\"公告级反查（HSK39004 → COPD 是 2024 至今稳定口径）；\n2. 大额数字前加\"货币/量纲校对\"流程；\n3. 一季报披露后立即用实际数替换预告口径；\n4. \"待核实\"条目补\"下一步核验动作\"。\n\n---\n\n**结语**：本轮 v3.6 独立评测最终确认了 R1 在事实准确性上的根本地位。MiroThink 在结构、深度、决策价值上均领先，但两处 P0 承重错误（主体错 + 量级错）触发双 veto，这不是\"评测官小题大做\"，而是 v3.6 T4 主体类/T3 货币量纲类扫描矩阵为证据——即使结构再完美，承重事实被外部三源落锤为错，就必须按契约处罚。SophiaAI v5 的领先主要来自\"愿意用一季报实际数代替业绩预告\"和\"愿意覆盖海外对照\"这两个工程化习惯，而不是某一篇华丽的行文。对 Sophia 研发的核心建议是：把\"艾力斯实际数替换预告\"这种看起来机械的工序做成 hard rule，才能在下一轮 v4 与竞品拉开更稳的差距。\n\n---\n\n## 五、历史一致性闸门记录（v3.6 最后一步）\n\n读取 v2 作为对照：\n\n- **SophiaAI v5**：v2=6.3 / 本轮=8.0，Δ=+1.7，跨档（合格→优秀）。**deltaReason**：v2 在 R1 上误把 SophiaAI 艾力斯净利额读成 5.94 亿（实际原文 5.94 亿是一品红行，艾力斯对应的是 6.36 亿行），导致错扣一档；本轮 v3.6 T8 统计口径一致性扫描时直接命中 SophiaAI v5 原文「艾力斯 A 股（SH688578） +54.94% 6.36」，纠正 v2 误判；同时 R4 补上海外对照的显式加分。属 v2 误判修正，不是规则变更。\n- **MiroThink**：v2=7.4 / 本轮=6.9 封顶（名义 5.8），Δ=-0.5 且 veto 状态翻转（v2=false → 本轮=true）。**deltaReason**：v2 在 claim 抽取阶段未把 HSK39004 适应症（T4）与 600 亿元/美元（T3）两个承重错误纳入 inventory，导致 Pass 2 无核验触发；本轮 v3.6 强制执行 T1~T8 事实覆盖矩阵，T4 主体类和 T3 货币量纲类都必须扫描，两处 P0 错误被独立抓到并经外部三源落锤。属于 v3.6 新方法论发现的 v2 漏检，不是评测官情绪翻转。\n- **Manus**：v2=5.5 / 本轮=6.3，Δ=+0.8。**deltaReason**：R1 维度从 C 调回 B。v2 中对 Manus R1 档位判定与 Kimi 过于接近，实际 Manus 主关键数字（海思科/万邦德/富祥/纳微/博腾/金城/誉衡/华海）与公告一致率显著高于 Kimi，R1 应落在 B 而非 C；本轮按 v3.6 事实覆盖矩阵重新核验已修正。\n- **Gemini**：v2=4.3 / 本轮=6.0，Δ=+1.7，跨档（待改进→合格）。**deltaReason**：v2 因 v3.5 perReportFeedback 密度 + 交叉矩阵等新硬约束将 Gemini R3/R4/R5 全部从 B 降到 C，但 Gemini 在这些维度的实际质量未变；本轮按 v3.6 判定\"结构薄但正文贴题、数字可核\"仍应落在 B 档（合格下限），不应该因结构要求把它降到\"待改进\"。属 v2 惩罚过重，本轮纠回。\n- **Kimi**：v2=4.9 / 本轮=4.9，Δ=0，无跨档。保持与 v2 一致（严重跑题结论稳定）。\n\n历史闸门结论：本轮 v3 的 4 处翻转全部有新证据支持（事实覆盖矩阵主动抓到的 P0 / T8 口径自查修正 / 档位判定纠偏），符合 v3.6 deltaReason 规则，无需回退。\n"
+}

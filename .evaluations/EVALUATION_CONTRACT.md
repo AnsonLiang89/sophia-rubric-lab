@@ -1,4 +1,4 @@
-# Sophia Rubric Lab · 评测契约 v3.5
+# Sophia Rubric Lab · 评测契约 v3.6
 
 > 这是一份给 **LLM 评测官（Sophia）** 和 **Sophia Rubric Lab 网站** 共同遵守的工作契约。
 >
@@ -13,22 +13,29 @@
 > - 完整 outbox 示例（参考骨架）：`./EVALUATION_CONTRACT_EXAMPLE.json`
 > - 工程侧沉淀与历史踩坑：项目根 `.workbuddy/memory/MEMORY.md`
 
+> 🆕 **契约版本 3.6（2026-04-28 生效）** —— **事实准确性评测方法升级 + 跨版本稳定性闸门**：
+>
+> - 🧭 **事实覆盖矩阵（factCoverageMatrix）硬约束**：抽 claim 前必须先扫 T1~T8 八类事实类型（数字/时间/货币量纲/主体或适应症/因果/信源/范围scope/统计口径），每类至少给出"有/无/原因"的显式覆盖记录；**每个"有"的类别必须至少有 1 条 claim 进 claimInventory**。
+> - 🔦 **Pass 1 疑点主动激发**：每条 claim 必须附 `pass1Question`（具体怀疑点），而不是简单打 clean / suspicious 标签；没有问题就无法进入 Pass 2。
+> - 🛡 **Pass 2 三条强制核验动作**：无论 inventory 抽了几条，每份报告都必须做：A）专有名词 + 分类词反查（药物名+适应症/公司名+主业）；B）大额数字（≥1亿 或 ≥3位数百分比）做货币/量纲/单位显式对照；C）scope 词逐条比对 query 原文。三条动作结果落在 `verificationBudget.notes`。
+> - 🪜 **历史一致性闸门（最后一步）**：本轮结论独立定稿后再看上一版 outbox；同 reportId 总分 Δ≥1.0 或跨档（含 veto 翻转）必须写 `overallScores[].deltaReason`；若无新证据支持变动，必须回退本轮结论与上一版保持一致。**历史参考只发生在评测最后一步，不允许在开头或中途引用**。
+>
+> 🎯 **v3.6 的本质**：把"抽样靠直觉 + 核验靠清单"改为"先扫类型 + 再抽 claim + 再激发疑点 + 再强制核验动作"，让事实错误漏检从"系统缺口"降为"可审计缺漏"。首版评测（无历史）也能独立抓到 P0 级错误。
+
 > 🆕 **契约版本 3.5（2026-04-28 生效）** —— **详实度与效率双优化**（评测语义增强）：
 >
-> - 🧭 **交叉验证前置**：正文第二段（按维度展开）必须含“维度×产品交叉验证矩阵”，先对齐同一承重点在各产品间的一致/冲突/遗漏，再给档位结论。
-> - 🔗 **why 三联证据硬化**：高影响判断（尤其降档点与亮点）必须同时给出“原文引文 + 外部核验 + 推理链”，禁止只给结论。
-> - 📌 **inconclusive 收敛约束**：允许 `inconclusive`，但必须写明“当前不可核原因 + 下一步核验动作”；且占比不应成为常态（建议 ≤30%）。
-> - ⚡ **效率补丁**：Pass 2 改为“承重优先分层（P0/P1/P2）+ 信源复用”，减少重复检索，提升核验吞吐。
+> - 🧭 **交叉验证前置**：正文第二段（按维度展开）必须含"维度×产品交叉验证矩阵"，先对齐同一承重点在各产品间的一致/冲突/遗漏，再给档位结论。
+> - 🔗 **why 三联证据硬化**：高影响判断（尤其降档点与亮点）必须同时给出"原文引文 + 外部核验 + 推理链"，禁止只给结论。
+> - 📌 **inconclusive 收敛约束**：允许 `inconclusive`，但必须写明"当前不可核原因 + 下一步核验动作"；且占比不应成为常态（建议 ≤30%）。
+> - ⚡ **效率补丁**：Pass 2 改为"承重优先分层（P0/P1/P2）+ 信源复用"，减少重复检索，提升核验吞吐。
 
 > **契约版本 3.4（2026-04-28 生效）** —— **taskId 扁平化**（结构性修复，非评测规则变更）：
 >
 > - 🗂️ **taskId 语义变更**：`taskId` 从 `{queryCode}-{nanoid6}` 简化为 **直接等于 `queryCode`**（如 `"EV-0001"`）。同一 query 的多轮评测不再生成新目录，而是累积写入 `outbox/EV-0001/v{N+1}.json`。inbox 同步改为每个 query 一个 `EV-0001.json`（POST 已存在时按 `candidateId` 合并 candidates）。
-> - 🎯 **修复目标**：v3.3 及以前同一 query 被多次"召唤评测"时会生成碎片化目录（`EV-0001-abc/`、`EV-0001-xyz/` …），前端 `pickLatestTaskByQueryCode` 只展示最新那个，历史评测被"埋了"。v3.4 后所有版本都被 `flattenTaskVersions` 按 mtime 统一编号，ReportPage 下拉可完整切换。
-> - 🔄 **历史目录迁移**：通过 `scripts/migrate-consolidate-outbox.mjs` 一次性把 `outbox/EV-XXXX-suffix/vN.json` 按 mtime 合并成 `outbox/EV-XXXX/v1..vN.json`；inbox 多文件合并成 `inbox/EV-XXXX.json`。迁移过程中 `contractVersion` 保留原值（历史 v1.0 ~ v3.3 产物不被刷新）。
 > - ✅ **评测规则零变更**：所有评分、veto、四段正文、claim 核验、verificationBudget 硬约束完全沿用 v3.3；本次升级仅是文件组织层的工程整理。
-> - 📐 **兼容性**：`parseQueryCode` / `makeTaskId` / `codeRegistry.reconcile` / `renamePrefix` 同时兼容扁平化形式和历史带 suffix 形式，任何 v1.0 ~ v3.3 产物继续正常渲染。
 
 > v3.3 及以下的历史变更历史见 §7。
+
 
 ---
 
@@ -49,21 +56,25 @@
 
 > 摘要是给机器看的硬约束；report 是给人看的开放空间（但稳定锚点不可省）。两者都必须有。
 
-**v3.5 核心硬约束**（v3.3/v3.4 全部保留 + 详实度与效率增强）：
-1. **事实/逻辑错误优先**：发现高风险断言后，必须先做外部核验再定档（v3.1 起硬要求）。
-2. **有依据的非共识观点**：允许反直觉判断，但必须给出证据与推理链；无依据新奇结论视为无效洞察（v3.1 起硬要求）。
-3. **focusProductName 必填**（见 §3.11）——默认识别 `productName` 以 `SophiaAI` 开头的候选为聚焦对象；本轮无 Sophia 参评时显式填 `"none"`。
-4. **低分 comment 与 refuted 证据必须含原文**（见 §3.1 证据密度硬约束）。
-5. **crossProductInsights 必填**（candidates ≥ 2 时），至少覆盖 strongerThan / weakerThan / sharedWeakness 三类中的 ≥2 类；其内容默认回归正文展开，不再依赖独立主阅读模块。
-6. **report 必须满足四段正文锚点**：评测结论 → 按维度展开 → 额外重点问题 → 各主体优缺点与建议。
-7. **评分总表由网站独立渲染**：正文不再强制出现"评分总表"heading，但须承载评分总表之外的全部诊断内容。
-8. **refuted / inconclusive 核验说明需体现外部核验结论**：证据文本同时包含原文引用与外部核验结果（或明确不可核原因）。
-9. **承重 claim 拉满**：每份报告 3~10 条 `claimInventory`（含 ≥1 条 `logic` 类），加强对事实性问题的暴露密度。
-10. **评测质量优先于时间盒**：不再硬限 45 分钟；按需展开核验，但所有核心阶段不可跳过（见 §5）。
-11. **新增交叉验证矩阵硬约束**：正文第二段必须给出“维度×产品”对照，显式标记一致/冲突/遗漏。
-12. **新增 why 三联硬约束**：所有高影响判断（至少覆盖每个产品 2 条亮点 + 2 条问题点）都需包含“原文引文 + 外部核验 + 推理链”。
-13. **新增 inconclusive 收敛要求**：`inconclusive` 必须写明“不可核原因 + 下一步核验动作”；不得长期作为默认终态。
-14. **新增效率优先级机制**：Pass 2 先核 P0（可直接改档或触发 veto）再核 P1/P2，允许复用同一外部证据池减少重复搜索。
+**v3.6 核心硬约束**（v3.5 全部保留 + 事实核验方法论升级）：
+1. **事实/逻辑错误优先**：发现高风险断言后，必须先做外部核验再定档。
+2. **有依据的非共识观点**：允许反直觉判断，但必须给出证据与推理链。
+3. **focusProductName 必填**（见 §3.11）。
+4. **低分 comment 与 refuted 证据必须含原文**。
+5. **crossProductInsights 必填**（candidates ≥ 2 时）。
+6. **report 四段正文锚点**：评测结论 → 按维度展开 → 额外重点问题 → 各主体优缺点与建议。
+7. **评分总表由网站独立渲染**。
+8. **refuted / inconclusive 核验说明需体现外部核验结论**。
+9. **承重 claim 拉满**：每份报告 3~10 条 `claimInventory`（含 ≥1 条 `logic` 类）。
+10. **评测质量优先于时间盒**。
+11. **交叉验证矩阵硬约束**：正文第二段必须给出"维度×产品"对照。
+12. **why 三联硬约束**：高影响判断都需"原文引文 + 外部核验 + 推理链"。
+13. **inconclusive 收敛要求**：必须写明"不可核原因 + 下一步核验动作"。
+14. **效率优先级机制**：Pass 2 先核 P0 再核 P1/P2，允许同源证据复用。
+15. **🆕 事实覆盖矩阵硬约束**：抽 claim 前先扫 T1~T8 八类事实类型，每类给出"有/无/原因"记录；存在的类别至少抽 1 条 claim 进 inventory。产物新增 `summary.factCoverageMatrix` 字段（见 §3.12）。
+16. **🆕 Pass 1 疑点主动激发**：每条 claim 必须附 `pass1Question`（产物字段 `claimChecks[].pass1Question`），明确怀疑点，没有问题不得进入 Pass 2。
+17. **🆕 Pass 2 三条强制核验动作**：A 专有名词+分类词反查（药物+适应症/公司+主业）；B 大额数字（≥1亿或≥3位数%）货币量纲显式对照；C scope 词逐条对齐 query。动作结果必须记入 `verificationBudget.notes`。
+18. **🆕 历史一致性闸门（最后一步）**：本轮独立定稿后再看上一版 outbox；同 reportId 总分 Δ≥1.0 或跨档（含 veto 翻转）必须写 `overallScores[].deltaReason`；若无新证据，必须回退本轮结论与上版保持一致。历史参考只在评测最后一步发生，不得在开头或中途引用。
 
 ---
 
@@ -139,17 +150,18 @@
   "version": 1,
   "evaluator": "Sophia (Claude-Opus-4.7 via WorkBuddy)",
   "evaluatedAt": "2026-04-25T14:30:00.000Z",
-  "contractVersion": "3.5",
+  "contractVersion": "3.6",
   "summary": {
     "overallScores": [...],
     "rubric": [...],           // R1~R5，R1 含 subscores
     "extraDimensions": [...],
     "sbs": { "pairs": [...] },
     "perReportFeedback": [...],
+    "factCoverageMatrix": {...},      // v3.6：T1~T8 事实类型扫描矩阵
     "claimInventory": [...],           // v3.3：3~10 条/每份报告
-    "claimChecks": [...],
+    "claimChecks": [...],              // v3.6：每条含 pass1Question
     "dimensionChecklists": {...},
-    "verificationBudget": {...},       // v3.3：targetMinutes 仅作节奏参考
+    "verificationBudget": {...},       // v3.6：notes 必须含 Pass 2 三条强制动作结果
     "crossProductInsights": {          // v3.0 新增，聚焦 Sophia 的跨产品诊断
       "focusProductName": "SophiaAI v4",
       "strongerThan": [...],
@@ -167,32 +179,34 @@
 
 | 字段 | 约束 |
 |---|---|
-| `contractVersion` | 新产物必须为 `"3.5"`（推荐）或 `"3.4"`（兼容）；历史产物可保留 `"3.3"` / `"3.2"` / `"3.1"` / `"3.0"` / `"2.2"` / `"2.1"` / `"2.0"` / `"1.0"` |
+| `contractVersion` | 新产物必须为 `"3.6"`（推荐）或 `"3.5"`/`"3.4"`（兼容）；历史产物可保留 `"3.3"` / `"3.2"` / `"3.1"` / `"3.0"` / `"2.2"` / `"2.1"` / `"2.0"` / `"1.0"` |
 | `summary.overallScores[].score` | [0, 10]，**必须等于** `Σ(Ri.score × Ri.weight)`；触发一票否决时**封顶 6.9** |
-| `summary.overallScores[].verdict` | 枚举：`卓越` / `优秀` / `合格` / `待改进` / `不合格`，按 `RUBRIC_STANDARD.md §三` 的评级档位 |
+| `summary.overallScores[].verdict` | 枚举：`卓越` / `优秀` / `合格` / `待改进` / `不合格` |
 | `summary.overallScores[].vetoTriggered` | 布尔值，必填 |
 | `summary.overallScores[].vetoReason` | `vetoTriggered=true` 时**必填**，须引用触发的 claim id + V1~V5 错误模式代号 |
-| `summary.overallScores[].productName` | 必填非空；禁用括号版本号（❌ `"SophiaAI (v4)"`，✅ `"SophiaAI v4"`）；同一 payload 内必须唯一；不同 Sophia 版本视作完全独立产品 |
-| `summary.rubric` | **必须包含 R1~R5 全部 5 个维度**，顺序、id、name、weight 与 `RUBRIC_STANDARD.md §二` 一致 |
+| `summary.overallScores[].deltaReason` | **v3.6 条件必填**：当存在上一版 outbox 且同 reportId 的 `score` Δ≥1.0 或跨档（S/A/B/C/D 变化或 `vetoTriggered` 翻转）时必填；内容须写明变动来源（规则变更 / 新证据 / 上轮误判 / 新披露数据），若无新证据必须回退本轮结论与上版保持一致 |
+| `summary.overallScores[].productName` | 必填非空；禁用括号版本号；同一 payload 内必须唯一 |
+| `summary.rubric` | 必须包含 R1~R5 全部 5 个维度 |
 | `summary.rubric[].weight` | R1=0.40, R2=0.15, R3=0.20, R4=0.10, R5=0.15（激活 X 时等比缩减） |
-| `summary.rubric[0].subscores` | **R1 专属必填**：`{R1a: {score,tier,weight:0.28,comment}, R1b: {score,tier,weight:0.12,comment}}`。R1 合成分（`scores[].score`）必须与 `R1a×0.7+R1b×0.3` 四舍五入到最近的 10/8/6/4/2 档一致 |
-| `summary.rubric[].scores` | **必须覆盖 candidates 里每一份报告** |
-| `summary.rubric[].scores[].score` | **只能是 10 / 8 / 6 / 4 / 2 中的一个整数** |
-| `summary.rubric[].scores[].tier` | **必填**，值必须与 score 对应：10→`"S"` / 8→`"A"` / 6→`"B"` / 4→`"C"` / 2→`"D"` |
-| `summary.rubric[].scores[].comment` | 必填，说明打分依据 —— **v3.0 证据密度硬约束**：若 `tier ∈ {C, D}` 则 comment 必须含**原文引用片段**（≥15 字，用「」或 `"` 包裹）；一句话定性结论（"论证浅，信息罗列为主"）直接 lint 拒。建议所有档位都尽量引用原文。 |
+| `summary.rubric[0].subscores` | R1 专属必填：R1a(0.28) + R1b(0.12) |
+| `summary.rubric[].scores` | 必须覆盖 candidates 里每一份报告 |
+| `summary.rubric[].scores[].score` | 只能是 10 / 8 / 6 / 4 / 2 中的一个整数 |
+| `summary.rubric[].scores[].tier` | 必填，值必须与 score 对应 |
+| `summary.rubric[].scores[].comment` | 必填；若 `tier ∈ {C, D}` 则 comment 必须含原文引用片段（≥15 字） |
 | `summary.rubric[].scores[].confidence` | 必填，枚举：`high` / `medium` / `low` |
-| `summary.rubric[].scores[].issueTags` | 数组，可空；优先使用 `RUBRIC_STANDARD.md §五` 词表 |
-| `summary.extraDimensions` | 可选；数量 ≤ 3；`dimensionId` 用 `X1`/`X2`/`X3` |
+| `summary.rubric[].scores[].issueTags` | 数组，可空 |
+| `summary.extraDimensions` | 可选；数量 ≤ 3 |
 | `summary.extraDimensions[].activated` | 布尔值，必填 |
 | `summary.extraDimensions[].weight` | `activated=true` 时必填，枚举：`0.05` / `0.10` / `0.15` |
-| `summary.sbs` | candidates ≥ 2 时**必填**；`pairs[]` 结构见 §3.7 |
-| `summary.perReportFeedback` | **必填**；覆盖每一份报告；每项 `strengths` / `weaknesses` / `improvements` 三个非空数组，其中 `strengths` 与 `weaknesses` **各至少 2 条**，`improvements` 至少 1 条 |
-| `summary.claimInventory` | **必填**；结构见 §3.8 |
-| `summary.claimChecks` | **必填**；结构见 §3.8 —— **v3.5 证据密度硬约束**：`status ∈ {refuted, inconclusive}` 时 `evidence` 必须①含报告原文片段②含一手源对照或明确说明对照为什么不可得③长度 ≥30 字；且 `inconclusive` 需补充下一步核验动作 |
-| `summary.dimensionChecklists` | **必填**；结构见 §3.9 |
-| `summary.verificationBudget` | **必填**；结构见 §3.10 |
-| `summary.crossProductInsights` | **v3.0 必填**（candidates ≥ 2 时）；结构见 §3.11；聚焦 Sophia 的跨产品诊断 |
-| `report` | 必填；markdown 格式；**v3.5 硬约束**：必须符合四段正文锚点（评测结论 / 按维度展开 / 额外重点问题 / 各主体优缺点与建议），且第二段必须包含“维度×产品交叉验证矩阵”。评分总表由网站独立渲染，正文不再强制出现"评分总表"heading。v3.1/v3.2 按四段正文规则渲染；v3.0 及以下沿用旧规则。 |
+| `summary.sbs` | candidates ≥ 2 时必填 |
+| `summary.perReportFeedback` | 必填；每项 `strengths` / `weaknesses` 各至少 2 条，`improvements` 至少 1 条 |
+| `summary.factCoverageMatrix` | **v3.6 必填**；结构见 §3.12；T1~T8 八类事实类型都必须覆盖；存在的类别至少有 1 条 claim 进 `claimInventory`；不存在的类别必须给出显式原因 |
+| `summary.claimInventory` | 必填；每份报告 3~10 条，含 ≥1 条 `type="logic"` |
+| `summary.claimChecks` | 必填；**v3.6 新增 `pass1Question` 字段**：每条必须写明 Pass 1 阶段评测官主动提出的怀疑点（一句话问题），没有问题不得进入 Pass 2 |
+| `summary.dimensionChecklists` | 必填 |
+| `summary.verificationBudget` | 必填；**v3.6 约束**：`notes` 必须包含 Pass 2 三条强制核验动作（A 专名+分类反查 / B 大额数字量纲对照 / C scope 词与 query 对齐）的执行结果 |
+| `summary.crossProductInsights` | v3.0 起必填（candidates ≥ 2 时） |
+| `report` | 必填；markdown 格式；**v3.5/3.6 硬约束**：必须符合四段正文锚点，第二段必须包含"维度×产品交叉验证矩阵" |
 
 ### 3.2 overallScore 计算
 
@@ -277,7 +291,7 @@ tier 和 score **必须严格一一对应**（`tier="A", score=7` 非法）。**
 
 **硬约束**：
 - 评分总表由网站独立渲染；正文不再强制写"评分总表"heading，但第一段应能与总表读法衔接。
-- 第二段（按维度展开）必须包含“维度×产品交叉验证矩阵”，并显式标记一致/冲突/遗漏。
+- 第二段（按维度展开）必须包含"维度×产品交叉验证矩阵"，并显式标记一致/冲突/遗漏。
 - "按维度展开"与"额外重点问题"段至少各含 **1 处原文引用**（整句或整段，≥30 字）。
 - 每个产品在第四段至少给出 **2 条做得好 + 2 条有问题**，且每条高影响判断都包含 why 三联：原文引文、外部核验、推理链。
 - refuted / inconclusive 的问题描述必须含外部核验结论（或明确不可核原因）；`inconclusive` 需写下一步核验动作。
@@ -533,6 +547,56 @@ tier 和 score **必须严格一一对应**（`tier="A", score=7` 非法）。**
 
 ---
 
+### 3.12 `summary.factCoverageMatrix`（v3.6 新增）
+
+这是 v3.6 的核心新结构，把"抽 claim 靠直觉"改为"先扫 8 类事实类型"。**在 Pass 1 之前就必须填**，是后续 `claimInventory` 抽样的输入而非输出。
+
+```json
+{
+  "scannedAt": "2026-04-28T15:00:00.000Z",
+  "types": [
+    {
+      "typeId": "T1",
+      "label": "数字/金额/比例",
+      "hintKeywords": "精确小数/亿/万/%，同比/环比",
+      "perReport": [
+        {"reportId": "sub_xxx", "present": true, "sampleQuote": "「...」", "claimIdsSampled": ["c1","c2"]},
+        {"reportId": "sub_yyy", "present": false, "reason": "该报告全篇未出现具体数字"}
+      ]
+    }
+  ]
+}
+```
+
+#### T1~T8 事实类型（每份报告都必须逐类扫描）
+
+| typeId | 名称 | 脑内扫描提示词 |
+|---|---|---|
+| **T1** | 数字/金额/比例 | 精确小数/亿/万/%、同比/环比、价格区间 |
+| **T2** | 时间/日期 | 年份、通车/获批/生效日期 |
+| **T3** | 货币/量纲/单位 | 人民币 vs 美元、亿 vs 万亿、套 vs 平米 |
+| **T4** | 主体/适应症/行业归属 | 药物治什么病、公司主业、区域归属 |
+| **T5** | 因果关系 | "因为→所以"方向、前提→结论 |
+| **T6** | 信源可追溯性 | 是否给 URL/公告编号、一手 vs 二手 |
+| **T7** | 范围/scope 是否匹配 query | 时间窗、地域、主体、口径是否与 query 一致 |
+| **T8** | 统计口径一致性 | 同一指标跨段落是否自洽（预告 vs 实际、含税 vs 不含税） |
+
+#### 硬约束
+
+- `types` 必须覆盖 T1~T8 全部 8 类，缺一不可；
+- 每个 type 的 `perReport` 必须覆盖 inbox 全部 candidates；
+- `present=true` 的条目必须给 `sampleQuote`（原文引用 ≥15 字）并至少有 1 条对应的 `claimId` 进入 `claimInventory`；
+- `present=false` 的条目必须给 `reason`（非空字符串），不允许留空；
+- **每份报告在"该类存在但未抽样"的情况下 lint 报错**。
+
+#### 设计意图
+
+- 让评测官先完成"地毯式扫描 → 再决定抽哪几条承重"的顺序，防止"眼睛只被大数字吸引"导致 T4 主体类 / T3 货币量纲类事实被漏抓；
+- 当上一轮出现漏检时，下一轮用同一套类型表能独立发现（不依赖历史）；
+- lint 可在结构层做完整性校验，把"漏抓"从不可见降为可见。
+
+---
+
 ## 4. Rubric（打分维度定义）
 
 **打分维度的宗旨、R1~R5 的完整定义与权重、扩展维度规则、SBS 规则、评级档位、issueTags 词表、双轴 tier 表、必查 checklist、45min SOP —— 全部单独落在 `.evaluations/RUBRIC_STANDARD.md`。**
@@ -548,119 +612,127 @@ tier 和 score **必须严格一一对应**（`tier="A", score=7` 非法）。**
 
 ---
 
-## 5. 工作流（LLM 端，v3.5：阶段 SOP，评测质量优先 + 核验效率优化）
+## 5. 工作流（LLM 端，v3.6：阶段 SOP，事实扫描优先 + 疑点主动激发 + 历史一致性兜底）
 
-用户在 WorkBuddy 对话框说 "**评测 EV-0001**" 时（v3.4 起 taskId 就是 queryCode；历史 `EV-0001-dlqvY6` 形式仍可识别）：
+用户在 WorkBuddy 对话框说 "**评测 EV-0001**" 时：
 
 ### 5.0 准备
 
-1. **读工作协议**：`read_file .evaluations/EVALUATION_CONTRACT.md`（如果还没读过）
-2. **读评测标准**：`read_file .evaluations/RUBRIC_STANDARD.md`
-3. **读任务**：`read_file .evaluations/inbox/EV-0001-dlqvY6.json`
+1. 读工作协议：`read_file .evaluations/EVALUATION_CONTRACT.md`
+2. 读评测标准：`read_file .evaluations/RUBRIC_STANDARD.md`
+3. 读任务：`read_file .evaluations/inbox/EV-0001.json`
+4. **不要**先去看 `outbox/{taskId}/` 历史产物——历史只在 §5.5 做最后一步一致性兜底，不得在开头或中途引用。
 
 ### 5.1 阶段 SOP（顺序固定，核心阶段不可跳过）
 
 | 阶段 | 标志性产物 |
 |---|---|
-| ① **read**（读报告） | 脑内地图：每份报告的主结论、关键段落、亮点/疑点 |
-| ② **claim-inventory**（承重 claim 抽取） | `summary.claimInventory` —— **v3.3：每份报告 3~10 条，含 ≥1 条 logic 类** |
-| ③ **pass1**（快筛） | `claimChecks` 首版，每条打 clean / suspicious / unverifiable-yet |
-| ④ **pass2**（深核嫌疑 + 外部检索） | 按 P0/P1/P2 承重优先级核验 suspicious 项（P0=可直接改档/触发 veto）；做外部搜索 + 一手源对照 + 算术核算，落锤 verified-correct / refuted / inconclusive；veto 候选必须走到这里才下结论，且同源证据允许复用避免重复检索 |
-| ⑤ **pass3**（逻辑一致性） | R1b 子项判定；跨段落口径对齐（≥1 处）、关键因果链重建、报告内部算术交叉 |
-| ⑥ **score**（打分 + 跨产品诊断） | 5 份 checklist 过完 + 双轴表定 tier + 机械映射 score + overallScore + SBS + `crossProductInsights` |
-| ⑦ **feedback + report** | `perReportFeedback` + `report` 四段正文（评分总表之外的诊断内容全部回归正文） |
+| ① **read**（读报告） | 脑内地图 |
+| ② **🆕 fact-scan**（T1~T8 事实覆盖矩阵扫描） | `summary.factCoverageMatrix`；每份报告对每类显式填"有/无/原因" |
+| ③ **claim-inventory**（承重 claim 抽取） | `summary.claimInventory`（v3.6：存在的每类 T 至少 1 条）|
+| ④ **pass1**（快筛 + 疑点主动激发） | `claimChecks` 首版，每条必须含 `pass1Question` |
+| ⑤ **pass2**（深核 + 三条强制动作） | 按 P0/P1/P2 深核 suspicious 项；同时执行三条强制动作（A 专名+分类反查 / B 大额数字量纲对照 / C scope 对齐 query）；结果写入 `verificationBudget.notes` |
+| ⑥ **pass3**（逻辑一致性） | R1b 子项；跨段落口径、因果链、算术交叉 |
+| ⑦ **score**（打分 + 跨产品诊断） | `rubric` + `overallScore` + `sbs` + `crossProductInsights` |
+| ⑧ **feedback + report** | `perReportFeedback` + 四段正文 |
+| ⑨ **🆕 history-gate**（历史一致性兜底） | 读 `outbox/{taskId}/` 最新一版；同 reportId 总分 Δ≥1.0 或跨档/veto 翻转 → 必须写 `deltaReason`；无新证据必须回退 |
 
 **硬约束**：
 
-- 核心阶段 ①~⑥ **不可跳过**。v3.3 起不再设硬时间盒——按需展开核验，质量优先。
-- 流程完成后把实际耗时如实记入 `summary.verificationBudget.actualMinutes`；`targetMinutes` 保留为节奏参考。
-- 若因外部检索限制等客观原因必须 skip 某 claim，使用 `skipped-out-of-scope`（或特殊情形 `skipped-time-budget`）并在 `notes` 说明；**不得把 skip 当默认选项**。
+- 阶段 ①~⑧ 不可跳过，且 ⑨ 必须在 ⑧ 完成后才执行；
+- 禁止在 ①~⑧ 阶段参考历史 outbox；
+- 若因外部检索限制确需 skip 某 claim，标 `skipped-out-of-scope` 并在 `notes` 说明。
 
-### 5.2 关键操作清单（按阶段展开）
+### 5.2 关键操作清单
 
-1. **read**：通读 candidates[] 里全部报告，建立脑内地图
-2. **claim-inventory**：每份报告抽 **3~10 条**承重 claim（含 ≥1 条 logic 类），建议跨 fact/number/logic/source 多种 type
-3. **pass1**：快速通读，对所有 claim 打初筛标签（不做外部搜索，只用既有知识 + 报告内部逻辑判断）
-4. **pass2 · 深核嫌疑**：先按 P0/P1/P2 分层（P0=能直接改变档位或触发 veto 的承重点），再对 suspicious 项发起外部搜索 / 一手源对照 / 算术核算；任何 veto 候选必须在此落锤；量纲 / 占比 / 汇率必须动手算；同一事实允许建立 sourceId 复用到多条 claim
-5. **pass3 · 逻辑一致性**：跨段落口径对齐、关键因果链重建、报告内部算术交叉
-6. **score**：按 R1~R5 顺序过 checklist → 查双轴 tier 表 → 定 tier → 机械映射 score；R1 先定 R1a/R1b 再按 0.7:0.3 合成；扩展维度建议 ≥1 个、激活最多 1 个；算 overallScore（触发 veto 封顶 6.9）；出 SBS（candidates ≥ 2 时）；识别 `focusProductName`（默认匹配 `SophiaAI*`）并产出 `crossProductInsights`
-7. **feedback + report**：`perReportFeedback` 三件套 + 按 §3.5 的**四段正文**写 report；写之前先问自己"研发看完能不能明确知道 Sophia 下一步该改什么？"不能就重写
+1. **read**：通读全部 candidates。
+2. **🆕 fact-scan**：对每份报告逐一扫 T1~T8；T1~T8 任一在本报告出现 → 至少抽 1 条进 inventory；不存在 → 显式写 `reason`。
+3. **claim-inventory**：按承重度排序，每份 3~10 条；含 ≥1 条 `logic`；覆盖 fact-scan 矩阵中所有 `present=true` 的类别。
+4. **pass1**：对每条 claim 写 `pass1Question`，明确怀疑点（T4 类问"主体/适应症是否与公开口径一致"；T3 类问"单位/量纲是否与外部标准一致"；T7 类问"scope 是否与 query 一致"）。
+5. **pass2**：按 P0→P1→P2 深核；**同时做三条强制动作**（A/B/C），把结果写进 `verificationBudget.notes`。
+6. **pass3**：跨段落口径 + 因果链 + 算术交叉。
+7. **score**：按 R1~R5 过 checklist → 定 tier → 映射 score。
+8. **feedback + report**：按四段结构写，第二段必须含交叉验证矩阵。
+9. **🆕 history-gate**：此时才可读 `outbox/{taskId}/` 最新一版；对比每个 reportId 的总分与维度档位，跨档或 Δ≥1.0 必须写 `deltaReason`，无新证据必须回退。
 
 ### 5.3 写文件
 
-- `list_dir .evaluations/outbox/{taskId}/` 确认版本号
-- 不存在就创建目录，写 `v1.json`
-- 多轮迭代：用户提出修改后，生成 `v2.json` / `v3.json`（**禁止覆盖历史**）
-- 告知用户产物路径和版本号，让用户回网站点"刷新"
+- 确认版本号后写 `v{n}.json`，禁止覆盖历史；
+- 告知用户产物路径与版本号。
 
 ### 5.4 产物自检清单（写文件前必做 · 语义要点版）
 
-> 结构约束大部分已由 `npm run lint:outbox` 自动校验；本清单聚焦易被 lint 漏掉的语义质量项。正式发布前必须 **① 跑 `npm run lint:outbox` 过闸 ② JSON 解析器自检通过**。
-
 **契约版本 & 结构：**
 
-- [ ] `contractVersion` = `"3.3"` 或 `"3.4"`（或历史已定稿版本的对应值）
-- [ ] `summary.rubric` 覆盖 R1~R5，id/name/weight 与 RUBRIC_STANDARD.md §二 一致；激活 X 后权重已等比缩减并写回
-- [ ] 维度内层数组字段名是 `scores`（不是 `reports`；历史踩坑点）
+- [ ] `contractVersion` = `"3.6"`（推荐）或 `"3.5"`/`"3.4"`（兼容）
+- [ ] `summary.rubric` 覆盖 R1~R5，id/name/weight 与 RUBRIC_STANDARD.md §二 一致
+- [ ] 维度内层数组字段名是 `scores`
 - [ ] `overallScores[].productName` 非空、无括号版本号、同 payload 内唯一
+
+**事实覆盖矩阵（v3.6 新增）：**
+
+- [ ] `summary.factCoverageMatrix.types` 覆盖 T1~T8 全部 8 类
+- [ ] 每个 type 的 `perReport` 覆盖所有 candidates
+- [ ] `present=true` 的条目都有 `sampleQuote` 且至少 1 条 claim 在 `claimInventory` 中
+- [ ] `present=false` 的条目都给出非空 `reason`
 
 **打分链路：**
 
-- [ ] R1 子档：`subscores.R1a` / `R1b` 齐全，R1a weight=0.28、R1b weight=0.12；R1 合成分与 `round(R1a×0.7 + R1b×0.3)` 档位一致
-- [ ] 每个维度 `scores` 覆盖 inbox 全部 candidates；`score ∈ {10,8,6,4,2}`、tier 严格一一对应（S=10/A=8/B=6/C=4/D=2）；confidence 存在
-- [ ] `overallScore` = 加权和（触发 veto 封顶 6.9）；`verdict` 按 RUBRIC_STANDARD §三
+- [ ] R1 subscores 齐全；合成分符合 `R1a×0.7+R1b×0.3` 档位映射
+- [ ] 每个维度 scores 覆盖全部 candidates；score 与 tier 严格对应
+- [ ] overallScore = Σ(加权和)；veto 时封顶 6.9
 
-**证据密度（硬约束）：**
+**证据密度：**
 
-- [ ] 所有 `tier ∈ {C, D}` 的 `rubric.scores[].comment` 含原文引用片段（≥15 字，用「」或 `"` 包裹），不允许一句话定性结论
-- [ ] 所有 `claimChecks[].status ∈ {refuted, inconclusive}` 的 `evidence` 含报告原文 + 一手源对照（或明确不可得说明），长度 ≥30 字
-- [ ] 所有 `inconclusive` 条目都写明了“不可核原因 + 下一步核验动作”，且占比未异常偏高（建议 ≤30%）
-- [ ] 所有 `crossProductInsights[].evidenceQuotes[]` 至少 1 条属于 Sophia，每条含产品名 + 原文片段，长度建议 ≥30 字
+- [ ] tier ∈ {C, D} 的 comment 含 ≥15 字原文引用
+- [ ] claimChecks `status ∈ {refuted, inconclusive}` 的 evidence 含原文 + 一手源对照，≥30 字
+- [ ] 所有 inconclusive 都写了"不可核原因 + 下一步核验动作"
+- [ ] 所有 crossProductInsights evidenceQuotes 至少 1 条属于 Sophia
 
 **一票否决：**
 
-- [ ] `vetoTriggered` 每条有布尔；触发的，`vetoReason` 引用 claim id + V1~V5、总分 ≤ 6.9、verdict ≤ "合格"、`claimChecks` 对应项有 `vetoMode`
+- [ ] vetoTriggered 每条有布尔；触发的 vetoReason 引用 claim id + V1~V5、总分 ≤ 6.9、verdict ≤ "合格"
 
-**Claim 核验（v3.3）：**
+**Claim 核验（v3.3~3.6）：**
 
-- [ ] 每份报告 **3~10 条** `claimInventory`（Top 10 上限），含 ≥1 条 `type="logic"`，建议跨 ≥2 种 type
-- [ ] `summary.claimChecks` 每个 claimId 都有对应记录
-- [ ] 核验覆盖率 ≥85%：`(verified-correct + refuted + inconclusive).length / 非 skipped.length ≥ 0.85`
-- [ ] veto 候选已通过 pass2 外部核验（`checkedBy` 含 `pass2-*`）
+- [ ] 每份报告 3~10 条 `claimInventory`，含 ≥1 条 logic 类
+- [ ] **v3.6**：fact-scan 中 present=true 的每类都有至少 1 条对应 claim
+- [ ] **v3.6**：每条 claimChecks 都有 `pass1Question`（非空字符串）
+- [ ] 核验覆盖率 ≥85%
 
 **Checklist 与预算：**
 
-- [ ] `summary.dimensionChecklists` 含 R1~R5 五键；R1=7 项，R2~R5 各 5 项；`passedFor` 为数组（可空）
-- [ ] `verificationBudget`：`actualMinutes` > 0；`passesCompleted` 至少含 read/claim-inventory/pass1/pass2/pass3/score；`claimsSkippedDueToBudget` 与 `claimChecks` 里 `skipped-time-budget` 数量一致
+- [ ] dimensionChecklists 含 R1~R5；R1=7 项、R2~R5 各 5 项
+- [ ] `verificationBudget.notes` 必须显式写出 Pass 2 三条强制动作（A/B/C）的执行结果
 
-**SBS / 扩展维度 / perReportFeedback：**
+**perReportFeedback / SBS / 扩展维度：**
 
-- [ ] candidates ≥ 2 时 `sbs.pairs` 非空，字段齐全；margin 为 `overwhelming`/`clear`/`slight`/`tie` 四种英文枚举之一；`dimensionDriver` 为字符串数组或单字符串
-- [ ] 每个扩展维度有 `rationale` 和 `activated` 布尔；激活的 X 有 weight ∈ {0.05, 0.10, 0.15}，且 R1~R5 权重已等比缩减
-- [ ] `perReportFeedback` 覆盖全部报告；每份 strengths/weaknesses/improvements 各 ≥1 条；每条指向维度 + 事例
+- [ ] 每份报告 strengths ≥2、weaknesses ≥2、improvements ≥1
+- [ ] candidates ≥ 2 时 sbs.pairs 非空，margin ∈ `overwhelming`/`clear`/`slight`/`tie`
 
 **crossProductInsights：**
 
-- [ ] candidates ≥ 2 时 `crossProductInsights` 非空
-- [ ] `focusProductName` 填写（无 Sophia 时填 `"none"`）
-- [ ] 本轮有 Sophia 时 `strongerThan.length + weakerThan.length ≥ 2`
-- [ ] `sharedWeakness[]` 为数组（可空，但应尽量给出 1 条）
+- [ ] focusProductName 填写；本轮有 Sophia 时 strongerThan+weakerThan ≥2
 
 **report 四段正文：**
 
-- [ ] 四段锚点齐全且顺序固定：**评测结论** / **按维度展开** / **额外重点问题** / **各主体优缺点与建议**
-- [ ] 第二段已包含“维度×产品交叉验证矩阵”，且有一致/冲突/遗漏标记
-- [ ] 评分总表之外的主诊断内容已回收到正文，未依赖独立模块代替展开
-- [ ] "按维度展开"与"额外重点问题"段至少各有 1 处原文引用（≥30 字整句/整段）
-- [ ] 每个产品都有“≥2 条亮点 + ≥2 条问题点”，且高影响判断都给出了 why 三联（引文/核验/推理）
-- [ ] 低分（verdict ≤ 合格）的 Sophia 产品在正文有**原文引用级别**的错误详析
+- [ ] 四段锚点齐全且顺序固定
+- [ ] 第二段包含"维度×产品交叉验证矩阵"
+- [ ] 每产品有 ≥2 亮点 + ≥2 问题点，且高影响判断给 why 三联
+
+**🆕 历史一致性闸门（v3.6 最后一步）：**
+
+- [ ] 已读 `outbox/{taskId}/` 上一版；每个 reportId 都做了 delta 比对
+- [ ] 所有 score Δ≥1.0 或跨档/veto 翻转的 reportId 都写了 `deltaReason`
+- [ ] 无新证据的变动已回退
 
 **其他：**
 
-- [ ] `report` markdown 无坏点（表格/代码块闭合）
-- [ ] 版本号正确递增，没有覆盖历史
-- [ ] JSON 合法：`python3 -c "import json; json.load(open('path'))"`；正文避免直引号 `"`，用中文「」《》或单引号
+- [ ] report markdown 无坏点
+- [ ] 版本号正确递增
+- [ ] JSON 合法
 - [ ] 跑 `npm run lint:outbox` 过闸
+
 
 ## 6. 网站端约定（给开发/自己留档）
 
@@ -711,29 +783,26 @@ tier 和 score **必须严格一一对应**（`tier="A", score=7` 非法）。**
 
 ## 7. 版本
 
-- **契约版本：3.5**
+- **契约版本：3.6**
 - 生效日期：2026-04-28
 - 历史版本：
+  - 3.5（2026-04-28）—— 详实度与效率双优化：交叉矩阵/why三联/inconclusive收敛/Pass2分层
   - 3.4（2026-04-28）—— taskId 扁平化（结构层升级，评测语义不变）
   - 3.3（2026-04-27）—— 质量优先：取消 45min 时间盒；claim Top 5 → Top 10；文档精简
-  - 3.2（2026-04-26）—— 页面主阅读路径收敛为"评分总表 + 正文"；四段正文规则落地；crossProductInsights 等结构化字段回归正文展开
+  - 3.2（2026-04-26）—— 页面主阅读路径收敛为"评分总表 + 正文"；四段正文规则落地
   - 3.1（2026-04-25 深夜）—— 先查错再评分、四段正文锚点、非共识观点要求
-  - 3.0（2026-04-25 晚）—— 聚焦 Sophia、三稳定锚点 + 自由生成层、crossProductInsights、证据密度硬约束
+  - 3.0（2026-04-25 晚）—— 聚焦 Sophia、三稳定锚点 + 自由生成层、crossProductInsights
   - 2.2（2026-04-25 日间）—— claim 核验、维度 checklist、时间预算、R1 子档、SBS 英文枚举
   - 2.1（2026-04-22）—— 外部核验硬约束、perReportFeedback、报告六大章节
   - 2.0（2026-04-21）—— 维度重构、档位制、一票否决、扩展维度
   - 1.0（2026-04-19）—— 初版
-- **v3.5 vs v3.4 的落地变化**（评测质量与效率双提升）：
-  - 新增“维度×产品交叉验证矩阵”硬约束，要求先做跨产品一致/冲突/遗漏对照再下结论
-  - 新增高影响判断 why 三联（引文/核验/推理）硬约束，避免结论先行
-  - `perReportFeedback` 提升最低密度：每产品 strengths 与 weaknesses 各至少 2 条
-  - `inconclusive` 需附“不可核原因 + 下一步核验动作”，降低不可核尾项堆积
-  - Pass 2 引入 P0/P1/P2 承重分层与信源复用机制，减少重复检索、提升核验吞吐
+- **v3.6 vs v3.5 的落地变化**（事实准确性评测方法论升级 + 跨版本稳定性）：
+  - 新增 `summary.factCoverageMatrix`：T1~T8 事实类型扫描矩阵，抽 claim 前先做，每类给出"有/无/原因"
+  - 新增 `claimChecks[].pass1Question`：Pass 1 必须写明怀疑点才能进入 Pass 2，避免"无脑 clean"
+  - Pass 2 三条强制核验动作（专名+分类反查 / 大额数字量纲对照 / scope 对齐 query），结果写入 `verificationBudget.notes`
+  - 新增 `overallScores[].deltaReason`：同 reportId 跨版本总分 Δ≥1.0 或跨档/veto 翻转必须写明变动来源；无新证据必须回退
+  - 工作流 SOP 新增 ② fact-scan 阶段与 ⑨ history-gate 阶段；历史 outbox 只在最后一步参考，不得在开头/中途引用
+- **v3.5 vs v3.4 的落地变化**：交叉验证矩阵、why 三联、perReportFeedback 密度、inconclusive 收敛、Pass 2 P0/P1/P2 分层
 - **v3.4 vs v3.3 的落地变化**（结构性工程整理，评测规则零变更）：
-  - **taskId 语义扁平化**：`taskId === queryCode`，不再拼 `-${nanoid6}` 后缀
-  - **outbox 目录**：`outbox/{queryCode}/v{N}.json`，同 query 多轮评测累积写入同目录
-  - **inbox 文件**：每 query 一个 `inbox/{queryCode}.json`；POST 已存在按 `candidateId` 合并 candidates（新 candidate 追加，已有 candidate 保留磁盘权威副本以避免轧平 PATCH 历史）
-  - **兼容层**：`parseQueryCode` / `codeRegistry.reconcile` / `renamePrefix` / `flattenTaskVersions` 同时认扁平化与历史带 suffix 两种形式
-  - **历史目录迁移**：`scripts/migrate-consolidate-outbox.mjs` 按 mtime 合并 `EV-XXXX-suffix/vN` → `EV-XXXX/vN`；迁移不动任何 payload 评测内容，只改 taskId 字段与目录名
-  - **lint / 测试 / 类型 / eslint 全绿**，dev server 冷启 `codeRegistry` reconcile no-op
+  - taskId 语义扁平化；outbox 目录语义简化；inbox 每 query 一文件
 - 后续任何字段语义变更 → contractVersion 升级，旧 outbox 文件保留原 contractVersion 以便兼容渲染。

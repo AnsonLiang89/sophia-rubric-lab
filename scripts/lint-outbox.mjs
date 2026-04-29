@@ -201,15 +201,15 @@ export function validatePayload(file, payload, errors, expectedTaskId) {
     pushErr(errors, file, "version", "缺失或非 number");
   }
   const cv = payload.contractVersion;
-  if (!["1.0", "2.0", "2.1", "2.2", "3.0", "3.1", "3.2", "3.3", "3.4", "3.5"].includes(cv)) {
-    pushErr(errors, file, "contractVersion", `必须是 "1.0" / "2.0" / "2.1" / "2.2" / "3.0" / "3.1" / "3.2" / "3.3" / "3.4" / "3.5"，实际：${JSON.stringify(cv)}`);
+  if (!["1.0", "2.0", "2.1", "2.2", "3.0", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6"].includes(cv)) {
+    pushErr(errors, file, "contractVersion", `必须是 "1.0" / "2.0" / "2.1" / "2.2" / "3.0" / "3.1" / "3.2" / "3.3" / "3.4" / "3.5" / "3.6"，实际：${JSON.stringify(cv)}`);
   }
 
-  // v3.4+ 扁平化硬约束（3.4 与 3.5 共用）：
+  // v3.4+ 扁平化硬约束（3.4/3.5/3.6 共用）：
   //   - taskId 必须匹配 ^[A-Z]+-\d+$（无 suffix，等同 queryCode）
   //   - 若调用方提供 expectedTaskId（来自目录名），必须与 payload.taskId 完全一致
   // 旧版本（1.0 ~ 3.3）不启用此约束——历史 `${queryCode}-${suffix6}` 形态直到写兼容层消化完之前都合法。
-  if (cv === "3.4" || cv === "3.5") {
+  if (cv === "3.4" || cv === "3.5" || cv === "3.6") {
     if (!/^[A-Z]+-\d+$/.test(payload.taskId)) {
       pushErr(
         errors,
@@ -239,6 +239,9 @@ export function validatePayload(file, payload, errors, expectedTaskId) {
   const isV31 = cv === "3.1";
   const isV32 = cv === "3.2";
   const isV33 = cv === "3.3";
+  const isV36 = cv === "3.6";
+  // claim 数量上限：v3.3 起放宽到 10（v3.3/3.4/3.5/3.6 共享），更早版本维持 5
+  const isClaimTopTen = cv === "3.3" || cv === "3.4" || cv === "3.5" || cv === "3.6";
   if (!payload.summary || typeof payload.summary !== "object") {
     pushErr(errors, file, "summary", "缺失或非对象");
     return;
@@ -533,6 +536,129 @@ export function validatePayload(file, payload, errors, expectedTaskId) {
   // v2.2+：claimInventory / claimChecks / dimensionChecklists / verificationBudget
   // ============================================================
   if (isV22Plus) {
+    // --- v3.6: factCoverageMatrix ---
+    // 每个 type (T1~T8) 对每份 report 都要给出 present=true/false；true 则必须有对应 claimId 进 inventory
+    const factMatrixPresent = new Map(); // reportId -> Set<typeId> 的 present=true 集合
+    const factMatrixClaims = new Map(); // reportId -> Set<claimId> 从 perReport 里累积的 claimIdsSampled
+    if (isV36) {
+      const m = s.factCoverageMatrix;
+      const REQ_TYPES = ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8"];
+      if (!m || typeof m !== "object") {
+        pushErr(errors, file, "summary.factCoverageMatrix", "v3.6 必填对象");
+      } else if (!Array.isArray(m.types) || m.types.length === 0) {
+        pushErr(errors, file, "summary.factCoverageMatrix.types", "v3.6 必填非空数组");
+      } else {
+        const typeIdsFound = new Set();
+        for (const [i, t] of m.types.entries()) {
+          const tpref = `summary.factCoverageMatrix.types[${i}]`;
+          if (!t.typeId || typeof t.typeId !== "string") {
+            pushErr(errors, file, `${tpref}.typeId`, "必填非空字符串");
+            continue;
+          }
+          if (!REQ_TYPES.includes(t.typeId)) {
+            pushErr(errors, file, `${tpref}.typeId`, `必须 ∈ {T1..T8}，实际 ${JSON.stringify(t.typeId)}`);
+          }
+          if (typeIdsFound.has(t.typeId)) {
+            pushErr(errors, file, `${tpref}.typeId`, `重复出现：${t.typeId}`);
+          }
+          typeIdsFound.add(t.typeId);
+          if (!Array.isArray(t.perReport) || t.perReport.length === 0) {
+            pushErr(errors, file, `${tpref}.perReport`, "必填非空数组");
+            continue;
+          }
+          const seenReports = new Set();
+          for (const [j, pr] of t.perReport.entries()) {
+            const ppref = `${tpref}.perReport[${j}]`;
+            if (!pr.reportId || typeof pr.reportId !== "string") {
+              pushErr(errors, file, `${ppref}.reportId`, "必填非空字符串");
+              continue;
+            }
+            if (reportIds.size > 0 && !reportIds.has(pr.reportId)) {
+              pushErr(errors, file, `${ppref}.reportId`, `reportId 不在 candidates 中：${pr.reportId}`);
+            }
+            if (seenReports.has(pr.reportId)) {
+              pushErr(errors, file, `${ppref}.reportId`, `同一 typeId 下 reportId 重复：${pr.reportId}`);
+            }
+            seenReports.add(pr.reportId);
+            if (typeof pr.present !== "boolean") {
+              pushErr(errors, file, `${ppref}.present`, "必填布尔值");
+              continue;
+            }
+            if (pr.present === true) {
+              if (!pr.sampleQuote || typeof pr.sampleQuote !== "string" || pr.sampleQuote.trim().length < 15) {
+                pushErr(errors, file, `${ppref}.sampleQuote`, "present=true 必须给原文引用，≥15 字");
+              }
+              if (!Array.isArray(pr.claimIdsSampled) || pr.claimIdsSampled.length === 0) {
+                pushErr(errors, file, `${ppref}.claimIdsSampled`, "present=true 必须给至少 1 个对应的 claimId");
+              } else {
+                if (!factMatrixPresent.has(pr.reportId)) factMatrixPresent.set(pr.reportId, new Set());
+                factMatrixPresent.get(pr.reportId).add(t.typeId);
+                if (!factMatrixClaims.has(pr.reportId)) factMatrixClaims.set(pr.reportId, new Set());
+                for (const cid of pr.claimIdsSampled) {
+                  factMatrixClaims.get(pr.reportId).add(cid);
+                }
+              }
+            } else {
+              if (!pr.reason || typeof pr.reason !== "string" || !pr.reason.trim()) {
+                pushErr(errors, file, `${ppref}.reason`, "present=false 必须给非空 reason");
+              }
+            }
+          }
+          // perReport 必须覆盖全部 candidates
+          for (const rid of reportIds) {
+            if (!seenReports.has(rid)) {
+              pushErr(errors, file, `${tpref}.perReport`, `缺少 reportId=${rid} 的覆盖条目`);
+            }
+          }
+        }
+        // 必须覆盖 T1~T8 全部
+        for (const tid of REQ_TYPES) {
+          if (!typeIdsFound.has(tid)) {
+            pushErr(errors, file, "summary.factCoverageMatrix.types", `缺少 typeId=${tid}（T1~T8 必须齐全）`);
+          }
+        }
+      }
+      // v3.6 新增：overallScores[].deltaReason 条件必填（需比对上一版 outbox）
+      try {
+        // expectedTaskId 是 outbox 目录名；历史版本路径 .evaluations/outbox/{taskId}/v{N-1}.json
+        const curVersion = typeof payload.version === "number" ? payload.version : null;
+        if (curVersion && curVersion > 1 && expectedTaskId) {
+          const prevFile = path.resolve(
+            path.dirname(file),
+            `v${curVersion - 1}.json`
+          );
+          if (fs.existsSync(prevFile)) {
+            const prevRaw = JSON.parse(fs.readFileSync(prevFile, "utf-8"));
+            const prevMap = new Map();
+            for (const o of prevRaw?.summary?.overallScores ?? []) {
+              prevMap.set(o.reportId, o);
+            }
+            for (const cur of payload?.summary?.overallScores ?? []) {
+              const prev = prevMap.get(cur.reportId);
+              if (!prev) continue;
+              const dScore = Math.abs(Number(cur.score ?? 0) - Number(prev.score ?? 0));
+              const crossTier = !!cur.vetoTriggered !== !!prev.vetoTriggered;
+              // 维度档位跨档：R1~R5 逐项比 tier，任意一格变化即视为跨档（例如 A↔C）
+              // 简化处理：总分 >=1.0 或 veto 翻转时触发 deltaReason 必填
+              if (dScore >= 1.0 || crossTier) {
+                if (typeof cur.deltaReason !== "string" || !cur.deltaReason.trim()) {
+                  pushErr(
+                    errors,
+                    file,
+                    `summary.overallScores[reportId=${cur.reportId}].deltaReason`,
+                    `v3.6 要求总分 Δ=${dScore.toFixed(1)}${crossTier ? " 或 veto 翻转" : ""} 时必须写 deltaReason（与上一版 v${curVersion - 1} 对比）`
+                  );
+                }
+              }
+            }
+          }
+        }
+      } catch (e) {
+        // 历史对比失败不阻塞主流程，但给个警告
+        pushErr(errors, file, "summary.overallScores.deltaReason", `历史一致性闸门读取失败：${e.message}`);
+      }
+    }
+
     // --- claimInventory ---
     const claimIds = new Set();
     if (!Array.isArray(s.claimInventory) || s.claimInventory.length === 0) {
@@ -560,8 +686,8 @@ export function validatePayload(file, payload, errors, expectedTaskId) {
           perReportClaims.set(c.reportId, arr);
         }
       }
-      // 每份报告承重 claim 数量硬约束：v2.2~v3.2 为 3~5，v3.3 起放宽到 3~10（含 ≥1 条 logic）
-      const maxClaimsPerReport = isV33 ? 10 : 5;
+      // 每份报告承重 claim 数量硬约束：v2.2~v3.2 为 3~5，v3.3+ 放宽到 3~10（含 ≥1 条 logic）
+      const maxClaimsPerReport = isClaimTopTen ? 10 : 5;
       for (const rid of reportIds) {
         const arr = perReportClaims.get(rid) ?? [];
         if (arr.length < 3 || arr.length > maxClaimsPerReport) {
@@ -642,6 +768,12 @@ export function validatePayload(file, payload, errors, expectedTaskId) {
           }
           if (isV31 && !hasExternalValidationCue(ck.evidence)) {
             pushErr(errors, file, `${pref}.evidence`, "v3.1 下 refuted / inconclusive 的 evidence 还必须包含外部核验结论（或不可核说明）");
+          }
+        }
+        // v3.6 新增：pass1Question 必填（Pass 1 疑点主动激发）
+        if (isV36 && ck.status !== "skipped-out-of-scope" && ck.status !== "skipped-time-budget") {
+          if (typeof ck.pass1Question !== "string" || !ck.pass1Question.trim()) {
+            pushErr(errors, file, `${pref}.pass1Question`, "v3.6 要求每条 claimChecks 必填 pass1Question（Pass 1 疑点主动激发）");
           }
         }
       }
