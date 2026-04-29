@@ -54,6 +54,8 @@ const DEFAULT_RUBRIC_NAMES: Record<ContractVersion, Record<string, string>> = {
   "3.2": NAMES_V2_PLUS,
   "3.3": NAMES_V2_PLUS,
   "3.4": NAMES_V2_PLUS,
+  "3.5": NAMES_V2_PLUS,
+  "3.6": NAMES_V2_PLUS,
 };
 
 /**
@@ -197,6 +199,12 @@ export function orderReportIds(
  */
 export function reportHintFor(contractVersion: ContractVersion): string {
   switch (contractVersion) {
+    case "3.6":
+      return "v3.6：事实准确性方法论（T1~T8 全扫描）+ 跨版本稳定性（deltaReason）+ 效率优化（P0/P1/P2 分层）。";
+    case "3.5":
+      return "v3.5：报告详实化（维度×产品矩阵 + why 三联）+ 效率优化（承重分层 + sourceId 复用）。";
+    case "3.4":
+      return "v3.4：taskId 扁平化 + 正文四段结构 + 质量优先。";
     case "3.3":
       return "质量优先：取消 45min 时间盒；承重 claim 抽到 Top 10；诊断内容全部写入正文四段结构。";
     case "3.2":
