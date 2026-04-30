@@ -27,17 +27,14 @@
         if (l.search && l.search.indexOf("?/") === 0) {
           var hash = l.hash || "";
           var decoded = l.search
-            .slice(2)
+            .slice(1)
             .split("&")
             .map(function (s) {
               return s.replace(/~and~/g, "&");
             })
             .join("?");
-          window.history.replaceState(
-            null,
-            "",
-            l.pathname.slice(0, -1) + decoded + hash
-          );
+          var base = l.pathname.replace(/\/$/, "");
+          window.history.replaceState(null, "", base + decoded + hash);
         }
       })();
     </script>
