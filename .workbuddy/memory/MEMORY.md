@@ -40,3 +40,9 @@
 - 边界隔离：`vite-plugins/` 严禁 import `src/` 代码。
 - 契约/lint/schema 相关改动后的回归三连：`npm run lint:outbox` + `npm test` + `tsc -p tsconfig.app.json --noEmit`（UI 变更再加 `npm run lint`）。
 
+## 工程踩坑（评测官写产物时高频翻车点）
+
+- **lint-outbox 期望字段名是 `dimensionId`**（rubric / extraDimensions 都是），契约 §3.0 示例写的是 `id` 但 lint 实现取的是 `dimensionId`，存在契约示例与 lint 不一致。直接用 `dimensionId` 即可。
+- **extraDimensions 即便 `activated=false` 也必须显式 `scores: []`**，否则 lint 报「必须是数组」。
+- **JSON 内 markdown 引用片段「...」严禁出现未转义的 ASCII `"`**——写产物时一律把中文场景里的 `"x"` 改成 `『x』` / `"x"` / `'x'`，可避免反复修 JSON 语法错。
+

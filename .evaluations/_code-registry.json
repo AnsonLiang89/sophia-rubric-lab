@@ -2,7 +2,7 @@
   "version": 1,
   "prefix": "EV",
   "padWidth": 4,
-  "nextNumber": 11,
+  "nextNumber": 12,
   "entries": [
     {
       "code": "EV-0001",
@@ -62,6 +62,12 @@
       "code": "EV-0010",
       "queryId": "GWYhTqf3tO",
       "registeredAt": "2026-04-29T07:29:15.673Z",
+      "note": "createQuery"
+    },
+    {
+      "code": "EV-0011",
+      "queryId": "arxqHux5L3",
+      "registeredAt": "2026-05-27T13:54:38.870Z",
       "note": "createQuery"
     }
   ]
