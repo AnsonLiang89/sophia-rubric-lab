@@ -1,0 +1,1899 @@
+{
+  "taskId": "EV-0012",
+  "version": 2,
+  "evaluator": "Sophia (via WorkBuddy)",
+  "evaluatedAt": "2026-06-03T09:20:00.000Z",
+  "contractVersion": "3.6",
+  "summary": {
+    "overallScores": [
+      {
+        "reportId": "swFVPOtaPS",
+        "productName": "SophiaAI v10",
+        "score": 8.7,
+        "verdict": "卓越",
+        "vetoTriggered": false,
+        "comment": "事实最严谨：自带审计修正、对铌供应链(巴西产量88%/中国<1%/进口依赖>95%)核验正确，对AI渗透率18%→35%坦承『高不确定性假设，无独立来源支撑』并拒绝用于投资决策。论证深度与决策价值双S档。"
+      },
+      {
+        "reportId": "XdVfWC8VqR",
+        "productName": "SophiaAI v5",
+        "score": 7.2,
+        "verdict": "优秀",
+        "vetoTriggered": false,
+        "comment": "信息量大且做了大量审计修正(Proterial国籍/云路毛利率/Finemet成分/铁氧体Bs等)，但保留$2800/kg严重偏差价格做模型、体例混乱(口语前言+正式报告拼接)，R1降至B。"
+      },
+      {
+        "reportId": "QiQY4vEfP3",
+        "productName": "Kimi",
+        "score": 6.9,
+        "verdict": "合格",
+        "vetoTriggered": false,
+        "comment": "数据密度最高、八问全覆盖，但承重事实层薄弱：多处精确数字(2.5亿片/98.7%/GB300~5000电感)无一手源、疑似拟真，且全文零 caveat。R1压B、R5本轮降B，总分由7.2→6.9，跌出优秀档。",
+        "deltaReason": "相对 v1：本轮按用户强调的『有效辅助决策而非堆字数』视角复审 R5——Kimi 以全6份最长篇幅(54907字)承载多处无源拟真数字且零 caveat，对不确定项打包票，决策诚实度不足，R5由A(8)降B(6)，总分7.2→6.9、评级优秀→合格。其余维度与 v1 一致，无新证据不改动。"
+      },
+      {
+        "reportId": "ayDsLMvn6z",
+        "productName": "Manus",
+        "score": 7.8,
+        "verdict": "优秀",
+        "vetoTriggered": false,
+        "comment": "口径最诚实：明确区分『金属软磁粉芯母市场』与『非晶纳米晶粉末细分』，所有市场数字标注情景测算与渗透率假设区间，事实零硬错，R1=A。壁垒拆解相对浅、R4=B。"
+      },
+      {
+        "reportId": "dJZdiw8UyF",
+        "productName": "MiroThink",
+        "score": 6.0,
+        "verdict": "合格",
+        "vetoTriggered": false,
+        "comment": "框架完整但数据偏旧(引2019年市占率)、市场量级估算粗(数亿美元/数千吨级跨度过大)，论证多停留一阶，整体合格档。"
+      },
+      {
+        "reportId": "y2CMWWnpnH",
+        "productName": "Gemini",
+        "score": 5.4,
+        "verdict": "待改进",
+        "vetoTriggered": false,
+        "comment": "工艺壁垒拆解最深(四大壁垒+退火温区+多模态级配)，但承重事实错误『钼坡莫合金(MPP)占全球金属粉芯总需求的49%以上』(实际MPP约20%、铁硅铝70%)，且全篇零信源，R1降至C、总分跌入待改进。"
+      }
+    ],
+    "rubric": [
+      {
+        "dimensionId": "R1",
+        "name": "准确性",
+        "weight": 0.4,
+        "scores": [
+          {
+            "reportId": "swFVPOtaPS",
+            "tier": "A",
+            "score": 8,
+            "confidence": "high",
+            "comment": "承重数字均给来源且自带审计层。铌供应链『中国对巴西铌的进口依赖度超95%』经外验属实(巴西产量约90%/中国0.8%/依赖96.9%)。",
+            "issueTags": []
+          },
+          {
+            "reportId": "XdVfWC8VqR",
+            "tier": "B",
+            "score": 6,
+            "confidence": "high",
+            "comment": "审计修正到位但价值定价模型仍引用与行业实际(约80元/kg)严重偏差的『$2800/kg基准价格』，虽自标⚠️但仍据此推$2100/kg阈值，口径污染。",
+            "issueTags": []
+          },
+          {
+            "reportId": "QiQY4vEfP3",
+            "tier": "B",
+            "score": 6,
+            "confidence": "high",
+            "comment": "数据海量但多处精确数字无法独立核验(如『iPhone 16 Pro无线充电模块采用纳米晶磁片，充电效率提升至88%，年需求量达2.5亿片』『全球首条万吨级纳米晶带材产线良品率达98.7%』)，幻觉风险高。",
+            "issueTags": []
+          },
+          {
+            "reportId": "ayDsLMvn6z",
+            "tier": "A",
+            "score": 8,
+            "confidence": "high",
+            "comment": "全文未出现可证伪的硬数字错误；市场容量均以『情景测算，并非直接披露数据』明示，估算区间(0.3万-1.0万吨)合理。",
+            "issueTags": []
+          },
+          {
+            "reportId": "dJZdiw8UyF",
+            "tier": "B",
+            "score": 6,
+            "confidence": "high",
+            "comment": "引用2019年日立49.7%、中国43.1%等旧口径未更新；市场量级以『数亿美元级别(2~3亿$量级)』粗估。",
+            "issueTags": []
+          },
+          {
+            "reportId": "y2CMWWnpnH",
+            "tier": "C",
+            "score": 4,
+            "confidence": "high",
+            "comment": "承重事实错误：「占全球金属粉芯总需求的49%以上，多用于军工和航天等不考虑高昂原材料成本的高精密环境」——MPP实际约占20%(铁硅铝占70%)，且与其自述『军工航天小众』内部矛盾；全篇零信源。",
+            "issueTags": []
+          }
+        ],
+        "subscores": {
+          "R1a": {
+            "tier": "A",
+            "score": 8,
+            "weight": 0.28,
+            "comment": "以聚焦对象SophiaAI v10为准：事实层经审计+外验，铌供应链数字核验属实，无承重事实错。"
+          },
+          "R1b": {
+            "tier": "A",
+            "score": 8,
+            "weight": 0.12,
+            "comment": "内部逻辑自洽：审计修正后口径统一，渗透率假设与结论的因果链一致，无算术/量纲矛盾。"
+          }
+        }
+      },
+      {
+        "dimensionId": "R2",
+        "name": "相关性",
+        "weight": 0.15,
+        "scores": [
+          {
+            "reportId": "swFVPOtaPS",
+            "tier": "A",
+            "score": 8,
+            "confidence": "medium",
+            "comment": "逐条正面回应应用/市场/格局/国产化率/未来/唯一性/并行方案/壁垒八问，并主动挖『去泡沫化』潜在诉求。",
+            "issueTags": []
+          },
+          {
+            "reportId": "XdVfWC8VqR",
+            "tier": "A",
+            "score": 8,
+            "confidence": "medium",
+            "comment": "八问全覆盖，唯一性判断与并行方案(铁氧体/铁粉芯/SMC/无Nb)清晰。",
+            "issueTags": []
+          },
+          {
+            "reportId": "QiQY4vEfP3",
+            "tier": "A",
+            "score": 8,
+            "confidence": "medium",
+            "comment": "八问全覆盖且带材/粉末分形态作答，锚点齐全。",
+            "issueTags": []
+          },
+          {
+            "reportId": "ayDsLMvn6z",
+            "tier": "A",
+            "score": 8,
+            "confidence": "medium",
+            "comment": "八问全覆盖，对『是否唯一选项』给出明确边界条件。",
+            "issueTags": []
+          },
+          {
+            "reportId": "dJZdiw8UyF",
+            "tier": "B",
+            "score": 6,
+            "confidence": "medium",
+            "comment": "覆盖主要诉求但壁垒与玩家介绍偏简，潜在诉求挖掘不足。",
+            "issueTags": []
+          },
+          {
+            "reportId": "y2CMWWnpnH",
+            "tier": "B",
+            "score": 6,
+            "confidence": "medium",
+            "comment": "覆盖应用/市场/格局/替代/壁垒，但『国产化率』与『未来量级』回应偏薄。",
+            "issueTags": []
+          }
+        ]
+      },
+      {
+        "dimensionId": "R3",
+        "name": "论证深度",
+        "weight": 0.2,
+        "scores": [
+          {
+            "reportId": "swFVPOtaPS",
+            "tier": "S",
+            "score": 10,
+            "confidence": "high",
+            "comment": "非共识三联完整：渗透率证伪(查OCP/三大电源商/媒体拆解全空白)、800V证伪(比亚迪转1000V/特斯拉守400V)、卡脖子重定义(从专利→批次一致性)，每条带证据+推理链+决策增量。",
+            "issueTags": []
+          },
+          {
+            "reportId": "XdVfWC8VqR",
+            "tier": "A",
+            "score": 8,
+            "confidence": "high",
+            "comment": "地缘政治四情景推演+价值定价模型有原创性，但价值模型因价格数据偏差而结论存疑。",
+            "issueTags": []
+          },
+          {
+            "reportId": "QiQY4vEfP3",
+            "tier": "A",
+            "score": 8,
+            "confidence": "high",
+            "comment": "多赛道量价测算闭环、带材vs粉末对比深入，二阶分析充分。",
+            "issueTags": []
+          },
+          {
+            "reportId": "ayDsLMvn6z",
+            "tier": "A",
+            "score": 8,
+            "confidence": "high",
+            "comment": "母市场→细分渗透率→情景区间的推导链清晰，投资判断有增量。",
+            "issueTags": []
+          },
+          {
+            "reportId": "dJZdiw8UyF",
+            "tier": "B",
+            "score": 6,
+            "confidence": "high",
+            "comment": "以信息梳理与区间判断为主，二阶追问偏少。",
+            "issueTags": []
+          },
+          {
+            "reportId": "y2CMWWnpnH",
+            "tier": "B",
+            "score": 6,
+            "confidence": "high",
+            "comment": "工艺机理推导深(纳米晶形核动力学/级配)，但产业与市场层多为结论陈述、缺对照。",
+            "issueTags": []
+          }
+        ]
+      },
+      {
+        "dimensionId": "R4",
+        "name": "完备性",
+        "weight": 0.1,
+        "scores": [
+          {
+            "reportId": "swFVPOtaPS",
+            "tier": "A",
+            "score": 8,
+            "confidence": "medium",
+            "comment": "应用/市场/格局/国产化率/壁垒/风险/海外专利/供应链情景维度齐全且有专项子报告支撑。",
+            "issueTags": []
+          },
+          {
+            "reportId": "XdVfWC8VqR",
+            "tier": "A",
+            "score": 8,
+            "confidence": "medium",
+            "comment": "维度最全(含碳关税/历史类比/国际化/无铌体系)，结构虽长但支撑结论。",
+            "issueTags": []
+          },
+          {
+            "reportId": "QiQY4vEfP3",
+            "tier": "A",
+            "score": 8,
+            "confidence": "medium",
+            "comment": "七大章节+大量数据表，决策维度覆盖最完整。",
+            "issueTags": []
+          },
+          {
+            "reportId": "ayDsLMvn6z",
+            "tier": "B",
+            "score": 6,
+            "confidence": "medium",
+            "comment": "维度齐但壁垒与玩家介绍相对单薄，缺定量测算表。",
+            "issueTags": []
+          },
+          {
+            "reportId": "dJZdiw8UyF",
+            "tier": "B",
+            "score": 6,
+            "confidence": "medium",
+            "comment": "维度基本覆盖但深度有限。",
+            "issueTags": []
+          },
+          {
+            "reportId": "y2CMWWnpnH",
+            "tier": "A",
+            "score": 8,
+            "confidence": "medium",
+            "comment": "壁垒拆解维度最深(配方/制粉/包覆/退火四壁垒+检测设备)，结构清晰。",
+            "issueTags": []
+          }
+        ]
+      },
+      {
+        "dimensionId": "R5",
+        "name": "决策价值",
+        "weight": 0.15,
+        "scores": [
+          {
+            "reportId": "swFVPOtaPS",
+            "tier": "S",
+            "score": 10,
+            "confidence": "high",
+            "comment": "『去泡沫化』+短中长期可执行建议+FTO前置流程，决策增量最高，主动标注多处不确定性。",
+            "issueTags": []
+          },
+          {
+            "reportId": "XdVfWC8VqR",
+            "tier": "A",
+            "score": 8,
+            "confidence": "high",
+            "comment": "分阶段建议详尽且带触发条件，caveat充分。",
+            "issueTags": []
+          },
+          {
+            "reportId": "QiQY4vEfP3",
+            "tier": "B",
+            "score": 6,
+            "confidence": "high",
+            "comment": "本轮按『辅助决策有效性 vs 堆字数』复审降档：6份中最长(54907字)，却以确定语气陈述「iPhone16 Pro无线充电模块采用纳米晶磁片，年需求量达2.5亿片」「安泰科技…良品率达98.7%」等多处无源拟真数字，且全文零 caveat、对不确定项打包票，决策诚实度轴下滑，R5由A降B。",
+            "issueTags": [
+              "风险缺失",
+              "启发性不足"
+            ]
+          },
+          {
+            "reportId": "ayDsLMvn6z",
+            "tier": "A",
+            "score": 8,
+            "confidence": "high",
+            "comment": "给出『较优企业画像四特征』与跟踪要点，可操作性强。",
+            "issueTags": []
+          },
+          {
+            "reportId": "dJZdiw8UyF",
+            "tier": "B",
+            "score": 6,
+            "confidence": "high",
+            "comment": "结论较笼统，take-away偏方向性。",
+            "issueTags": []
+          },
+          {
+            "reportId": "y2CMWWnpnH",
+            "tier": "B",
+            "score": 6,
+            "confidence": "high",
+            "comment": "技术展望(MHz化/耐温边界)有价值但缺投资可操作建议。",
+            "issueTags": []
+          }
+        ]
+      }
+    ],
+    "extraDimensions": [
+      {
+        "dimensionId": "X1",
+        "name": "信源可追溯度",
+        "activated": false,
+        "weight": 0.0,
+        "scores": [],
+        "rationale": "本轮已用T6信源类与R1信源子项充分覆盖『有无一手源』,无需单列扩展维度挤压R1~R5权重;但记录为开放观察项:Gemini零信源、Kimi信源稀疏是两大短板。"
+      }
+    ],
+    "sbs": {
+      "pairs": [
+        {
+          "reportIdA": "swFVPOtaPS",
+          "reportIdB": "XdVfWC8VqR",
+          "winner": "A",
+          "margin": "clear",
+          "dimensionDriver": [
+            "R1",
+            "R3",
+            "R5"
+          ],
+          "keyReason": "同源Sophia,v10事实(铌核验/渗透率证伪)与决策价值(去泡沫化)更硬,v5因$2800/kg偏差与体例混乱R1降B。"
+        },
+        {
+          "reportIdA": "swFVPOtaPS",
+          "reportIdB": "QiQY4vEfP3",
+          "winner": "A",
+          "margin": "clear",
+          "dimensionDriver": [
+            "R1",
+            "R3",
+            "R5"
+          ],
+          "keyReason": "v10(8.7)明显胜 Kimi(6.9)：v10事实可核+自审计、非共识带推理链、R5去泡沫化；Kimi数据全但R1无源拟真、R5零caveat，R1/R3/R5全面领先。"
+        },
+        {
+          "reportIdA": "swFVPOtaPS",
+          "reportIdB": "ayDsLMvn6z",
+          "winner": "A",
+          "margin": "clear",
+          "dimensionDriver": [
+            "R3",
+            "R5"
+          ],
+          "keyReason": "两者事实都诚实(均A),v10在R3非共识(渗透率/800V双证伪)与R5决策价值更突出。"
+        },
+        {
+          "reportIdA": "swFVPOtaPS",
+          "reportIdB": "dJZdiw8UyF",
+          "winner": "A",
+          "margin": "overwhelming",
+          "dimensionDriver": [
+            "R1",
+            "R3",
+            "R5"
+          ],
+          "keyReason": "v10在R1/R3/R5全面碾压,MiroThink数据偏旧、论证一阶。"
+        },
+        {
+          "reportIdA": "swFVPOtaPS",
+          "reportIdB": "y2CMWWnpnH",
+          "winner": "A",
+          "margin": "overwhelming",
+          "dimensionDriver": [
+            "R1",
+            "R3"
+          ],
+          "keyReason": "v10事实正确且信源齐,Gemini承重事实错(MPP49%)+零信源,差距压倒性。"
+        },
+        {
+          "reportIdA": "XdVfWC8VqR",
+          "reportIdB": "QiQY4vEfP3",
+          "winner": "A",
+          "margin": "slight",
+          "dimensionDriver": [
+            "R5",
+            "R1"
+          ],
+          "keyReason": "本轮 Kimi R5 降B后 v5(7.2)略胜 Kimi(6.9)：两者 R1 同为B(v5价格偏差/Kimi无源拟真)，v5 的分阶段建议带触发条件、caveat更足，R5仍A；Kimi零caveat降B，v5以R5略微领先。"
+        },
+        {
+          "reportIdA": "XdVfWC8VqR",
+          "reportIdB": "ayDsLMvn6z",
+          "winner": "B",
+          "margin": "slight",
+          "dimensionDriver": [
+            "R1"
+          ],
+          "keyReason": "Manus事实更干净(R1=A)且口径诚实,v5因$2800/kg偏差R1=B,Manus略胜。"
+        },
+        {
+          "reportIdA": "XdVfWC8VqR",
+          "reportIdB": "dJZdiw8UyF",
+          "winner": "A",
+          "margin": "clear",
+          "dimensionDriver": [
+            "R1",
+            "R4"
+          ],
+          "keyReason": "v5维度更全、审计更严,明显优于MiroThink。"
+        },
+        {
+          "reportIdA": "XdVfWC8VqR",
+          "reportIdB": "y2CMWWnpnH",
+          "winner": "A",
+          "margin": "overwhelming",
+          "dimensionDriver": [
+            "R1"
+          ],
+          "keyReason": "v5无承重事实错且信源足,Gemini有MPP硬错+零信源,v5明显领先。"
+        },
+        {
+          "reportIdA": "QiQY4vEfP3",
+          "reportIdB": "ayDsLMvn6z",
+          "winner": "B",
+          "margin": "clear",
+          "dimensionDriver": [
+            "R1",
+            "R5"
+          ],
+          "keyReason": "Manus(7.8)明显胜 Kimi(6.9)：Manus口径诚实(R1=A、量级标情景测算)且R5给可执行企业画像；Kimi无源拟真致R1=B、零caveat致R5=B，差距由slight扩为clear。"
+        },
+        {
+          "reportIdA": "QiQY4vEfP3",
+          "reportIdB": "dJZdiw8UyF",
+          "winner": "A",
+          "margin": "clear",
+          "dimensionDriver": [
+            "R1",
+            "R3",
+            "R4"
+          ],
+          "keyReason": "Kimi(6.9)仍明显胜 MiroThink(6.0)：Kimi数据深度与结构完整度远高，MiroThink数据偏旧(2019市占)、论证一阶；Kimi降档后差距收窄但仍clear。"
+        },
+        {
+          "reportIdA": "QiQY4vEfP3",
+          "reportIdB": "y2CMWWnpnH",
+          "winner": "A",
+          "margin": "clear",
+          "dimensionDriver": [
+            "R1"
+          ],
+          "keyReason": "Kimi(6.9)明显胜 Gemini(5.4)：Kimi虽有inconclusive但无承重事实硬错；Gemini有MPP 49%承重事实错+全篇零信源，Kimi在R1上明显领先。"
+        },
+        {
+          "reportIdA": "ayDsLMvn6z",
+          "reportIdB": "dJZdiw8UyF",
+          "winner": "A",
+          "margin": "overwhelming",
+          "dimensionDriver": [
+            "R1",
+            "R3"
+          ],
+          "keyReason": "Manus口径诚实、估算严谨,明显优于MiroThink。"
+        },
+        {
+          "reportIdA": "ayDsLMvn6z",
+          "reportIdB": "y2CMWWnpnH",
+          "winner": "A",
+          "margin": "overwhelming",
+          "dimensionDriver": [
+            "R1"
+          ],
+          "keyReason": "Manus事实干净+信源齐全,Gemini承重事实错+零信源,Manus明显领先。"
+        },
+        {
+          "reportIdA": "dJZdiw8UyF",
+          "reportIdB": "y2CMWWnpnH",
+          "winner": "A",
+          "margin": "slight",
+          "dimensionDriver": [
+            "R1"
+          ],
+          "keyReason": "MiroThink虽数据旧但无承重事实错且有信源,Gemini有MPP硬错+零信源,MiroThink略胜(R4 Gemini壁垒更深拉近差距)。"
+        }
+      ]
+    },
+    "perReportFeedback": [
+      {
+        "reportId": "swFVPOtaPS",
+        "strengths": [
+          "R1准确性:对AI电源渗透率18%→35%主动证伪并标注『高不确定性假设,不能用于投资决策』,事实纪律最强",
+          "R3论证深度:三大非共识(渗透率证伪/800V转向/卡脖子从专利重定义为批次一致性)均带证据+推理链+决策增量",
+          "R5决策价值:提出『下游增长预期需去泡沫化』并给短中长期可执行建议与FTO前置流程"
+        ],
+        "weaknesses": [
+          "部分预测性数字(储能80亿/氢能10亿磁芯市场)虽标注可信度极低,仍占用正文篇幅",
+          "铌情景概率(中断25-30%等)为定性推演,缺乏可验证的概率模型支撑"
+        ],
+        "improvements": [
+          "把『高不确定性假设』类预测集中到独立的低置信附录,避免与硬数据混排稀释正文",
+          "对铌中断概率给出基于历史断供频次或期权隐含的量化锚点"
+        ]
+      },
+      {
+        "reportId": "XdVfWC8VqR",
+        "strengths": [
+          "审计修正全面:Proterial国籍/云路毛利率/Finemet成分Bs/铁氧体Bs/碳关税换算等十余处硬错均已修正并标注来源",
+          "R4完备性:含碳关税/历史类比(稀土/MLCC/东芝)/国际化/无铌体系,决策维度最齐"
+        ],
+        "weaknesses": [
+          "价值定价模型仍引用与行业均价(约80元/kg)偏差约250倍的『$2800/kg基准价格』,虽自标⚠️但据此推$2100/kg阈值,属带病推理",
+          "体例混乱:开头口语化营销前言(emoji+『这波真的能起飞吗』)与正式审计报告拼接,阅读体验割裂"
+        ],
+        "improvements": [
+          "彻底剔除$2800/kg错误基准,改用实测均价重做价值定价模型或直接删除该模型",
+          "去掉口语前言,统一为投研体例;审计标注(✅⚠️❌❓)保留但收敛密度"
+        ]
+      },
+      {
+        "reportId": "QiQY4vEfP3",
+        "strengths": [
+          "R4完备性:七章+大量数据表,带材/粉末分形态,市场细分测算最完整",
+          "R3:多赛道量价测算闭环,纳米晶μi近1000倍铁硅铝等技术对比深入"
+        ],
+        "weaknesses": [
+          "R1:混入大量无源精确数字(iPhone16 Pro磁片年需2.5亿片、华为产线良率98.7%、GB300单台~5000电感),存在系统性幻觉风险",
+          "同一指标跨段口径偶有出入(GB300电感数:单台~5000 vs 360万片×60-70个两种口径并存)"
+        ],
+        "improvements": [
+          "对每个精确承重数字补一手来源或降级为区间/定性表述,杜绝拟真数字",
+          "统一GB300等关键标的的电感用量口径,跨段交叉对齐"
+        ]
+      },
+      {
+        "reportId": "ayDsLMvn6z",
+        "strengths": [
+          "R1:口径最诚实,明确区分金属软磁粉芯母市场与非晶纳米晶粉末细分,所有量级标注『情景测算,并非直接披露数据』",
+          "R5:给出『较优企业画像四特征』(粉末制备+包覆压制退火+客户协同+多材料平台),投资可操作性强"
+        ],
+        "weaknesses": [
+          "R4:材料/工艺/配方壁垒拆解相对浅,缺定量测算表",
+          "玩家介绍以罗列为主,对中外企业差距的量化对比不足"
+        ],
+        "improvements": [
+          "补一张非晶纳米晶粉末关键工艺参数(冷却速率/氧含量/良率)的国产vs进口对照表",
+          "对头部企业(铂科/安泰/云路)的粉末产能与客户认证进度做结构化对比"
+        ]
+      },
+      {
+        "reportId": "dJZdiw8UyF",
+        "strengths": [
+          "结论归纳清晰,『一句话版』对应用/市场/格局/唯一性/壁垒五点收口干净",
+          "并行软磁路线对比表(非晶/纳米晶/铁硅铝/铁镍钼/铁氧体/硅钢)维度完整"
+        ],
+        "weaknesses": [
+          "R1:大量引用2019年日立49.7%/中国43.1%等旧口径,未更新到当前格局",
+          "R3:市场量级估算跨度过大(数亿美元/数千吨到上万吨),论证多停留一阶"
+        ],
+        "improvements": [
+          "把2019旧市占数据更新到2024-2025口径,或明确标注为历史基准",
+          "对粉末市场量级给出更窄的测算区间与推导过程,减少『数千吨级』式模糊表述"
+        ]
+      },
+      {
+        "reportId": "y2CMWWnpnH",
+        "strengths": [
+          "R4:技术壁垒拆解最深,四大壁垒(配方纳米形核动力学/急冷雾化/多模态级配包覆/精密退火温控)颗粒度行业最细",
+          "工艺数据具体:水气联合雾化167.6emu/g、Hc47.7A/m、560℃退火等可核且与论文一致"
+        ],
+        "weaknesses": [
+          "R1承重事实错误:『钼坡莫合金(MPP)占全球金属粉芯总需求的49%以上』(实际MPP约20%、铁硅铝70%),且与其『军工航天小众』表述自相矛盾",
+          "全篇零参考文献/URL,『前五大玩家超58%份额』等承重数据均无来源,可追溯性最差"
+        ],
+        "improvements": [
+          "立即更正MPP占比(改为约20%)并消除与『军工小众』的内部矛盾",
+          "为所有承重市场数据补一手来源/URL,建立可追溯引用体系"
+        ]
+      }
+    ],
+    "factCoverageMatrix": {
+      "scannedAt": "2026-06-03T08:05:00.000Z",
+      "types": [
+        {
+          "typeId": "T1",
+          "label": "数字/金额/比例",
+          "hintKeywords": "精确小数/亿/万/%、同比/环比",
+          "perReport": [
+            {
+              "reportId": "swFVPOtaPS",
+              "present": true,
+              "sampleQuote": "「2025年中国非晶纳米晶行业市场规模31.98亿元」「产量14.1万吨」",
+              "claimIdsSampled": [
+                "s10_1",
+                "s10_5"
+              ]
+            },
+            {
+              "reportId": "XdVfWC8VqR",
+              "present": true,
+              "sampleQuote": "「2024中国高纯铌进口28155吨、巴西占比98.4%」「铌资源量约470万吨、经济可采储量约29万吨」",
+              "claimIdsSampled": [
+                "s5_2",
+                "s5_4"
+              ]
+            },
+            {
+              "reportId": "QiQY4vEfP3",
+              "present": true,
+              "sampleQuote": "「2019云路全球非晶薄带市占41.15%」「GB300单台约4800-5000个一体成型电感」",
+              "claimIdsSampled": [
+                "k_1",
+                "k_2",
+                "k_5"
+              ]
+            },
+            {
+              "reportId": "ayDsLMvn6z",
+              "present": true,
+              "sampleQuote": "「中国金属软磁粉芯2024约16.6万吨、61亿元」",
+              "claimIdsSampled": [
+                "m_1",
+                "m_3",
+                "m_5"
+              ]
+            },
+            {
+              "reportId": "dJZdiw8UyF",
+              "present": true,
+              "sampleQuote": "「2020国产纳米晶带材占全球约80%(2.1万吨/全球2.5万吨)」",
+              "claimIdsSampled": [
+                "mi_1",
+                "mi_2",
+                "mi_4"
+              ]
+            },
+            {
+              "reportId": "y2CMWWnpnH",
+              "present": true,
+              "sampleQuote": "「钼坡莫合金(MPP)占全球金属粉芯总需求49%以上」「167.6emu/g、Hc=47.7A/m」",
+              "claimIdsSampled": [
+                "g_1",
+                "g_3",
+                "g_5"
+              ]
+            }
+          ]
+        },
+        {
+          "typeId": "T2",
+          "label": "时间/日期",
+          "hintKeywords": "年份、更名/获批/生效日期",
+          "perReport": [
+            {
+              "reportId": "swFVPOtaPS",
+              "present": true,
+              "sampleQuote": "「Proterial于2023年1月脱离日立集团更名为博迈立铖」",
+              "claimIdsSampled": [
+                "s10_3"
+              ]
+            },
+            {
+              "reportId": "XdVfWC8VqR",
+              "present": true,
+              "sampleQuote": "「1988年日立金属Yoshizawa团队发明Finemet」「CBAM自2028年1月1日起扩展至汽车零部件」",
+              "claimIdsSampled": [
+                "s5_1",
+                "s5_6"
+              ]
+            },
+            {
+              "reportId": "QiQY4vEfP3",
+              "present": false,
+              "reason": "时间锚点(1988 Finemet等)与其他报告重叠,已在T1/T4抽样覆盖该报告承重事实,T2不单独再抽。"
+            },
+            {
+              "reportId": "ayDsLMvn6z",
+              "present": false,
+              "reason": "通篇以市场结构为主,无独立承重的时间/日期断言(年份多为市场年度,已并入T1)。"
+            },
+            {
+              "reportId": "dJZdiw8UyF",
+              "present": false,
+              "reason": "时间信息仅2019/2020市占年份,已在T1作为旧口径抽样,T2不重复。"
+            },
+            {
+              "reportId": "y2CMWWnpnH",
+              "present": true,
+              "sampleQuote": "「日立金属在2003年通过收购霍尼韦尔旗下AlliedSignal非晶业务奠定其全球性垄断地位」",
+              "claimIdsSampled": [
+                "g_2"
+              ]
+            }
+          ]
+        },
+        {
+          "typeId": "T3",
+          "label": "货币/量纲/单位",
+          "hintKeywords": "人民币vs美元、亿vs万吨、$/kg vs 元/kg",
+          "perReport": [
+            {
+              "reportId": "swFVPOtaPS",
+              "present": true,
+              "sampleQuote": "「非晶纳米晶磁芯比铁氧体贵约2-3倍(约$15-25/kg vs $5-8/kg)」",
+              "claimIdsSampled": [
+                "s10_5",
+                "s10_2"
+              ]
+            },
+            {
+              "reportId": "XdVfWC8VqR",
+              "present": true,
+              "sampleQuote": "「$2800/kg基准价格与行业均价约1.1万美元/吨≈80元/kg存在巨大差异」",
+              "claimIdsSampled": [
+                "s5_3"
+              ]
+            },
+            {
+              "reportId": "QiQY4vEfP3",
+              "present": false,
+              "reason": "货币/量纲多为元/美元混排但均明示单位(如亿美元/亿元),无承重量纲错误,T3不单独抽样。"
+            },
+            {
+              "reportId": "ayDsLMvn6z",
+              "present": false,
+              "reason": "金额均标注币种(亿元/亿美元)且区分母市场口径,无量纲混用,T3不单独抽样。"
+            },
+            {
+              "reportId": "dJZdiw8UyF",
+              "present": false,
+              "reason": "市场额以美元为主且明示$,无量纲错误,T3不单独抽样。"
+            },
+            {
+              "reportId": "y2CMWWnpnH",
+              "present": false,
+              "reason": "金额混用亿美元/亿元但单位明示,无承重量纲错误,T3不单独抽样。"
+            }
+          ]
+        },
+        {
+          "typeId": "T4",
+          "label": "主体/适应症/行业归属",
+          "hintKeywords": "公司主业、国籍、产品归属",
+          "perReport": [
+            {
+              "reportId": "swFVPOtaPS",
+              "present": true,
+              "sampleQuote": "「比亚迪2025转向1000V平台、特斯拉主力车型仍400V」",
+              "claimIdsSampled": [
+                "s10_6",
+                "s10_3"
+              ]
+            },
+            {
+              "reportId": "XdVfWC8VqR",
+              "present": true,
+              "sampleQuote": "「Proterial为日本公司(原日立集团,2023更名,总部东京)」",
+              "claimIdsSampled": [
+                "s5_6",
+                "s5_5"
+              ]
+            },
+            {
+              "reportId": "QiQY4vEfP3",
+              "present": true,
+              "sampleQuote": "「安泰科技…独家供应华为5.5G基站无线充电模块」",
+              "claimIdsSampled": [
+                "k_4",
+                "k_3"
+              ]
+            },
+            {
+              "reportId": "ayDsLMvn6z",
+              "present": true,
+              "sampleQuote": "「2020年美磁/昌星/铂科/东睦科达前四合计约58%」",
+              "claimIdsSampled": [
+                "m_3"
+              ]
+            },
+            {
+              "reportId": "dJZdiw8UyF",
+              "present": false,
+              "reason": "主体描述(日立/安泰/云路)与其他报告一致且无张冠李戴,承重已在T1覆盖,T4不单独抽样。"
+            },
+            {
+              "reportId": "y2CMWWnpnH",
+              "present": true,
+              "sampleQuote": "「日立金属…通过收购霍尼韦尔旗下AlliedSignal非晶业务」",
+              "claimIdsSampled": [
+                "g_2"
+              ]
+            }
+          ]
+        },
+        {
+          "typeId": "T5",
+          "label": "因果关系",
+          "hintKeywords": "因为→所以、前提→结论",
+          "perReport": [
+            {
+              "reportId": "swFVPOtaPS",
+              "present": false,
+              "reason": "因果链(成本→渗透)已在R3非共识论证中评估,承重落在T1/T6,T5不单独抽claim。"
+            },
+            {
+              "reportId": "XdVfWC8VqR",
+              "present": false,
+              "reason": "地缘四情景因果已在R3评估,承重落在T1价格数据,T5不单独抽claim。"
+            },
+            {
+              "reportId": "QiQY4vEfP3",
+              "present": false,
+              "reason": "因果多为行业通识(高频化→需高Bs低损耗),非承重争议点,T5不单独抽claim。"
+            },
+            {
+              "reportId": "ayDsLMvn6z",
+              "present": false,
+              "reason": "因果(系统收益不足→选成熟材料)为合理推断,T5不单独抽claim。"
+            },
+            {
+              "reportId": "dJZdiw8UyF",
+              "present": false,
+              "reason": "因果偏通识,T5不单独抽claim。"
+            },
+            {
+              "reportId": "y2CMWWnpnH",
+              "present": true,
+              "sampleQuote": "「铁氧体…饱和磁通密度Bs较低(通常<0.5T),导致其大电流耐受度极差,限制了元器件的小型化发展」",
+              "claimIdsSampled": [
+                "g_4"
+              ]
+            }
+          ]
+        },
+        {
+          "typeId": "T6",
+          "label": "信源可追溯性",
+          "hintKeywords": "是否给URL/公告编号、一手vs二手",
+          "perReport": [
+            {
+              "reportId": "swFVPOtaPS",
+              "present": true,
+              "sampleQuote": "「详细报告全文(含56页参考来源)」正文含[1]-[59]编号来源,AI渗透率主动标注无来源",
+              "claimIdsSampled": [
+                "s10_4",
+                "s10_1"
+              ]
+            },
+            {
+              "reportId": "XdVfWC8VqR",
+              "present": false,
+              "reason": "信源密集(含审计报告交叉),无承重的信源缺失争议点,承重落在T1价格数据,T6不单独抽claim。"
+            },
+            {
+              "reportId": "QiQY4vEfP3",
+              "present": false,
+              "reason": "全文大量数字但信源标注稀疏,信源问题已通过T1的inconclusive(k_3/k_4)体现,T6不再单独抽。"
+            },
+            {
+              "reportId": "ayDsLMvn6z",
+              "present": false,
+              "reason": "References[1]-[19]齐全且为一手/券商源,无信源争议,T6不单独抽claim。"
+            },
+            {
+              "reportId": "dJZdiw8UyF",
+              "present": false,
+              "reason": "References[1]-[9]齐全,信源问题在于时效旧而非缺失,已在T1体现,T6不单独抽。"
+            },
+            {
+              "reportId": "y2CMWWnpnH",
+              "present": true,
+              "sampleQuote": "全篇零参考文献/URL,『前五大玩家占据了超过58%的市场份额』等承重数据均无来源",
+              "claimIdsSampled": [
+                "g_1",
+                "g_3"
+              ]
+            }
+          ]
+        },
+        {
+          "typeId": "T7",
+          "label": "范围/scope是否匹配query",
+          "hintKeywords": "时间窗、地域、主体、口径是否与query一致",
+          "perReport": [
+            {
+              "reportId": "swFVPOtaPS",
+              "present": true,
+              "sampleQuote": "query问唯一性,「非晶纳米晶是高频高功率场景最优解,但并非唯一选项」严格对齐",
+              "claimIdsSampled": [
+                "s10_4"
+              ]
+            },
+            {
+              "reportId": "XdVfWC8VqR",
+              "present": false,
+              "reason": "scope对齐query八问,无scope漂移,承重已在T1/T3覆盖,T7不单独抽claim。"
+            },
+            {
+              "reportId": "QiQY4vEfP3",
+              "present": false,
+              "reason": "带材/粉末分形态作答,scope对齐,承重已覆盖,T7不单独抽claim。"
+            },
+            {
+              "reportId": "ayDsLMvn6z",
+              "present": true,
+              "sampleQuote": "query问粉末市场,Manus明确「严格非晶纳米晶粉末缺乏公开统计…以金属软磁粉芯为母市场」精准对齐scope",
+              "claimIdsSampled": [
+                "m_2",
+                "m_1"
+              ]
+            },
+            {
+              "reportId": "dJZdiw8UyF",
+              "present": false,
+              "reason": "scope基本对齐但壁垒/玩家偏简,无scope错位,T7不单独抽claim。"
+            },
+            {
+              "reportId": "y2CMWWnpnH",
+              "present": false,
+              "reason": "scope对齐(粉末+替代+壁垒),无scope漂移,承重落在T1事实错,T7不单独抽claim。"
+            }
+          ]
+        },
+        {
+          "typeId": "T8",
+          "label": "统计口径一致性",
+          "hintKeywords": "同一指标跨段落是否自洽(产量vs市场规模、含税vs不含税)",
+          "perReport": [
+            {
+              "reportId": "swFVPOtaPS",
+              "present": false,
+              "reason": "产量(14.1万吨,+4%)与市场规模(31.98亿,+11%)口径区分清晰,跨段一致,T8无矛盾不单独抽claim。"
+            },
+            {
+              "reportId": "XdVfWC8VqR",
+              "present": false,
+              "reason": "产量增速4%vs市场规模增速11%已显式区分(『产量增速为4%而非11%,后者为市场规模增速,已修正』),T8自洽不单独抽claim。"
+            },
+            {
+              "reportId": "QiQY4vEfP3",
+              "present": true,
+              "sampleQuote": "「纳米晶μi可达80000-100000、是铁硅铝(50-125)近1000倍」跨段口径需逻辑自洽校验",
+              "claimIdsSampled": [
+                "k_6"
+              ]
+            },
+            {
+              "reportId": "ayDsLMvn6z",
+              "present": false,
+              "reason": "多口径(合金粉芯vs金属粉芯vs软磁材料)均显式标注,跨段一致,T8不单独抽claim。"
+            },
+            {
+              "reportId": "dJZdiw8UyF",
+              "present": false,
+              "reason": "口径(带材vs粉末)分列清晰,无跨段矛盾,T8不单独抽claim。"
+            },
+            {
+              "reportId": "y2CMWWnpnH",
+              "present": false,
+              "reason": "市场口径(金属磁粉芯vs非晶纳米晶)基本分列,主要问题在T1占比错,T8不单独抽claim。"
+            }
+          ]
+        }
+      ]
+    },
+    "claimInventory": [
+      {
+        "claimId": "s10_1",
+        "reportId": "swFVPOtaPS",
+        "type": "number",
+        "claim": "2025中国非晶纳米晶市场规模31.98亿元、产量14.1万吨",
+        "supportWeight": "high",
+        "locationHint": "市场容量表"
+      },
+      {
+        "claimId": "s10_2",
+        "reportId": "swFVPOtaPS",
+        "type": "number",
+        "claim": "中国对巴西铌进口依赖度超95%(全球产量巴西88%/中国<1%)",
+        "supportWeight": "high",
+        "locationHint": "供应链风险"
+      },
+      {
+        "claimId": "s10_3",
+        "reportId": "swFVPOtaPS",
+        "type": "fact",
+        "claim": "Proterial反垄断诉讼二审中国企业起诉、最高院驳回原告全部诉求",
+        "supportWeight": "high",
+        "locationHint": "不利因素4"
+      },
+      {
+        "claimId": "s10_4",
+        "reportId": "swFVPOtaPS",
+        "type": "logic",
+        "claim": "AI电源纳米晶渗透率18%→35%为高不确定性假设(OCP/三大电源商/媒体拆解全空白)",
+        "supportWeight": "high",
+        "locationHint": "专项子报告1"
+      },
+      {
+        "claimId": "s10_5",
+        "reportId": "swFVPOtaPS",
+        "type": "number",
+        "claim": "非晶纳米晶磁芯比铁氧体贵约2-3倍($15-25/kg vs $5-8/kg)",
+        "supportWeight": "high",
+        "locationHint": "不利因素5"
+      },
+      {
+        "claimId": "s10_6",
+        "reportId": "swFVPOtaPS",
+        "type": "fact",
+        "claim": "比亚迪2025转向1000V平台、特斯拉主力车型仍400V",
+        "supportWeight": "high",
+        "locationHint": "专项子报告2"
+      },
+      {
+        "claimId": "s5_1",
+        "reportId": "XdVfWC8VqR",
+        "type": "number",
+        "claim": "Finemet纳米晶Bs约1.24T(非1.6T,1.6T属NANOPERM)",
+        "supportWeight": "high",
+        "locationHint": "技术历史"
+      },
+      {
+        "claimId": "s5_2",
+        "reportId": "XdVfWC8VqR",
+        "type": "number",
+        "claim": "中国铌资源量约470万吨但经济可采储量仅约29万吨",
+        "supportWeight": "high",
+        "locationHint": "产业链国产化"
+      },
+      {
+        "claimId": "s5_3",
+        "reportId": "XdVfWC8VqR",
+        "type": "logic",
+        "claim": "价值定价模型引用$2800/kg基准价与行业均价约80元/kg严重偏差",
+        "supportWeight": "high",
+        "locationHint": "成本劣势"
+      },
+      {
+        "claimId": "s5_4",
+        "reportId": "XdVfWC8VqR",
+        "type": "number",
+        "claim": "2024中国高纯铌进口28155吨、巴西占比98.4%",
+        "supportWeight": "high",
+        "locationHint": "供应链"
+      },
+      {
+        "claimId": "s5_5",
+        "reportId": "XdVfWC8VqR",
+        "type": "fact",
+        "claim": "云路股份2025上半年毛利率29.33%同比降0.92pct、全年归母净利-19.13%",
+        "supportWeight": "high",
+        "locationHint": "企业图谱"
+      },
+      {
+        "claimId": "s5_6",
+        "reportId": "XdVfWC8VqR",
+        "type": "fact",
+        "claim": "Proterial为日本公司(原日立集团,2023更名,总部东京)",
+        "supportWeight": "medium",
+        "locationHint": "国际巨头"
+      },
+      {
+        "claimId": "k_1",
+        "reportId": "QiQY4vEfP3",
+        "type": "number",
+        "claim": "云路股份2019全球非晶薄带市占率41.15%、国内53.17%",
+        "supportWeight": "high",
+        "locationHint": "3.1.1"
+      },
+      {
+        "claimId": "k_2",
+        "reportId": "QiQY4vEfP3",
+        "type": "number",
+        "claim": "英伟达GB300单台约4800-5000个一体成型电感",
+        "supportWeight": "high",
+        "locationHint": "2.2.1"
+      },
+      {
+        "claimId": "k_3",
+        "reportId": "QiQY4vEfP3",
+        "type": "number",
+        "claim": "iPhone16 Pro无线充电纳米晶磁片年需求量2.5亿片",
+        "supportWeight": "high",
+        "locationHint": "2.1.3"
+      },
+      {
+        "claimId": "k_4",
+        "reportId": "QiQY4vEfP3",
+        "type": "number",
+        "claim": "安泰科技万吨级纳米晶产线良品率98.7%、独供华为5.5G",
+        "supportWeight": "high",
+        "locationHint": "2.1.3"
+      },
+      {
+        "claimId": "k_5",
+        "reportId": "QiQY4vEfP3",
+        "type": "number",
+        "claim": "全球非晶纳米晶软磁材料2023年6.39亿美元→2030年13.36亿(CAGR10.5%)",
+        "supportWeight": "high",
+        "locationHint": "2.3.1"
+      },
+      {
+        "claimId": "k_6",
+        "reportId": "QiQY4vEfP3",
+        "type": "logic",
+        "claim": "纳米晶μi可达80000-100000、是铁硅铝(50-125)近1000倍",
+        "supportWeight": "high",
+        "locationHint": "1.1.3"
+      },
+      {
+        "claimId": "k_7",
+        "reportId": "QiQY4vEfP3",
+        "type": "number",
+        "claim": "铂科新材2025金属软磁粉末收入2638万元、同比+90.35%",
+        "supportWeight": "medium",
+        "locationHint": "3.2.3"
+      },
+      {
+        "claimId": "m_1",
+        "reportId": "ayDsLMvn6z",
+        "type": "number",
+        "claim": "中国金属软磁粉芯2024约16.6万吨、61亿元",
+        "supportWeight": "high",
+        "locationHint": "四"
+      },
+      {
+        "claimId": "m_2",
+        "reportId": "ayDsLMvn6z",
+        "type": "logic",
+        "claim": "非晶纳米晶粉末当前国内需求估0.3万-1.0万吨(渗透率2%-6%情景测算)",
+        "supportWeight": "high",
+        "locationHint": "四"
+      },
+      {
+        "claimId": "m_3",
+        "reportId": "ayDsLMvn6z",
+        "type": "fact",
+        "claim": "2020年美磁/昌星/铂科/东睦科达前四合计约58%,铂科约15.6%",
+        "supportWeight": "high",
+        "locationHint": "五"
+      },
+      {
+        "claimId": "m_4",
+        "reportId": "ayDsLMvn6z",
+        "type": "number",
+        "claim": "2030年若母市场30万-50万吨且渗透率5%-12%则需求1.5万-6万吨",
+        "supportWeight": "medium",
+        "locationHint": "七"
+      },
+      {
+        "claimId": "m_5",
+        "reportId": "ayDsLMvn6z",
+        "type": "fact",
+        "claim": "AI服务器芯片电感价值量较普通服务器多60%-220%、2025全球约18.1亿元",
+        "supportWeight": "medium",
+        "locationHint": "七"
+      },
+      {
+        "claimId": "mi_1",
+        "reportId": "dJZdiw8UyF",
+        "type": "number",
+        "claim": "2019日立纳米晶全球市占49.7%、中国43.1%",
+        "supportWeight": "high",
+        "locationHint": "4.1"
+      },
+      {
+        "claimId": "mi_2",
+        "reportId": "dJZdiw8UyF",
+        "type": "number",
+        "claim": "2020国产纳米晶带材占全球约80%(国产2.1万吨/全球2.5万吨)",
+        "supportWeight": "high",
+        "locationHint": "4.3"
+      },
+      {
+        "claimId": "mi_3",
+        "reportId": "dJZdiw8UyF",
+        "type": "logic",
+        "claim": "高端纳米晶粉末国产化率约30-40%、整体粉末40-50%(推断)",
+        "supportWeight": "medium",
+        "locationHint": "4.3"
+      },
+      {
+        "claimId": "mi_4",
+        "reportId": "dJZdiw8UyF",
+        "type": "number",
+        "claim": "全球纳米晶软磁材料2023约3.49亿$、2026约5.22亿$(CAGR~10%)",
+        "supportWeight": "medium",
+        "locationHint": "3"
+      },
+      {
+        "claimId": "g_1",
+        "reportId": "y2CMWWnpnH",
+        "type": "number",
+        "claim": "钼坡莫合金(MPP)占全球金属粉芯总需求49%以上",
+        "supportWeight": "high",
+        "locationHint": "四.1"
+      },
+      {
+        "claimId": "g_2",
+        "reportId": "y2CMWWnpnH",
+        "type": "fact",
+        "claim": "日立2003收购霍尼韦尔旗下AlliedSignal非晶业务奠定垄断",
+        "supportWeight": "high",
+        "locationHint": "三.1"
+      },
+      {
+        "claimId": "g_3",
+        "reportId": "y2CMWWnpnH",
+        "type": "number",
+        "claim": "2024中国金属软磁粉芯61亿元、16.6万吨",
+        "supportWeight": "high",
+        "locationHint": "二"
+      },
+      {
+        "claimId": "g_4",
+        "reportId": "y2CMWWnpnH",
+        "type": "logic",
+        "claim": "铁氧体Bs<0.5T导致大电流耐受差、限制小型化",
+        "supportWeight": "high",
+        "locationHint": "四.2"
+      },
+      {
+        "claimId": "g_5",
+        "reportId": "y2CMWWnpnH",
+        "type": "number",
+        "claim": "水气联合雾化Fe-Si-B-Cu-Nb粉末Bs饱和磁化167.6emu/g、Hc=47.7A/m",
+        "supportWeight": "medium",
+        "locationHint": "五.2"
+      }
+    ],
+    "claimChecks": [
+      {
+        "claimId": "s10_1",
+        "pass1Question": "T1:31.98亿/14.1万吨是否与智研口径一致?",
+        "status": "verified-correct",
+        "evidence": "报告『2025年中国非晶纳米晶行业市场规模31.98亿元』『产量14.1万吨』与智研咨询/新浪财经2026-05-13一致(市场规模+11%、产量+4%),口径区分正确。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "s10_2",
+        "pass1Question": "T3/T7:铌依赖>95%是产量还是进口口径?",
+        "status": "verified-correct",
+        "evidence": "报告明确『中国对巴西铌的进口依赖度超95%指进口来源,非产量占比』。外验:百度百科/中研普华——巴西储量占90%+、产量约88-91%、中国资源0.8%、铌铁对外依存96.9%。口径与量级均属实。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "s10_3",
+        "pass1Question": "T4:Proterial究竟是原告还是被告?",
+        "status": "verified-correct",
+        "evidence": "报告『Proterial为被告,中国企业起诉,最高院驳回原告全部诉求』。外验:知乎/Proterial 2024官方press一致,系中国企业对其专利许可提起反垄断诉讼被驳回,主体方向正确。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "s10_4",
+        "pass1Question": "T1/T6:18%→35%渗透率有无一手来源?",
+        "status": "verified-correct",
+        "evidence": "报告主动证伪『对OCP官网/台达光宝雅达年报/与非网媒体拆解检索均未发现渗透率数据』并标注『高不确定性假设,不能用于投资决策』。该自证伪结论方向正确,是可核验的负面证据,属准确披露。",
+        "checkedBy": "pass3-cross-section"
+      },
+      {
+        "claimId": "s10_5",
+        "pass1Question": "T3:2-3倍价差单位是否对齐?",
+        "status": "verified-correct",
+        "evidence": "报告『$15-25/kg vs $5-8/kg』比值约2-3倍,与niobium.tech/LPEMA来源量级一致,USD/kg单位统一,无量纲混用。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "s10_6",
+        "pass1Question": "T4:比亚迪/特斯拉电压平台主体是否张冠李戴?",
+        "status": "verified-correct",
+        "evidence": "报告『比亚迪2025转1000V、特斯拉主力车型仍400V』。外验:比亚迪超级e平台官宣1000V、电子工程专辑『特斯拉为什么坚持不上800V』,主体正确。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "s5_1",
+        "pass1Question": "T1:Finemet Bs到底1.24还是1.6T?",
+        "status": "verified-correct",
+        "evidence": "报告自审计『Finemet Bs约1.24T,原报告写1.6T错误,1.6T属NANOPERM系列』。与Yoshizawa 1988/物理学报综述一致,修正方向正确。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "s5_2",
+        "pass1Question": "T1/T8:资源量与可采储量是否混用?",
+        "status": "verified-correct",
+        "evidence": "报告区分『铌资源量约470万吨(世界第二)但经济可采储量仅约29万吨』,与央视新闻/铌矿选矿PDF一致,口径区分正确。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "s5_3",
+        "pass1Question": "T1:$2800/kg基准价是否可信?",
+        "status": "refuted",
+        "evidence": "报告自承「价值定价模型引用的$2800/kg(约20000元/kg)与行业实际即非晶纳米晶磁芯均价约1.1万美元/吨≈80元/kg存在巨大差异」。外验东方财富2026-05-15均价口径成立——$2800/kg比行业均价高约250倍,该基准价确为错误数据,虽自标⚠️但仍据此推导$2100/kg阈值,属带病推理。",
+        "checkedBy": "pass2-arithmetic"
+      },
+      {
+        "claimId": "s5_4",
+        "pass1Question": "T1/T3:28155吨/98.4%是否海关口径?",
+        "status": "verified-correct",
+        "evidence": "报告『2024中国高纯铌进口28155吨、巴西占98.4%』,与《2024年主要钽铌产品进出口简析》一致,数量与占比量级属实。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "s5_5",
+        "pass1Question": "T4/T8:云路毛利率是升是降?",
+        "status": "verified-correct",
+        "evidence": "报告自审计『云路2025上半年毛利率29.33%同比降0.92pct、全年归母净利-19.13%,原报告称毛利率提升与实际相反已修正』,与每经/第一财经2026-03-31一致,方向正确。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "s5_6",
+        "pass1Question": "T4:Proterial国籍?",
+        "status": "verified-correct",
+        "evidence": "报告『Proterial为日本公司(原日立集团2023更名,总部东京)』,与Proterial官网一致,主体国籍正确(修正了原稿误写法国)。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "k_1",
+        "pass1Question": "T1:云路2019市占41.15%可核?",
+        "status": "verified-correct",
+        "evidence": "报告『2019云路全球非晶薄带市占41.15%、国内53.17%』,与QYResearch招股书口径一致,数值属实。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "k_2",
+        "pass1Question": "T1:GB300单台~5000电感量级是否合理?",
+        "status": "inconclusive",
+        "evidence": "报告「英伟达GB300单台约4800-5000个一体成型电感」。外验仅能确认GB300为72-节点/含芯片电感的高密度量级,公开渠道未给出权威单台电感总数的一手披露;另文又称「360万片GB300按每片60-70个电感」口径与此不同。当前不可落锤定真伪。下一步核验:查英伟达GB300官方电源拆解白皮书或铂科投资者交流纪要中的单机电感BOM。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "k_3",
+        "pass1Question": "T1:iPhone16 Pro磁片年需2.5亿片来源?",
+        "status": "inconclusive",
+        "evidence": "报告「iPhone16 Pro无线充电模块采用纳米晶磁片,充电效率提升至88%,年需求量达2.5亿片」为高度具体的承重数字,但未给来源,公开检索无法定位该2.5亿片/88%的一手出处,疑似模型生成的拟真数据。当前不可证真也不可证伪。下一步核验:查苹果供应链拆解报告(如iFixit/天风)或磁片供应商出货公告。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "k_4",
+        "pass1Question": "T1:华为产线良率98.7%是否可核?",
+        "status": "inconclusive",
+        "evidence": "报告「安泰科技全球首条万吨级纳米晶产线良品率达98.7%、独家供应华为5.5G基站无线充电模块」。98.7%与独供5.5G均为强承重断言但无来源,公开渠道无法验证该精确良率与独供关系,疑似拟真。下一步核验:查安泰科技年报/投资者纪要与华为供应商名录。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "k_5",
+        "pass1Question": "T1:6.39亿→13.36亿$是否与Valuates一致?",
+        "status": "verified-correct",
+        "evidence": "报告『2023年6.39亿美元→2030年13.36亿(CAGR10.5%)』与Valuates Reports口径一致,Manus同源引用相同数字,可交叉确认。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "k_6",
+        "pass1Question": "T8/逻辑:μi近1000倍倍率是否自洽?",
+        "status": "verified-correct",
+        "evidence": "报告『纳米晶μi 80000-100000、铁硅铝50-125』,80000/100≈800-1000倍,倍率算术自洽;磁导率量级与行业资料一致。",
+        "checkedBy": "pass3-logic"
+      },
+      {
+        "claimId": "k_7",
+        "pass1Question": "T1:铂科粉末2638万/+90.35%?",
+        "status": "verified-correct",
+        "evidence": "报告『铂科2025金属软磁粉末收入2638万、同比+90.35%』,与铂科2025年报口径一致,Gemini旁证铂科粉末进入量产放量,数值合理。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "m_1",
+        "pass1Question": "T1:16.6万吨/61亿元口径?",
+        "status": "verified-correct",
+        "evidence": "报告『中国金属软磁粉芯2024约16.6万吨、61亿元』,与华经产业研究院/智研口径一致(智研另给60.3亿+29.9%),量级属实。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "m_2",
+        "pass1Question": "逻辑:0.3万-1.0万吨估算前提是否明示?",
+        "status": "verified-correct",
+        "evidence": "报告明确以『2024年16.6万吨母市场×非晶纳米晶渗透率2%-6%早期阶段』推得0.3万-1.0万吨,并标注『情景测算,并非直接披露数据』,推理链与前提透明,自洽。",
+        "checkedBy": "pass3-logic"
+      },
+      {
+        "claimId": "m_3",
+        "pass1Question": "T1:前四58%/铂科15.6%?",
+        "status": "verified-correct",
+        "evidence": "报告『2020美磁+昌星+铂科+东睦科达前四约58%、铂科约15.6%』,与新浪/市值风云铂科专题一致,Kimi/Gemini同源旁证,数值属实。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "m_4",
+        "pass1Question": "逻辑:1.5万-6万吨上限情景条件?",
+        "status": "verified-correct",
+        "evidence": "报告给出三条上限达成条件(雾化成本下降+包覆压制退火高良率复制+高端客户认证导入),推理链完整,区间为情景上限非确定值,标注清楚。",
+        "checkedBy": "pass3-logic"
+      },
+      {
+        "claimId": "m_5",
+        "pass1Question": "T1:芯片电感价值量+60%-220%?",
+        "status": "verified-correct",
+        "evidence": "报告『AI服务器芯片电感价值量较普通服务器多60%-220%、2025全球约18.1亿元』,与国金证券金属磁粉芯深度报告口径一致,数值属实。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "mi_1",
+        "pass1Question": "T1/T2:49.7%是哪一年口径?",
+        "status": "verified-correct",
+        "evidence": "报告『2019日立纳米晶全球49.7%、中国43.1%』数值本身与QYResearch 2019口径一致;问题在于用2019旧数据描述当前格局(2025已降),属时效偏旧而非数字错。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "mi_2",
+        "pass1Question": "T1:80%国产化(2.1万/2.5万吨)?",
+        "status": "verified-correct",
+        "evidence": "报告『2020国产纳米晶带材占全球约80%(2.1/2.5万吨)』,与冶金科学技术奖宽幅超薄铁基纳米晶带材报道口径一致,数值属实。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "mi_3",
+        "pass1Question": "逻辑:30-40%粉末国产化率是否标注为推断?",
+        "status": "inconclusive",
+        "evidence": "报告「高端纳米晶粉末国产化率约30-40%、整体粉末40-50%」明确标注为『合理判断』『未有明确公开统计口径』。该区间为缺乏一手统计的推断值,无法证真证伪。下一步核验:查行业协会粉末环节国产化率专项统计或铂科/悦安出货份额倒推。",
+        "checkedBy": "pass3-cross-section"
+      },
+      {
+        "claimId": "mi_4",
+        "pass1Question": "T1:3.49亿→5.22亿$口径?",
+        "status": "verified-correct",
+        "evidence": "报告『全球纳米晶软磁材料2023约3.49亿$、2026约5.22亿$』,与华经/相关券商纳米晶细分口径量级吻合,数值合理(与Valuates非晶纳米晶合并口径6.39亿不同因统计范围差异)。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "g_1",
+        "pass1Question": "T1:MPP真占金属粉芯需求49%以上吗?",
+        "status": "refuted",
+        "evidence": "报告「镍铁/坡莫合金(MPP)…占全球金属粉芯总需求的49%以上,多用于军工和航天等不考虑高昂原材料成本的高精密环境」。外验科普中国/百度百科金属软磁粉芯:铁硅铝占比超70%、MPP在三大合金系列中用量约20%且因含Ni 50-80%成本最高仅军工小众。49%与『军工小众』自相矛盾,系承重事实错误(占比错+内部矛盾),据此R1降C。注:属占比错而非量级/主体/编造源,不构成V1-V5一票否决。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "g_2",
+        "pass1Question": "T4/T2:日立2003收购AlliedSignal可核?",
+        "status": "verified-correct",
+        "evidence": "报告『日立2003通过收购霍尼韦尔旗下AlliedSignal非晶业务奠定垄断』。外验:AlliedSignal非晶(Metglas)业务确于2003年由日立金属收购,主体与时间正确。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "g_3",
+        "pass1Question": "T1:61亿/16.6万吨?",
+        "status": "verified-correct",
+        "evidence": "报告『2024中国金属软磁粉芯61亿元、16.6万吨』,与Manus/华经同源口径一致,数值属实。",
+        "checkedBy": "pass2-external-search"
+      },
+      {
+        "claimId": "g_4",
+        "pass1Question": "逻辑:铁氧体Bs<0.5T推导是否成立?",
+        "status": "verified-correct",
+        "evidence": "报告『铁氧体Bs<0.5T→大电流耐受差→限制小型化』,Bs 0.35-0.5T与TDK等资料一致,因果链(低Bs→易饱和→需更大体积)成立。",
+        "checkedBy": "pass3-logic"
+      },
+      {
+        "claimId": "g_5",
+        "pass1Question": "T1:167.6emu/g、Hc47.7A/m来源?",
+        "status": "verified-correct",
+        "evidence": "报告『水气联合雾化Fe-Si-B-Cu-Nb粉末饱和磁化167.6emu/g、Hc=47.7A/m』,与李鑫等水气联合雾化纳米晶论文(NIMTE)数值一致,Manus同源引用,数值属实。",
+        "checkedBy": "pass2-external-search"
+      }
+    ],
+    "dimensionChecklists": {
+      "R1": {
+        "items": [
+          {
+            "label": "是否抽取承重claim清单(每份3~10含≥1 logic)",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "QiQY4vEfP3",
+              "ayDsLMvn6z",
+              "dJZdiw8UyF",
+              "y2CMWWnpnH"
+            ]
+          },
+          {
+            "label": "承重claim核验覆盖率≥85%",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "QiQY4vEfP3",
+              "ayDsLMvn6z",
+              "dJZdiw8UyF",
+              "y2CMWWnpnH"
+            ]
+          },
+          {
+            "label": "每份选3~5条精确承重数字对一手源核验",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "ayDsLMvn6z",
+              "dJZdiw8UyF",
+              "y2CMWWnpnH"
+            ]
+          },
+          {
+            "label": "所有veto候选完成至少一次外部验证后才下结论",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "QiQY4vEfP3",
+              "ayDsLMvn6z",
+              "dJZdiw8UyF",
+              "y2CMWWnpnH"
+            ]
+          },
+          {
+            "label": "关键量纲/占比/汇率均动手算过",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "ayDsLMvn6z",
+              "y2CMWWnpnH"
+            ]
+          },
+          {
+            "label": "跨段落至少1处口径一致性交叉检查",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "ayDsLMvn6z"
+            ]
+          },
+          {
+            "label": "核验过程落到正文事实核验记录",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR"
+            ]
+          }
+        ]
+      },
+      "R2": {
+        "items": [
+          {
+            "label": "列出query核心诉求与锚点",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "QiQY4vEfP3",
+              "ayDsLMvn6z",
+              "dJZdiw8UyF",
+              "y2CMWWnpnH"
+            ]
+          },
+          {
+            "label": "每个核心诉求有正面回应段落",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "QiQY4vEfP3",
+              "ayDsLMvn6z"
+            ]
+          },
+          {
+            "label": "每个锚点被正确识别响应",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "QiQY4vEfP3",
+              "ayDsLMvn6z"
+            ]
+          },
+          {
+            "label": "识别并回应字面下潜在诉求",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "ayDsLMvn6z"
+            ]
+          },
+          {
+            "label": "无跑题或>10%无关填充",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "QiQY4vEfP3",
+              "ayDsLMvn6z",
+              "dJZdiw8UyF",
+              "y2CMWWnpnH"
+            ]
+          }
+        ]
+      },
+      "R3": {
+        "items": [
+          {
+            "label": "抽3个核心判断均有支撑证据/推导",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "QiQY4vEfP3",
+              "ayDsLMvn6z"
+            ]
+          },
+          {
+            "label": "≥1处二阶/三阶追问",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "QiQY4vEfP3",
+              "ayDsLMvn6z"
+            ]
+          },
+          {
+            "label": "出现非共识但有据观点(观点+证据+推理链)",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "ayDsLMvn6z"
+            ]
+          },
+          {
+            "label": "关键争议点呈现对立视角/反方证据",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "QiQY4vEfP3",
+              "ayDsLMvn6z",
+              "y2CMWWnpnH"
+            ]
+          },
+          {
+            "label": "论据→结论无明显跳跃/循环论证",
+            "passedFor": [
+              "swFVPOtaPS",
+              "QiQY4vEfP3",
+              "ayDsLMvn6z"
+            ]
+          }
+        ]
+      },
+      "R4": {
+        "items": [
+          {
+            "label": "列出决策关键维度清单(≥3)",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "QiQY4vEfP3",
+              "ayDsLMvn6z",
+              "dJZdiw8UyF",
+              "y2CMWWnpnH"
+            ]
+          },
+          {
+            "label": "每个关键维度有对应段落",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "QiQY4vEfP3",
+              "y2CMWWnpnH"
+            ]
+          },
+          {
+            "label": "章节结构支撑结论(无孤立/重复/空白)",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "QiQY4vEfP3",
+              "ayDsLMvn6z",
+              "y2CMWWnpnH"
+            ]
+          },
+          {
+            "label": "适用场景有数据表/测算/模型",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "QiQY4vEfP3",
+              "y2CMWWnpnH"
+            ]
+          },
+          {
+            "label": "无虚假覆盖(一笔带过)",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "QiQY4vEfP3",
+              "y2CMWWnpnH"
+            ]
+          }
+        ]
+      },
+      "R5": {
+        "items": [
+          {
+            "label": "列出take-away/建议(≥2)",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "QiQY4vEfP3",
+              "ayDsLMvn6z",
+              "dJZdiw8UyF",
+              "y2CMWWnpnH"
+            ]
+          },
+          {
+            "label": "take-away具体可执行",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "QiQY4vEfP3",
+              "ayDsLMvn6z"
+            ]
+          },
+          {
+            "label": "提供公开难得的信息/观察",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "QiQY4vEfP3",
+              "ayDsLMvn6z"
+            ]
+          },
+          {
+            "label": "提供换角度的新框架/新联想",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "ayDsLMvn6z"
+            ]
+          },
+          {
+            "label": "对不确定事项主动标caveat",
+            "passedFor": [
+              "swFVPOtaPS",
+              "XdVfWC8VqR",
+              "ayDsLMvn6z"
+            ]
+          }
+        ]
+      }
+    },
+    "verificationBudget": {
+      "targetMinutes": 60,
+      "actualMinutes": 120,
+      "passesCompleted": [
+        "read",
+        "claim-inventory",
+        "pass1",
+        "pass2",
+        "pass3",
+        "score",
+        "feedback"
+      ],
+      "claimsSkippedDueToBudget": 0,
+      "claimsOutOfScope": 0,
+      "notes": "v3.6 Pass2三条强制核验动作:A)专名+分类反查:MPP=钼坡莫合金(Ni81Mo2)→科普中国/百度百科确认其在三大合金系列用量约20%、铁硅铝占70%,Gemini『MPP占49%以上』被落锤refuted(g_1);铌→巴西产量约88-91%/中国资源0.8%,印证s10_2正确。B)大额数字货币量纲对照:$2800/kg(S5)对照行业均价1.1万美元/吨≈80元/kg,偏差约250倍→s5_3 refuted;$15-25/kg(S10)对照$5-8/kg比值2-3倍单位统一;6.39亿$→13.36亿$(Kimi/Manus同源)量级一致。C)scope对齐query:六份均围绕『非晶纳米晶粉末:应用/市场/格局/国产化率/未来量/唯一性/并行方案/壁垒』,无scope漂移,Manus额外明示母市场口径修正最严谨。同源证据复用:16.6万吨/61亿元覆盖m_1/g_3;前四58%/铂科15.6%覆盖m_3并旁证Kimi/Gemini;167.6emu/g覆盖g_5并旁证Manus水气雾化引用。Kimi三条inconclusive(k_2/k_3/k_4)均为无源拟真数字,已写明不可核原因与下一步动作(查官方拆解/年报)。"
+    },
+    "crossProductInsights": {
+      "focusProductName": "SophiaAI v10",
+      "strongerThan": [
+        {
+          "dimension": "R1",
+          "vsProducts": [
+            "Gemini"
+          ],
+          "gapSummary": "Sophia v10承重事实经外验全部成立且自带审计层;Gemini存在MPP占比承重事实错误且全篇零信源。",
+          "evidenceQuotes": [
+            {
+              "product": "SophiaAI v10",
+              "quote": "中国对巴西铌的进口依赖度超95%（经审计确认：全球产量中国<1%，巴西占88%以上），替代供应商产能严重不足，供应中断风险概率25-30%。"
+            },
+            {
+              "product": "Gemini",
+              "quote": "镍铁/坡莫合金 (MPP)：主要成分为镍和铁，添加部分钼。由于其拥有接近零的磁致伸缩系数和优异的温度稳定性，占全球金属粉芯总需求的 49% 以上，多用于军工和航天等不考虑高昂原材料成本的高精密环境。"
+            }
+          ],
+          "claimRefs": [
+            "s10_2",
+            "g_1"
+          ]
+        },
+        {
+          "dimension": "R3",
+          "vsProducts": [
+            "MiroThink",
+            "Kimi"
+          ],
+          "gapSummary": "Sophia v10给出可证伪的非共识(渗透率18%→35%无源、800V车企转向),带完整推理链;MiroThink停留一阶信息梳理,Kimi虽数据多但缺对争议预测的证伪。",
+          "evidenceQuotes": [
+            {
+              "product": "SophiaAI v10",
+              "quote": "对台达、光宝、雅达三大电源商2025-2026年度报告及投资者说明会的检索未发现任何关于纳米晶磁芯采用比例的定量或定性描述……该渗透率预测（18%→35%）应被标记为『高不确定性假设』，建议在投资决策中给予显著警示。"
+            },
+            {
+              "product": "MiroThink",
+              "quote": "2026 年 800V 车型渗透率有望超过 25%。对应的车载 PFC、电感、OBC 中对高性能粉末磁芯的需求将显著放大。"
+            }
+          ],
+          "claimRefs": [
+            "s10_4"
+          ]
+        },
+        {
+          "dimension": "R5",
+          "vsProducts": [
+            "Kimi",
+            "Gemini"
+          ],
+          "gapSummary": "Sophia v10提出『去泡沫化』决策框架并给FTO前置等可执行动作;Kimi/Gemini的take-away偏行业趋势陈述,可操作性较弱。",
+          "evidenceQuotes": [
+            {
+              "product": "SophiaAI v10",
+              "quote": "建议产业投资决策回归短期（1-2年）的、可验证的真实需求……将FTO分析作为新产品、新市场立项的强制前置流程。"
+            },
+            {
+              "product": "Gemini",
+              "quote": "未来，通过铂科新材、云路股份等行业标杆在超微合金制粉、车规级球形铁硅铬/高效率非晶纳米晶粉末等高端领域的持续投入，中国高性能非晶纳米晶软磁粉末产业链将在全球电力电子元器件的高阶替代中拥有更强的产业话语权。"
+            }
+          ]
+        }
+      ],
+      "weakerThan": [
+        {
+          "dimension": "R4",
+          "vsProducts": [
+            "Gemini"
+          ],
+          "gapSummary": "在材料/工艺/配方壁垒的颗粒度上,Gemini的四大壁垒拆解(纳米形核动力学/多模态级配/退火温控)比Sophia v10更细致,Sophia v10的壁垒分析偏产业与风险层。",
+          "evidenceQuotes": [
+            {
+              "product": "SophiaAI v10",
+              "quote": "国产高端品批次一致性波动较日立金属高10%-15%，是进入汽车Tier1和数据中心高端市场的最大瓶颈……本次调研未能从原料纯度控制、退火炉温区均匀性、绝缘包覆层工艺控制三个维度中，确定导致该差距的核心制约点。"
+            },
+            {
+              "product": "Gemini",
+              "quote": "先进级配技术将较大目数的不规则第一非晶粉末（如 -100~+270 目）与较小目数的球形雾化第二非晶粉末（如 -200~+400 目）进行复配……使混合粉体的综合流动性指数提升至 70 以上。"
+            }
+          ],
+          "claimRefs": [
+            "g_5"
+          ]
+        }
+      ],
+      "sharedWeakness": [
+        {
+          "dimension": "R1",
+          "acrossProducts": [
+            "SophiaAI v5",
+            "Kimi",
+            "Gemini"
+          ],
+          "gapSummary": "三份都存在『精确但弱可核』的数字依赖:v5的$2800/kg、Kimi的多处无源拟真数字、Gemini的MPP 49%,反映行业研究普遍缺乏一手BOM/海关数据。",
+          "suggestion": "建立基于一手数据(Tier1 BOM拆解、海关HS编码、企业年报)的数字准入门槛,所有承重精确数字必须挂可追溯源,否则降级为区间或定性。"
+        }
+      ]
+    }
+  },
+  "report": "# EV-0012 评测报告 · 非晶纳米晶粉末产业深度研究横评（聚焦 SophiaAI · v2）\n\n## 一、评测结论\n\n本轮 6 份报告围绕 query 的八个子问题作答：①现有应用 ②市场容量 ③国内外玩家格局与介绍 ④国产化率 ⑤未来应用发展与量级 ⑥是否唯一选项 ⑦并行技术方案与玩家 ⑧材料/工艺/配方壁垒拆解。**排名与总分**：\n\n1. **SophiaAI v10 — 8.7（卓越）** 🏆\n2. **Manus — 7.8（优秀）**\n3. **SophiaAI v5 — 7.2（优秀）**\n4. **Kimi — 6.9（合格）**\n5. **MiroThink — 6.0（合格）**\n6. **Gemini — 5.4（待改进）**\n\n**本轮无一票否决触发。** 一句话结论（聚焦 Sophia）：**SophiaAI v10 是本轮唯一同时做到\"八问正面全覆盖 + 有效辅助决策 + 差异化非共识\"三者兼得的报告**——它没有被\"AI 算力 + 非晶纳米晶\"的叙事裹挟，把市场上最流行的两个承重预测（AI 电源渗透率 18%→35%、800V 全面爆发）逐一外部证伪，并提出\"下游增长预期需去泡沫化\"的反共识判断。\n\n**本版（v2）相对 v1 的核心变化**：本轮按用户强调的三个关注维度重新审视，做出**一处有据的档位修正**——**Kimi R5 由 A 降 B、总分 7.2→6.9、评级由优秀降为合格**：它是全 6 份里最长的报告（54907 字），却以确定语气堆砌多处无源拟真数字且全文零 caveat，在\"有效辅助决策 vs 堆字数\"这一维度上不达标。其余维度沿用 v1 的核验结论（铌供应链外验属实、Gemini MPP 占比证伪、v5 价格偏差等），无新证据不改动。\n\n> ⚠️ 数据校验说明：inbox 初版中 Gemini 槽位曾与 Manus 报告逐字节相同（已与用户确认为贴重复），用户重贴后 Gemini 为独立的纯工艺导向报告，本评测基于重贴后的 6 份独立报告。\n\n---\n\n## 二、按维度展开（含维度 × 产品交叉验证矩阵）\n\n### 2.1 关注点一：八子问题 × 六产品「正面回答」覆盖矩阵\n\n这是本轮评测 R2（相关性）的核心证据。判定标准：✅=正面且有实质内容；🔶=触达但偏薄/偏定性；❌=缺失或答非所问。\n\n| 子问题 | v10 | v5 | Kimi | Manus | Miro | Gemini |\n|---|---|---|---|---|---|---|\n| ①现有应用 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |\n| ②市场容量 | ✅ 31.98亿/细分 | ✅ 多口径 | ✅ 6.39→13.36亿$ | ✅ 母+细分估算 | 🔶 数亿$粗估 | ✅ 表1-3多区域 |\n| ③玩家格局与介绍 | ✅ 国际+国内 | ✅ 全景谱 | ✅ 分形态 | ✅ 国内外 | 🔶 偏简 | ✅ 表4指标对比 |\n| ④国产化率 | 🔶 高端~30% | ✅ 整体58%/高端30% | ✅ 带/粉分形态 | 🔶 定性 | 🔶 推断值 | 🔶 高端<30% |\n| ⑤未来发展与量级 | ✅ 含证伪 | ✅ 三情景 | ✅ 多赛道量价 | ✅ 情景区间 | 🔶 量级跨度大 | 🔶 MHz化定性 |\n| ⑥是否唯一选项 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |\n| ⑦并行方案+玩家 | ✅ | ✅ 铁氧体/SMC/无Nb | ✅ 铁硅铬竞争 | ✅ | ✅ 多路线表 | ✅ 表5六体系 |\n| ⑧材料工艺配方壁垒 | ✅ 含隐性壁垒 | ✅ | ✅ 全链条 | 🔶 较浅 | ✅ 三层壁垒 | ✅✅ 四壁垒最深 |\n\n**矩阵裁决**：\n- **正面覆盖最全**：SophiaAI v10、v5、Kimi、Gemini 八问基本全答；其中 **v10 在⑤未来量级上额外做了\"证伪\"而非简单外推**，回答质量最高。\n- **覆盖偏薄**：MiroThink 在②市场量级、③玩家介绍、⑤量级三处偏粗（🔶），R2 压在 B。\n- **结构性偏科**：Gemini 在④国产化率（仅定性\"高端<30%\"）、⑤未来量级（仅 MHz 化定性）偏薄，但其余六问尤其⑧壁垒拆解为全场最深——属\"工艺强、市场弱\"的偏科型，R2 维持 B（八问触达但两问偏薄），未降 C。\n\n### 2.2 维度 × 产品承重议题交叉验证矩阵\n\n下表对齐**同一承重议题**在六份报告间的一致 / 冲突 / 遗漏：\n\n| 承重议题 | v10 | v5 | Kimi | Manus | Miro | Gemini | 一致性裁决 |\n|---|---|---|---|---|---|---|---|\n| **2024 中国金属软磁粉芯规模** | 未单列 | — | 60.3亿/+29.9% | 16.6万吨/61亿 | — | 61亿/16.6万吨 | ✅ Manus=Gemini=Kimi 三方一致，可信 |\n| **MPP 占金属粉芯比例** | — | — | — | — | — | **49%以上** | ❌ **冲突且错误**：实际≈20%、铁硅铝≈70%（仅 Gemini 给且与\"军工小众\"自相矛盾）|\n| **铌供应链口径** | 进口依赖>95%/中国<1%/巴西88% | 进口28155吨/巴西98.4% | — | — | — | — | ✅ v10 与 v5 互证，外验属实 |\n| **AI 电源渗透率18%→35%** | **证伪为无源假设** | 未评估 | 默认放量 | 未给该数 | 未给 | 未给 | ⚠️ 仅 v10 做证伪 |\n| **800V 平台渗透** | 比亚迪转1000V/特斯拉守400V | 沿用乐观 | 乐观 | 800V确定但车规慢 | 乐观>25% | 乐观SiC普及 | ⚠️ 仅 v10 给反证 |\n| **非晶纳米晶是否唯一选项** | 否 | 否 | 否 | 否 | 否 | 否 | ✅ 六方共识，回应准确 |\n| **粉末国产化率** | 高端~30% | 整体58%/高端30% | 芯片电感45% | 高端深化期 | 高端30-40%(推断) | 高端<30% | ⚠️ 区间分散，均承认缺一手统计 |\n\n### 2.3 R1~R5 维度小结\n\n- **R1 准确性（0.40）**：v10/Manus=A（事实可核、口径诚实）；v5/Kimi/Miro=B（v5价格偏差、Kimi无源拟真、Miro数据旧）；Gemini=C（MPP承重错+零信源）。\n- **R2 相关性（0.15）**：v10/v5/Kimi/Manus=A（八问全覆盖）；Miro/Gemini=B（见 2.1 矩阵，各有两问偏薄）。\n- **R3 论证深度（0.20）**：v10=S（三大非共识带 why 三联）；v5/Kimi/Manus=A（二阶充分）；Miro/Gemini=B（一阶或结论陈述）。\n- **R4 完备性（0.10）**：v10/v5/Kimi/Gemini=A（Kimi结构最全、Gemini壁垒最深）；Manus/Miro=B。\n- **R5 决策价值（0.15）**：v10=S（去泡沫化+FTO前置）；v5/Manus=A；**Kimi=B（本版降档，见三）**；Miro/Gemini=B。\n\n### 2.4 扩展维度\n\n本轮**不激活**扩展维度（X1 信源可追溯度仅作开放观察）：信源问题已被 R1 信源子项与 T6 充分覆盖。观察结论：Gemini 零信源、Kimi 信源稀疏是两大短板。\n\n---\n\n## 三、额外重点问题（承重事实错误 / 逻辑错误 / 决策有效性）\n\n### 关注点二：辅助决策有效性 vs 堆字数——本版降 Kimi 的核心依据\n\n我把\"篇幅\"与\"有效决策信息\"显式拉开对照：\n\n| 产品 | 篇幅(字) | 信源密度 | caveat | 决策有效性裁决 |\n|---|---|---|---|---|\n| **Kimi** | **54907（最长）** | 极低（无参考文献段） | **零** | ❌ 长而难甄别：大量精确数字无法回溯，读者无法判断哪条可信 |\n| SophiaAI v10 | 22002 | 高（含专项子报告来源） | 多处主动标注 | ✅ 短而可决策：明确告知哪些是高不确定假设 |\n| Manus | 12678 | 中（标情景测算） | 充分 | ✅ 最精炼，口径诚实 |\n\n**结论**：决策价值不由篇幅决定。Kimi 用全场最长篇幅承载了最难甄别的信息，反而增加了用户的核验成本——这正是 R5「风险与不确定性诚实度」轴要惩罚的。**篇幅最短的 Manus（12678 字）决策可操作性反而排第二**，印证\"堆字数 ≠ 帮到决策\"。\n\n### 问题①（Gemini，承重事实错误）：MPP 占比严重错误且内部自相矛盾\n\n> 原文：「**镍铁/坡莫合金 (MPP)：主要成分为镍和铁，添加部分钼。由于其拥有接近零的磁致伸缩系数和优异的温度稳定性，占全球金属粉芯总需求的 49% 以上，多用于军工和航天等不考虑高昂原材料成本的高精密环境。**」\n\n**外部核验（落锤 refuted）**：科普中国 / 百度百科「金属软磁粉芯」明确——**铁硅铝（Sendust）占比超 70%**，**MPP 用量约 20%**，因含 Ni 50-80% 成本最高，仅用于军工/航天/医疗小众场景。报告自己写\"多用于军工航天小众\"，却同时说\"占 49% 以上\"，**承重数字与定性描述自相矛盾**。\n\n**定档影响**：落在 claimInventory（g_1）、Pass 2 外验落锤，R1 降 C。**不触发一票否决**：属\"占比错 + 内部矛盾\"，量级未差数量级、主体未张冠李戴、是\"无源\"而非\"编造源\"，故不属 V1-V5，仅 R1 内扣档。\n\n### 问题②（SophiaAI v5，逻辑/数据错误）：$2800/kg 基准价污染价值定价模型\n\n> 原文：「**价值定价模型引用的『$2800/kg基准价格』与行业实际（2025年非晶纳米晶磁芯均价约1.1万美元/吨≈80元/千克）存在巨大差异**」\n\n**外部核验（落锤 refuted）**：东方财富 2026-05-15 给磁芯均价约 1.1 万美元/吨 ≈ 80 元/kg；`$2800/kg`≈2 万元/kg，**高出约 250 倍**。v5 虽自标 ⚠️ 仍据此推\"$2100/kg 阈值\"写进结论，**属明知有错仍带病推理**，R1 降 B。\n\n### 问题③（Kimi，弱可核的拟真数字群，inconclusive）\n\n> 原文：「**iPhone 16 Pro无线充电模块采用纳米晶磁片，充电效率提升至88%，年需求量达2.5亿片**」「**安泰科技…全球首条万吨级纳米晶带材产线良品率达98.7%**」「**英伟达GB300服务器…总共需要约4,800-5,000个一体成型电感**」\n\n**核验结论（inconclusive）**：三处均为高度具体的承重数字但无来源，公开渠道无法定位一手出处，疑似模型拟真。**下一步核验动作**：查 iFixit/天风 iPhone16 Pro 拆解、安泰科技年报与投资者纪要、英伟达 GB300 官方电源白皮书。这类\"精确但无源\"是 Kimi R1 压 B、R5 本版降 B 的共同主因。\n\n### 问题④（SophiaAI v10，承重事实正确——正向核验）\n\n> 原文：「**中国对巴西铌的进口依赖度超95%（经审计确认：全球产量中国<1%，巴西占88%以上）**」\n\n**外部核验（verified-correct）**：百度百科/中研普华——巴西铌储量占 90%+、产量约 88-91%，中国资源量 0.8%，铌铁对外依存度 96.9%。**口径区分正确、量级正确**，是 v10 R1 拿 A 的代表性正向证据。\n\n### 关注点三：差异化 / 非共识观点发现汇总\n\n这是 R3 的核心。下表汇总各报告\"市场上少见、且本报告给了证据/推理链\"的差异化观点：\n\n| 产品 | 差异化/非共识观点 | 是否带证据+推理链 | 决策增量 |\n|---|---|---|---|\n| **SophiaAI v10** | ①AI电源渗透率18%→35%是**无源假设**，应去泡沫化 ②800V非全面爆发（比亚迪转1000V/特斯拉守400V）③卡脖子从\"专利\"重定义为\"批次一致性差10-15%\" | ✅ 三联完整 | 最高：直接反转主流投资叙事 |\n| **Manus** | 非晶纳米晶是\"高端场景择优路线\"而非通用最优，给明确边界条件 | ✅ | 中：厘清适用边界 |\n| **SophiaAI v5** | 地缘政治四情景 + 无铌/低铌体系替代潜力 | 🔶 价值模型因价格错而存疑 | 中 |\n| **Kimi** | 铁硅铬在AI芯片电感与纳米晶**直接竞争**（而非互补） | ✅ | 中 |\n| **MiroThink** | 基本是共识观点的梳理 | ❌ 一阶为主 | 低 |\n| **Gemini** | 工艺层非共识（多模态粒径级配/碳改性四元体系）但属技术细节非决策洞察 | ✅ 技术层 | 中（偏研发非投资） |\n\n**裁决**：**只有 SophiaAI v10 把差异化观点用在了\"反转最流行的投资共识\"上**，且每条都带可证伪的证据——这是它 R3 独得 S 档、且本轮综合最优的根本原因。\n\n---\n\n## 四、各主体优缺点与建议\n\n### SophiaAI v10（8.7 卓越）🏆\n- **优点1（R3）**：三大非共识均带 why 三联——渗透率证伪、800V 证伪、卡脖子重定义。\n- **优点2（R5）**：提出\"下游增长预期需去泡沫化\"，给短中长期可执行建议与 FTO 强制前置流程。\n- **缺点1**：储能 80 亿/氢能 10 亿等预测虽标低可信度，仍占正文篇幅。\n- **缺点2**：铌中断概率（25-30%）为定性推演，缺量化模型。\n- **建议**：把低置信预测收进独立附录；对铌中断概率给历史断供频次锚点。\n\n### Manus（7.8 优秀）\n- **优点1（R1）**：口径最诚实，明确区分母市场与细分粉末，量级标\"情景测算\"；**全场最短（12678字）却决策可操作性第二**。\n- **优点2（R5）**：给\"较优企业画像四特征\"，投资可操作性强。\n- **缺点1（R4）**：材料/工艺/配方壁垒拆解相对浅，缺定量表。\n- **缺点2**：玩家介绍以罗列为主，缺量化对比。\n- **建议**：补国产 vs 进口关键工艺参数（冷却速率/氧含量/良率）对照表。\n\n### SophiaAI v5（7.2 优秀）\n- **优点1（R4）**：维度最全（碳关税/历史类比/国际化/无铌体系）。\n- **优点2（R1）**：审计修正全面（Proterial 国籍/云路毛利率/Finemet 成分等十余处）。\n- **缺点1（R1）**：$2800/kg 带病推理（见问题②）。\n- **缺点2**：体例割裂，口语营销前言 + 正式审计报告拼接。\n- **建议**：剔除 $2800/kg 重做或删除价值模型；统一投研体例。\n\n### Kimi（6.9 合格 ⬇ 本版由优秀降档）\n- **优点1（R4）**：七章 + 大量数据表，带材/粉末分形态，最完整。\n- **优点2（R3）**：多赛道量价测算闭环，铁硅铬直接竞争判断有增量。\n- **缺点1（R1）**：无源拟真数字群（见问题③），系统性幻觉风险。\n- **缺点2（R5）**：**全场最长（54907字）却零 caveat、对不确定项打包票**，篇幅未转化为决策有效性——本版 R5 由 A 降 B 的直接依据。\n- **建议**：每个精确承重数字补一手源或降级为区间；对所有不确定项主动标 caveat；删减重复堆砌、把篇幅让位给可核信息。\n\n### MiroThink（6.0 合格）\n- **优点1**：结论归纳清晰，\"一句话版\"收口干净。\n- **优点2**：并行软磁路线对比表维度完整。\n- **缺点1（R1）**：引 2019 年旧市占（日立 49.7%/中国 43.1%）未更新。\n- **缺点2（R2/R3）**：市场量级跨度过大、多停留一阶。\n- **建议**：更新到 2024-2025 口径；给更窄的粉末量级测算区间与推导。\n\n### Gemini（5.4 待改进）\n- **优点1（R4）**：技术壁垒拆解最深（四大壁垒 + 退火温控 + 多模态级配），颗粒度行业最细。\n- **优点2**：工艺数据具体且可核（167.6emu/g、Hc47.7A/m、560℃ 退火与论文一致）。\n- **缺点1（R1）**：MPP 占比承重事实错误且内部矛盾（见问题①）。\n- **缺点2（R1/R2）**：全篇零参考文献；国产化率、未来量级两问偏薄。\n- **建议**：立即更正 MPP 占比（约 20%）并消除与\"军工小众\"的矛盾；为所有承重数据补一手来源；补足市场/国产化率的量化作答。\n\n---\n\n> 评测官 Sophia｜契约 v3.6｜本轮聚焦对象 SophiaAI v10｜v2 综合 v1 核验过程，按\"子问题正面覆盖 / 辅助决策有效性 / 差异化非共识\"三视角重审。评分总表由网站独立渲染，本正文承担总表之外的全部诊断阅读。\n"
+}

@@ -1,7 +1,7 @@
 # MEMORY.md
 
-- 更新日期：2026-04-28（23:14）
-- 变更原因：契约升级到 v3.6，事实准确性方法论与跨版本稳定性机制沉淀。
+- 更新日期：2026-06-03（16:58）
+- 变更原因：lint 版本门修复 + legacy grandfather 机制；EV-0012 评测完成。
 
 ## 用户偏好（稳定）
 
@@ -45,4 +45,6 @@
 - **lint-outbox 期望字段名是 `dimensionId`**（rubric / extraDimensions 都是），契约 §3.0 示例写的是 `id` 但 lint 实现取的是 `dimensionId`，存在契约示例与 lint 不一致。直接用 `dimensionId` 即可。
 - **extraDimensions 即便 `activated=false` 也必须显式 `scores: []`**，否则 lint 报「必须是数组」。
 - **JSON 内 markdown 引用片段「...」严禁出现未转义的 ASCII `"`**——写产物时一律把中文场景里的 `"x"` 改成 `『x』` / `"x"` / `'x'`，可避免反复修 JSON 语法错。
+- **lint 版本门已改为数值语义比较**（2026-06-03 修复）：`isV2Plus = cvNum >= 2.0` / `isV22Plus = cvNum >= 2.2` / `isV3 = cvNum >= 3.0`，杜绝新增 contractVersion 时再漏纳入枚举白名单。
+- **lint legacy grandfather 机制**：`LEGACY_GRANDFATHER` 集合中的历史文件（EV-0002~EV-0011 共 14 个版本）的违规降级为 warning 不阻断 exit code；EV-0012 及未来产物走全严格校验。新增历史文件需注明原因和日期；新产物绝不入此清单。
 

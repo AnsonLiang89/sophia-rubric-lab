@@ -233,9 +233,12 @@ export function validatePayload(file, payload, errors, expectedTaskId) {
   }
   // v2.0+ 共享档位制/veto 校验；v2.2+ 共享 claim/checklist/budget/SBS/R1 子档；v3.x 额外有焦点诊断与证据密度校验；
   // v3.3 在 v3.2 基础上：claim Top 上限 5→10、verificationBudget.targetMinutes 不再硬锁 45
-  const isV2Plus = cv === "2.0" || cv === "2.1" || cv === "2.2" || cv === "3.0" || cv === "3.1" || cv === "3.2" || cv === "3.3";
-  const isV22Plus = cv === "2.2" || cv === "3.0" || cv === "3.1" || cv === "3.2" || cv === "3.3";
-  const isV3 = cv === "3.0" || cv === "3.1" || cv === "3.2" || cv === "3.3";
+  // 用数值语义比较替代枚举白名单，避免新增 contractVersion（3.4/3.5/3.6…）时漏纳入
+  // 导致档位制/veto/claim/证据密度等核心校验被静默跳过（历史踩坑：3.4~3.6 曾全程绕过实质校验）。
+  const cvNum = Number.parseFloat(cv);
+  const isV2Plus = Number.isFinite(cvNum) && cvNum >= 2.0;
+  const isV22Plus = Number.isFinite(cvNum) && cvNum >= 2.2;
+  const isV3 = Number.isFinite(cvNum) && cvNum >= 3.0;
   const isV31 = cv === "3.1";
   const isV32 = cv === "3.2";
   const isV33 = cv === "3.3";
@@ -842,10 +845,11 @@ export function validatePayload(file, payload, errors, expectedTaskId) {
       pushErr(errors, file, "summary.verificationBudget", "v2.2 必填对象");
     } else {
       const b = s.verificationBudget;
-      if (isV33) {
-        // v3.3 起 targetMinutes 仅作节奏参考，不再硬锁 45；但仍需是正数
+      // v3.3 起 targetMinutes 仅作节奏参考，不再硬锁 45（3.3/3.4/3.5/3.6… 共享，用 >= 语义判断）
+      const isV33Plus = Number.isFinite(cvNum) && cvNum >= 3.3;
+      if (isV33Plus) {
         if (typeof b.targetMinutes !== "number" || b.targetMinutes <= 0)
-          pushErr(errors, file, "summary.verificationBudget.targetMinutes", `v3.3 需为 >0 的数字（节奏参考），实际 ${b.targetMinutes}`);
+          pushErr(errors, file, "summary.verificationBudget.targetMinutes", `v3.3+ 需为 >0 的数字（节奏参考），实际 ${b.targetMinutes}`);
       } else {
         if (b.targetMinutes !== 45)
           pushErr(errors, file, "summary.verificationBudget.targetMinutes", `${cv} 固定为 45，实际 ${b.targetMinutes}`);
@@ -1032,13 +1036,14 @@ export function validatePayload(file, payload, errors, expectedTaskId) {
   // report 正文
   if (typeof payload.report !== "string" || !payload.report.trim()) {
     pushErr(errors, file, "report", "必填非空字符串");
-  } else if (isV31 || isV32 || isV33) {
+  } else if (Number.isFinite(cvNum) && cvNum >= 3.1) {
+    // v3.1 起统一为四段正文锚点（3.1~3.6 共享，contract §3.5.1）
     const summaryIdx = findHeadingIndex(payload.report, "summary");
     const scoreIdx = findHeadingIndex(payload.report, "score");
     const dimensionIdx = findHeadingIndex(payload.report, "dimension");
     const keyIssueIdx = findHeadingIndex(payload.report, "keyIssue");
     const prosConsIdx = findHeadingIndex(payload.report, "prosCons");
-    const versionLabel = isV33 ? "v3.3" : isV32 ? "v3.2" : "v3.1";
+    const versionLabel = `v${cv}`;
     // v3.2 起评分总表由 UI 固定展示，正文评分总表 heading 可选；v3.1 仍必填
     const scoreHeadingRequired = isV31;
     if (summaryIdx < 0) pushErr(errors, file, "report", `${versionLabel} 必须包含“评测结论/总评”锚点 heading`);
@@ -1255,10 +1260,54 @@ export function lintInbox() {
   };
 }
 
+/**
+ * 历史产物宽容清单（legacy grandfather list）。
+ *
+ * 背景：v3.4 之前的 lint 版本门（isV2Plus/isV22Plus/isV3）使用枚举白名单，
+ * 只覆盖到 3.3，导致 3.4/3.5/3.6 产物的档位制/veto/claim/证据密度等核心校验
+ * 被静默跳过。修复版本门后，这些历史产物暴露出约 53 条真实违规
+ * （加权和不一致、claimChecks 缺失、evidence 不足等）。
+ *
+ * 按 contract §6.2（历史产物保留不迁移），不回改已发布的结论/排名。
+ * 但这些违规会让 build:public 的 lint:outbox 步骤失败。
+ *
+ * 解决方案：对这些文件的违规降级为 warning（仍打印但不阻断 exit code），
+ * EV-0012 及所有未来产物走全严格校验。
+ *
+ * 维护规则：
+ *   - 仅列出"因版本门缺失而遗留的、不可回改的"历史文件
+ *   - 新产物绝不可加入此清单——如果新产物违规，必须修产物
+ *   - 每次添加需注明原因和日期
+ */
+const LEGACY_GRANDFATHER = new Set([
+  // 2026-06-03: 版本门修复后暴露的历史违规，contract §6.2 不可回改
+  "EV-0002/v5.json",
+  "EV-0003/v1.json",
+  "EV-0004/v2.json",
+  "EV-0004/v3.json",
+  "EV-0006/v1.json",
+  "EV-0007/v1.json",
+  "EV-0007/v2.json",
+  "EV-0007/v3.json",
+  "EV-0008/v1.json",
+  "EV-0009/v1.json",
+  "EV-0010/v1.json",
+  "EV-0011/v1.json",
+  "EV-0011/v2.json",
+  "EV-0011/v3.json",
+]);
+
+/** 从文件绝对路径提取 "EV-XXXX/vN.json" 形式的相对标识 */
+function legacyKey(absolutePath) {
+  const m = absolutePath.match(/(EV-\d+\/v\d+\.json)$/);
+  return m ? m[1] : null;
+}
+
 /** 主入口：校验所有 outbox 产物 */
 export function lintOutbox() {
   const files = listOutboxFiles();
   const errors = [];
+  const warnings = []; // legacy grandfather 降级的违规
   const checked = [];
   for (const f of files) {
     const res = readJsonSafe(f);
@@ -1266,15 +1315,23 @@ export function lintOutbox() {
       pushErr(errors, f, "<json>", `JSON 解析失败：${res.error}`);
       continue;
     }
-    // outbox 产物路径约定：.evaluations/outbox/{taskId}/v{n}.json
-    // → path.dirname(f) 的 basename 就是目录名（= 期望的 taskId，v3.4 起 === queryCode）
     const expectedTaskId = path.basename(path.dirname(f));
-    validatePayload(f, res.data, errors, expectedTaskId);
+    const fileErrors = [];
+    validatePayload(f, res.data, fileErrors, expectedTaskId);
+    const isLegacy = LEGACY_GRANDFATHER.has(legacyKey(f));
+    for (const e of fileErrors) {
+      if (isLegacy) {
+        warnings.push({ ...e, legacyGrandfather: true });
+      } else {
+        errors.push(e);
+      }
+    }
     checked.push(path_rel(f));
   }
   return {
     ok: errors.length === 0,
     errors,
+    warnings,
     checkedFiles: checked.length,
     files: checked,
   };
@@ -1295,9 +1352,27 @@ function main() {
     const inRes = lintInbox();
     const totalChecked = outRes.checkedFiles + inRes.checkedFiles;
     const totalErrors = outRes.errors.length + inRes.errors.length;
+    const totalWarnings = outRes.warnings.length;
+    // 打印 legacy grandfather warnings（不阻断 exit code）
+    if (totalWarnings > 0) {
+      const byFile = new Map();
+      for (const e of outRes.warnings) {
+        if (!byFile.has(e.file)) byFile.set(e.file, []);
+        byFile.get(e.file).push(e);
+      }
+      console.warn(
+        `⚠️  legacy grandfather warnings: ${totalWarnings} known violations in pre-EV-0012 files (not blocking):\n`
+      );
+      for (const [file, errs] of byFile) {
+        console.warn(`  📄 ${file}`);
+        for (const e of errs) console.warn(`     ⚠ ${e.path}: ${e.msg}`);
+      }
+      console.warn("");
+    }
     if (outRes.ok && inRes.ok) {
       console.log(
-        `✅ lint OK: checked ${outRes.checkedFiles} outbox + ${inRes.checkedFiles} inbox files, no violations`
+        `✅ lint OK: checked ${outRes.checkedFiles} outbox + ${inRes.checkedFiles} inbox files, no violations` +
+          (totalWarnings > 0 ? ` (${totalWarnings} legacy warnings suppressed)` : "")
       );
       process.exit(0);
     }
