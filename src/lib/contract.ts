@@ -501,6 +501,36 @@ export interface EvaluationSummary {
    * 历史版本（≤ v2.2）没有此字段，前端按"无聚焦诊断面板"容错展示。
    */
   crossProductInsights?: CrossProductInsights;
+
+  /**
+   * v3.7 条件必填：子问题 × 产品覆盖矩阵。
+   * 当 query 含 ≥2 个子问题（典型 info-mining）时填写，逐子问题 × 逐产品判定 full/partial/missing。
+   * 单一诉求 query 整体省略此字段；历史版本（≤ v3.6）没有此字段，前端容错展示。
+   */
+  queryCoverageMatrix?: QueryCoverageMatrix;
+}
+
+/** v3.7：子问题覆盖判定枚举 —— full(✅) / partial(🔶) / missing(❌) */
+export type SubQuestionCoverage = "full" | "partial" | "missing";
+
+/** v3.7：单个产品对某子问题的覆盖判定 */
+export interface SubQuestionCoverageEntry {
+  reportId: string;
+  coverage: SubQuestionCoverage;
+  /** coverage=partial/missing 时必填：一句话说明哪里偏薄或缺失 */
+  note?: string;
+}
+
+/** v3.7：单个子问题在所有产品上的覆盖情况 */
+export interface SubQuestionCoverageBlock {
+  subId: string;
+  question: string;
+  perReport: SubQuestionCoverageEntry[];
+}
+
+/** v3.7：子问题 × 产品覆盖矩阵 */
+export interface QueryCoverageMatrix {
+  subQuestions: SubQuestionCoverageBlock[];
 }
 
 export interface EvaluationOutboxPayload {
@@ -526,7 +556,7 @@ export interface EvaluationOutboxPayload {
    * 前端渲染时按此字段分支兼容——历史版本保留原样展示，新版本启用新 UI 能力
    * （档位标签、veto 徽章、激活的扩展维度纳入总分展示、正文四段锚点校验、低分证据高亮等）。
    */
-  contractVersion: "1.0" | "2.0" | "2.1" | "2.2" | "3.0" | "3.1" | "3.2" | "3.3" | "3.4" | "3.5" | "3.6";
+  contractVersion: "1.0" | "2.0" | "2.1" | "2.2" | "3.0" | "3.1" | "3.2" | "3.3" | "3.4" | "3.5" | "3.6" | "3.7";
   /**
    * 冗余写入的 query 永久 id（2026-04-21 方案 D 新增）。
    * - 由 bus / bake 统一注入，payload 原作者（LLM）不需要填

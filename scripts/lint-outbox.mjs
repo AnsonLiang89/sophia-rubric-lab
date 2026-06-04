@@ -201,15 +201,16 @@ export function validatePayload(file, payload, errors, expectedTaskId) {
     pushErr(errors, file, "version", "缺失或非 number");
   }
   const cv = payload.contractVersion;
-  if (!["1.0", "2.0", "2.1", "2.2", "3.0", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6"].includes(cv)) {
-    pushErr(errors, file, "contractVersion", `必须是 "1.0" / "2.0" / "2.1" / "2.2" / "3.0" / "3.1" / "3.2" / "3.3" / "3.4" / "3.5" / "3.6"，实际：${JSON.stringify(cv)}`);
+  if (!["1.0", "2.0", "2.1", "2.2", "3.0", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7"].includes(cv)) {
+    pushErr(errors, file, "contractVersion", `必须是 "1.0" / "2.0" / "2.1" / "2.2" / "3.0" / "3.1" / "3.2" / "3.3" / "3.4" / "3.5" / "3.6" / "3.7"，实际：${JSON.stringify(cv)}`);
   }
 
-  // v3.4+ 扁平化硬约束（3.4/3.5/3.6 共用）：
+  // v3.4+ 扁平化硬约束（3.4 起共用，用 >= 语义避免新增版本漏纳入）：
   //   - taskId 必须匹配 ^[A-Z]+-\d+$（无 suffix，等同 queryCode）
   //   - 若调用方提供 expectedTaskId（来自目录名），必须与 payload.taskId 完全一致
   // 旧版本（1.0 ~ 3.3）不启用此约束——历史 `${queryCode}-${suffix6}` 形态直到写兼容层消化完之前都合法。
-  if (cv === "3.4" || cv === "3.5" || cv === "3.6") {
+  const cvNumEarly = Number.parseFloat(cv);
+  if (Number.isFinite(cvNumEarly) && cvNumEarly >= 3.4) {
     if (!/^[A-Z]+-\d+$/.test(payload.taskId)) {
       pushErr(
         errors,
@@ -242,9 +243,13 @@ export function validatePayload(file, payload, errors, expectedTaskId) {
   const isV31 = cv === "3.1";
   const isV32 = cv === "3.2";
   const isV33 = cv === "3.3";
-  const isV36 = cv === "3.6";
-  // claim 数量上限：v3.3 起放宽到 10（v3.3/3.4/3.5/3.6 共享），更早版本维持 5
-  const isClaimTopTen = cv === "3.3" || cv === "3.4" || cv === "3.5" || cv === "3.6";
+  // v3.6 起的事实覆盖矩阵 / pass1Question / deltaReason 等校验：用 >= 语义门控，
+  // 避免再次出现"新增 3.7 时枚举漏纳入导致校验被静默跳过"的历史坑。
+  const isV36Plus = Number.isFinite(cvNum) && cvNum >= 3.6;
+  // v3.7 起新增：queryCoverageMatrix（子问题×产品覆盖矩阵）+ R5 信噪比 checklist 第 6 项
+  const isV37Plus = Number.isFinite(cvNum) && cvNum >= 3.7;
+  // claim 数量上限：v3.3 起放宽到 10（3.3+ 共享），更早版本维持 5
+  const isClaimTopTen = Number.isFinite(cvNum) && cvNum >= 3.3;
   if (!payload.summary || typeof payload.summary !== "object") {
     pushErr(errors, file, "summary", "缺失或非对象");
     return;
@@ -543,7 +548,7 @@ export function validatePayload(file, payload, errors, expectedTaskId) {
     // 每个 type (T1~T8) 对每份 report 都要给出 present=true/false；true 则必须有对应 claimId 进 inventory
     const factMatrixPresent = new Map(); // reportId -> Set<typeId> 的 present=true 集合
     const factMatrixClaims = new Map(); // reportId -> Set<claimId> 从 perReport 里累积的 claimIdsSampled
-    if (isV36) {
+    if (isV36Plus) {
       const m = s.factCoverageMatrix;
       const REQ_TYPES = ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8"];
       if (!m || typeof m !== "object") {
@@ -662,6 +667,78 @@ export function validatePayload(file, payload, errors, expectedTaskId) {
       }
     }
 
+    // --- v3.7: queryCoverageMatrix（子问题 × 产品覆盖矩阵）---
+    // 复合 query（≥2 个子问题）下，强制把"是否正面回答每个子问题"下沉到子问题级，
+    // 杜绝"八问全覆盖=A"的笼统判定压平 R2 区分度。
+    if (isV37Plus) {
+      const qm = s.queryCoverageMatrix;
+      const COV_ENUM = ["full", "partial", "missing"]; // ✅ / 🔶 / ❌
+      if (!qm || typeof qm !== "object") {
+        pushErr(errors, file, "summary.queryCoverageMatrix", "v3.7 必填对象");
+      } else if (!Array.isArray(qm.subQuestions) || qm.subQuestions.length === 0) {
+        pushErr(errors, file, "summary.queryCoverageMatrix.subQuestions", "v3.7 必填非空数组");
+      } else if (qm.subQuestions.length < 2) {
+        // 单子问题 query 不强制矩阵；若评测官判定 <2，应整体省略该字段而非写空壳
+        pushErr(
+          errors,
+          file,
+          "summary.queryCoverageMatrix.subQuestions",
+          "v3.7：复合 query 才需此矩阵（子问题 ≥2）；单一诉求请整体省略 queryCoverageMatrix"
+        );
+      } else {
+        const seenSubIds = new Set();
+        for (const [i, sq] of qm.subQuestions.entries()) {
+          const qpref = `summary.queryCoverageMatrix.subQuestions[${i}]`;
+          if (!sq || typeof sq !== "object") {
+            pushErr(errors, file, qpref, "必填对象");
+            continue;
+          }
+          if (!isNonEmptyString(sq.subId)) {
+            pushErr(errors, file, `${qpref}.subId`, "必填非空字符串（如 Q1/Q2）");
+          } else if (seenSubIds.has(sq.subId)) {
+            pushErr(errors, file, `${qpref}.subId`, `subId 重复：${sq.subId}`);
+          } else {
+            seenSubIds.add(sq.subId);
+          }
+          if (!isNonEmptyString(sq.question)) {
+            pushErr(errors, file, `${qpref}.question`, "必填非空字符串（子问题原文/转述）");
+          }
+          if (!Array.isArray(sq.perReport) || sq.perReport.length === 0) {
+            pushErr(errors, file, `${qpref}.perReport`, "必填非空数组");
+            continue;
+          }
+          const seenR = new Set();
+          for (const [j, pr] of sq.perReport.entries()) {
+            const ppref = `${qpref}.perReport[${j}]`;
+            if (!isNonEmptyString(pr.reportId)) {
+              pushErr(errors, file, `${ppref}.reportId`, "必填非空字符串");
+              continue;
+            }
+            if (reportIds.size > 0 && !reportIds.has(pr.reportId)) {
+              pushErr(errors, file, `${ppref}.reportId`, `reportId 不在 candidates 中：${pr.reportId}`);
+            }
+            if (seenR.has(pr.reportId)) {
+              pushErr(errors, file, `${ppref}.reportId`, `同一子问题下 reportId 重复：${pr.reportId}`);
+            }
+            seenR.add(pr.reportId);
+            if (!COV_ENUM.includes(pr.coverage)) {
+              pushErr(errors, file, `${ppref}.coverage`, `必须 ∈ {full, partial, missing}，实际 ${JSON.stringify(pr.coverage)}`);
+            }
+            // partial / missing 必须给一句话理由（与 R2 扣档证据对齐）
+            if ((pr.coverage === "partial" || pr.coverage === "missing") && !isNonEmptyString(pr.note)) {
+              pushErr(errors, file, `${ppref}.note`, "coverage=partial/missing 必须给非空 note（说明哪里偏薄或缺失）");
+            }
+          }
+          // perReport 必须覆盖全部 candidates
+          for (const rid of reportIds) {
+            if (!seenR.has(rid)) {
+              pushErr(errors, file, `${qpref}.perReport`, `缺少 reportId=${rid} 的覆盖条目`);
+            }
+          }
+        }
+      }
+    }
+
     // --- claimInventory ---
     const claimIds = new Set();
     if (!Array.isArray(s.claimInventory) || s.claimInventory.length === 0) {
@@ -773,10 +850,10 @@ export function validatePayload(file, payload, errors, expectedTaskId) {
             pushErr(errors, file, `${pref}.evidence`, "v3.1 下 refuted / inconclusive 的 evidence 还必须包含外部核验结论（或不可核说明）");
           }
         }
-        // v3.6 新增：pass1Question 必填（Pass 1 疑点主动激发）
-        if (isV36 && ck.status !== "skipped-out-of-scope" && ck.status !== "skipped-time-budget") {
+        // v3.6 起新增：pass1Question 必填（Pass 1 疑点主动激发）
+        if (isV36Plus && ck.status !== "skipped-out-of-scope" && ck.status !== "skipped-time-budget") {
           if (typeof ck.pass1Question !== "string" || !ck.pass1Question.trim()) {
-            pushErr(errors, file, `${pref}.pass1Question`, "v3.6 要求每条 claimChecks 必填 pass1Question（Pass 1 疑点主动激发）");
+            pushErr(errors, file, `${pref}.pass1Question`, "v3.6+ 要求每条 claimChecks 必填 pass1Question（Pass 1 疑点主动激发）");
           }
         }
       }
@@ -815,7 +892,9 @@ export function validatePayload(file, payload, errors, expectedTaskId) {
           pushErr(errors, file, `${pref}.items`, "必填非空数组");
           continue;
         }
-        const minItems = CHECKLIST_MIN_ITEMS[dimId] ?? 5;
+        // v3.7 起 R5 必查项从 5 增到 6（新增"信息密度/信噪比"负向检查项）
+        let minItems = CHECKLIST_MIN_ITEMS[dimId] ?? 5;
+        if (isV37Plus && dimId === "R5") minItems = 6;
         if (checklist.items.length < minItems) {
           pushErr(
             errors,

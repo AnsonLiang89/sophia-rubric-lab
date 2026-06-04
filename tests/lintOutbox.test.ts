@@ -1105,3 +1105,115 @@ describe("validatePayload · v3.3 report 锚点（与 v3.2 同规则）", () => 
   });
 });
 
+// ------------------------------------------------------------
+// v3.7：queryCoverageMatrix（子问题 × 产品覆盖矩阵）+ R5 信噪比 checklist
+// 这些测试只关心 v3.7 新增分支，按既有风格（makeMinimalV34）只断言目标 path，
+// 忽略其他无关维度的报错。
+// ------------------------------------------------------------
+function makeMinimalV37WithQCM(qcm: any) {
+  // 复用 v3.3 的合法骨架，仅把 contractVersion 升到 3.7 并挂 queryCoverageMatrix。
+  // 其余维度可能仍报错（v3.6/3.7 还要 factCoverageMatrix 等），但本组测试只过滤
+  // path 以 "summary.queryCoverageMatrix" 开头的错误来断言。
+  const p: any = goodPayloadV33();
+  p.contractVersion = "3.7";
+  p.summary.queryCoverageMatrix = qcm;
+  return p;
+}
+
+function qcmErrors(qcm: any) {
+  const p = makeMinimalV37WithQCM(qcm);
+  const errors = lint(p);
+  return errors.filter((e) => e.path.startsWith("summary.queryCoverageMatrix"));
+}
+
+describe("validatePayload · v3.7 queryCoverageMatrix 硬约束", () => {
+  const validQCM = {
+    subQuestions: [
+      {
+        subId: "Q1",
+        question: "现有应用有哪些？",
+        perReport: [
+          { reportId: "sub_1", coverage: "full", note: "" },
+          { reportId: "sub_2", coverage: "partial", note: "仅列举未展开" },
+        ],
+      },
+      {
+        subId: "Q2",
+        question: "市场容量多大？",
+        perReport: [
+          { reportId: "sub_1", coverage: "full", note: "" },
+          { reportId: "sub_2", coverage: "missing", note: "通篇未触达" },
+        ],
+      },
+    ],
+  };
+
+  it("合法 queryCoverageMatrix → 无 queryCoverageMatrix 报错", () => {
+    expect(qcmErrors(validQCM)).toHaveLength(0);
+  });
+
+  it("子问题数 <2 → 报错（应整体省略）", () => {
+    const qcm = { subQuestions: [validQCM.subQuestions[0]] };
+    expect(qcmErrors(qcm).some((e) => e.msg.includes("子问题 ≥2"))).toBe(true);
+  });
+
+  it("coverage 非法枚举 → 报错", () => {
+    const qcm = JSON.parse(JSON.stringify(validQCM));
+    qcm.subQuestions[0].perReport[0].coverage = "yes";
+    expect(qcmErrors(qcm).some((e) => e.msg.includes("full, partial, missing"))).toBe(true);
+  });
+
+  it("partial/missing 缺 note → 报错", () => {
+    const qcm = JSON.parse(JSON.stringify(validQCM));
+    qcm.subQuestions[0].perReport[1].note = "";
+    expect(qcmErrors(qcm).some((e) => e.msg.includes("note"))).toBe(true);
+  });
+
+  it("perReport 未覆盖全部 candidates → 报错", () => {
+    const qcm = JSON.parse(JSON.stringify(validQCM));
+    qcm.subQuestions[0].perReport = [qcm.subQuestions[0].perReport[0]]; // 只剩 sub_1
+    expect(qcmErrors(qcm).some((e) => e.msg.includes("缺少 reportId=sub_2"))).toBe(true);
+  });
+
+  it("subId 重复 → 报错", () => {
+    const qcm = JSON.parse(JSON.stringify(validQCM));
+    qcm.subQuestions[1].subId = "Q1";
+    expect(qcmErrors(qcm).some((e) => e.msg.includes("subId 重复"))).toBe(true);
+  });
+
+  it("contractVersion ≤ 3.6 时 queryCoverageMatrix 不被校验（向后兼容）", () => {
+    const p: any = goodPayloadV33(); // 3.3
+    p.summary.queryCoverageMatrix = { subQuestions: [] }; // 故意非法
+    const errors = lint(p);
+    expect(errors.filter((e) => e.path.startsWith("summary.queryCoverageMatrix"))).toHaveLength(0);
+  });
+});
+
+describe("validatePayload · v3.7 R5 checklist ≥6 项", () => {
+  function r5ChecklistErrors(itemCount: number, cv: string) {
+    const p: any = goodPayloadV33();
+    p.contractVersion = cv;
+    p.summary.dimensionChecklists = {
+      R1: { items: Array.from({ length: 7 }, (_, i) => ({ label: `R1-${i}`, passedFor: [] })) },
+      R2: { items: Array.from({ length: 5 }, (_, i) => ({ label: `R2-${i}`, passedFor: [] })) },
+      R3: { items: Array.from({ length: 5 }, (_, i) => ({ label: `R3-${i}`, passedFor: [] })) },
+      R4: { items: Array.from({ length: 5 }, (_, i) => ({ label: `R4-${i}`, passedFor: [] })) },
+      R5: { items: Array.from({ length: itemCount }, (_, i) => ({ label: `R5-${i}`, passedFor: [] })) },
+    };
+    const errors = lint(p);
+    return errors.filter((e) => e.path === "summary.dimensionChecklists.R5.items");
+  }
+
+  it("v3.7 下 R5 仅 5 项 → 报错（需 ≥6）", () => {
+    expect(r5ChecklistErrors(5, "3.7").some((e) => e.msg.includes("≥ 6"))).toBe(true);
+  });
+
+  it("v3.7 下 R5 有 6 项 → 通过", () => {
+    expect(r5ChecklistErrors(6, "3.7")).toHaveLength(0);
+  });
+
+  it("v3.6 下 R5 仅 5 项 → 通过（旧规则 ≥5）", () => {
+    expect(r5ChecklistErrors(5, "3.6")).toHaveLength(0);
+  });
+});
+

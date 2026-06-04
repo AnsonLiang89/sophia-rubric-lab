@@ -1,7 +1,7 @@
 # MEMORY.md
 
-- 更新日期：2026-06-03（16:58）
-- 变更原因：lint 版本门修复 + legacy grandfather 机制；EV-0012 评测完成。
+- 更新日期：2026-06-03（18:42）
+- 变更原因：契约升级 v3.7（子问题覆盖矩阵 + 决策信噪比 + 非共识跨产品归集）；lint 版本门彻底数值语义化。
 
 ## 用户偏好（稳定）
 
@@ -19,7 +19,7 @@
 
 - 评测执行顺序强约束：`EVALUATION_CONTRACT.md` → `RUBRIC_STANDARD.md` → `inbox/{taskId}.json` 全量 → **禁止在评测开头或中途参考 outbox 历史，仅在最后一步做 history-gate 兜底**。
 - 长 JSON 产物采用"**骨架 + 分段 replace**"策略，避免单次写入截断；交付前必须过 `json.load` 与 `npm run lint:outbox`。
-- 版本语义：`contractVersion`（当前主线 **3.6**）与 `inboxSchemaVersion`（当前 2.1）独立演进。
+- 版本语义：`contractVersion`（当前主线 **3.7**）与 `inboxSchemaVersion`（当前 2.1）独立演进。
 - taskId 扁平化（v3.4 起）：`taskId === queryCode`，同一 query 版本累计在 `outbox/{taskId}/vN.json`。
 - v3.4 lint 硬约束：`taskId` 必须匹配 `^[A-Z]+-\d+$` 且等于 outbox 目录名。
 - **v3.5 硬约束（报告详实化 + 效率优化）**：
@@ -35,6 +35,12 @@
   4) `overallScores[].deltaReason`：跨版本同 reportId 总分 Δ≥1.0 或跨档/veto 翻转必须写明变动来源；
   5) 历史 outbox 只在最后一步参考（history-gate 阶段），严禁在开头或中途引用。
 - lint 脚本对 3.6 产物做以下结构校验：factCoverageMatrix（T1~T8 齐全 + 每类 perReport 覆盖全 candidates + present=true 需 sampleQuote 与 claimIdsSampled）、claimChecks pass1Question 必填、deltaReason 条件必填（通过读 v{N-1}.json 对比）。
+- **v3.7 新增硬约束（答题颗粒度 + 决策信噪比，2026-06-03 生效）**：
+  1) `summary.queryCoverageMatrix`：query 含 ≥2 子问题时必填，逐子问题×逐产品判 `full/partial/missing`，覆盖全 candidates，partial/missing 必给 note（契约 §3.13）；单一诉求 query 整体省略。
+  2) R5 必查 checklist 5→6 项，新增"信息冗余/篇幅膨胀稀释决策价值/甄别成本过高"负向项；**篇幅永不作为 R5 加分理由，堆字数≠帮决策**；长报告零 caveat 诚实度轴再降一档。
+  3) R3 checklist 加"跨产品非共识归集"（逐产品列差异化观点+是否带why三联+决策增量）。
+  4) history-gate 的 deltaReason 须说明"差异来源=新证据/视角变化"。
+- **lint 版本门铁律（三次踩坑后定）**：凡按 contractVersion 分支的判断，**一律用 `cvNum = Number.parseFloat(cv); cvNum >= X` 数值语义**，禁用精确枚举(`cv==="3.6"`)和枚举白名单。已统一：isV2Plus/isV22Plus/isV3/isV36Plus/isV37Plus/isClaimTopTen/targetMinutes门/四段锚点门/扁平化门/contractVersion白名单。
 - Submission（localStorage）与 Inbox（磁盘契约）是两条平行存储链。
 - "待评测"判据：对比源正文最后变动时间晚于最新评测时间时，必须提示重跑评测。
 - 边界隔离：`vite-plugins/` 严禁 import `src/` 代码。

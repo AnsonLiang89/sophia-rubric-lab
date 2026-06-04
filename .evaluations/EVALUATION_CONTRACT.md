@@ -1,4 +1,4 @@
-# Sophia Rubric Lab · 评测契约 v3.6
+# Sophia Rubric Lab · 评测契约 v3.7
 
 > 这是一份给 **LLM 评测官（Sophia）** 和 **Sophia Rubric Lab 网站** 共同遵守的工作契约。
 >
@@ -12,6 +12,14 @@
 > - 评测主体清单（事实源）：`./PRODUCTS.json`
 > - 完整 outbox 示例（参考骨架）：`./EVALUATION_CONTRACT_EXAMPLE.json`
 > - 工程侧沉淀与历史踩坑：项目根 `.workbuddy/memory/MEMORY.md`
+
+> 🆕 **契约版本 3.7（2026-06-03 生效）** —— **答题颗粒度 + 决策信噪比双闸门**（基于 EV-0012 两轮评测复盘）：
+>
+> - 🧩 **子问题覆盖矩阵（queryCoverageMatrix）硬约束**：当 query 含 **≥2 个子问题**（典型 info-mining）时，必须先把 query 拆成子问题清单（Q1…Qn），再对每份报告逐子问题判定 `full`(✅) / `partial`(🔶) / `missing`(❌)，partial/missing 必须给一句话理由。目的：堵死"八问全覆盖=A"的笼统判定，让 R2 的区分度下沉到子问题级。产物新增 `summary.queryCoverageMatrix`（见 §3.13）。
+> - 📉 **决策信噪比负向闸门**：R5 必查 checklist 从 5 项增至 6 项，新增"信息冗余 / 篇幅膨胀稀释决策价值 / 读者甄别成本过高"的**负向**检查项；长报告零 caveat 视为诚实度轴下移一档（详见 RUBRIC_STANDARD.md R5）。本质：决策价值不由篇幅决定，**堆字数 ≠ 帮决策**。
+> - 🔁 **稳定性自检（history-gate 增强）**：跨版本档位差异必须在 `deltaReason` 中说明"差异来源 = 新证据 / 评测视角变化"；若是后者，说明上一版 rubric 存在覆盖盲区，应记录。
+>
+> 🎯 **v3.7 的本质**：v3.6 解决了"说得对不对"（事实纪律），v3.7 补齐"答得准不准（子问题颗粒度）"和"帮不帮得上（信噪比）"——把这两件原本靠评测官临场意识的事，固化成结构 + lint 可校验的硬约束。
 
 > 🆕 **契约版本 3.6（2026-04-28 生效）** —— **事实准确性评测方法升级 + 跨版本稳定性闸门**：
 >
@@ -75,6 +83,8 @@
 16. **🆕 Pass 1 疑点主动激发**：每条 claim 必须附 `pass1Question`（产物字段 `claimChecks[].pass1Question`），明确怀疑点，没有问题不得进入 Pass 2。
 17. **🆕 Pass 2 三条强制核验动作**：A 专有名词+分类词反查（药物+适应症/公司+主业）；B 大额数字（≥1亿或≥3位数%）货币量纲显式对照；C scope 词逐条对齐 query。动作结果必须记入 `verificationBudget.notes`。
 18. **🆕 历史一致性闸门（最后一步）**：本轮独立定稿后再看上一版 outbox；同 reportId 总分 Δ≥1.0 或跨档（含 veto 翻转）必须写 `overallScores[].deltaReason`；若无新证据，必须回退本轮结论与上版保持一致。历史参考只在评测最后一步发生，不得在开头或中途引用。
+19. **🆕（v3.7）子问题覆盖矩阵硬约束**：query 含 ≥2 个子问题时必填 `summary.queryCoverageMatrix`，逐子问题 × 逐产品判定 `full/partial/missing`（见 §3.13）。
+20. **🆕（v3.7）决策信噪比负向闸门**：R5 必查 checklist 增至 6 项，新增"信息冗余/篇幅膨胀稀释决策价值"负向项；评判决策价值时篇幅不得作为加分理由。
 
 ---
 
@@ -158,6 +168,7 @@
     "sbs": { "pairs": [...] },
     "perReportFeedback": [...],
     "factCoverageMatrix": {...},      // v3.6：T1~T8 事实类型扫描矩阵
+    "queryCoverageMatrix": {...},      // v3.7：子问题×产品覆盖矩阵（≥2 子问题时必填）
     "claimInventory": [...],           // v3.3：3~10 条/每份报告
     "claimChecks": [...],              // v3.6：每条含 pass1Question
     "dimensionChecklists": {...},
@@ -179,7 +190,7 @@
 
 | 字段 | 约束 |
 |---|---|
-| `contractVersion` | 新产物必须为 `"3.6"`（推荐）或 `"3.5"`/`"3.4"`（兼容）；历史产物可保留 `"3.3"` / `"3.2"` / `"3.1"` / `"3.0"` / `"2.2"` / `"2.1"` / `"2.0"` / `"1.0"` |
+| `contractVersion` | 新产物必须为 `"3.7"`（推荐）或 `"3.6"`/`"3.5"`/`"3.4"`（兼容）；历史产物可保留 `"3.3"` / `"3.2"` / `"3.1"` / `"3.0"` / `"2.2"` / `"2.1"` / `"2.0"` / `"1.0"` |
 | `summary.overallScores[].score` | [0, 10]，**必须等于** `Σ(Ri.score × Ri.weight)`；触发一票否决时**封顶 6.9** |
 | `summary.overallScores[].verdict` | 枚举：`卓越` / `优秀` / `合格` / `待改进` / `不合格` |
 | `summary.overallScores[].vetoTriggered` | 布尔值，必填 |
@@ -201,6 +212,7 @@
 | `summary.sbs` | candidates ≥ 2 时必填 |
 | `summary.perReportFeedback` | 必填；每项 `strengths` / `weaknesses` 各至少 2 条，`improvements` 至少 1 条 |
 | `summary.factCoverageMatrix` | **v3.6 必填**；结构见 §3.12；T1~T8 八类事实类型都必须覆盖；存在的类别至少有 1 条 claim 进 `claimInventory`；不存在的类别必须给出显式原因 |
+| `summary.queryCoverageMatrix` | **v3.7 条件必填**：query 含 ≥2 个子问题时必填；结构见 §3.13；逐子问题 × 逐产品判定 `full/partial/missing`，覆盖全部 candidates；单一诉求 query 可整体省略 |
 | `summary.claimInventory` | 必填；每份报告 3~10 条，含 ≥1 条 `type="logic"` |
 | `summary.claimChecks` | 必填；**v3.6 新增 `pass1Question` 字段**：每条必须写明 Pass 1 阶段评测官主动提出的怀疑点（一句话问题），没有问题不得进入 Pass 2 |
 | `summary.dimensionChecklists` | 必填 |
@@ -597,6 +609,53 @@ tier 和 score **必须严格一一对应**（`tier="A", score=7` 非法）。**
 
 ---
 
+### 3.13 `summary.queryCoverageMatrix`（v3.7 新增）
+
+把"是否正面回答了用户的每个子问题"从笼统的 R2 印象分，下沉为**子问题 × 产品**的结构化判定。**仅在 query 含 ≥2 个子问题时必填**（典型 info-mining / 多诉求 query）；单一诉求 query 可整体省略此字段。
+
+```json
+{
+  "subQuestions": [
+    {
+      "subId": "Q1",
+      "question": "现有应用场景有哪些？",
+      "perReport": [
+        {"reportId": "sub_xxx", "coverage": "full", "note": ""},
+        {"reportId": "sub_yyy", "coverage": "partial", "note": "仅列举未展开主次场景"},
+        {"reportId": "sub_zzz", "coverage": "missing", "note": "通篇未触达该子问题"}
+      ]
+    }
+  ]
+}
+```
+
+#### 字段语义
+
+| 字段 | 必填 | 说明 |
+|---|---|---|
+| `subQuestions` | ✅ | 非空数组；元素数 = 评测官从 query 拆出的子问题数；**长度 < 2 时不应写本字段，应整体省略** |
+| `subQuestions[].subId` | ✅ | 子问题稳定 id（如 `Q1`/`Q2`），同 payload 内唯一 |
+| `subQuestions[].question` | ✅ | 子问题原文或简明转述 |
+| `subQuestions[].perReport` | ✅ | 必须覆盖全部 candidates，每份一条 |
+| `perReport[].reportId` | ✅ | 沿用 inbox 的 reportId |
+| `perReport[].coverage` | ✅ | 枚举：`full`（✅ 正面且有实质内容）/ `partial`（🔶 触达但偏薄/偏定性）/ `missing`（❌ 缺失或答非所问） |
+| `perReport[].note` | 条件 | `coverage ∈ {partial, missing}` 时必填一句话理由（说明哪里偏薄或缺失）；`full` 可空 |
+
+#### 硬约束
+
+- query 子问题数 ≥2 → 必填；每个子问题的 `perReport` 必须覆盖全部 candidates；
+- `coverage` 必须是 `full/partial/missing` 之一；
+- `partial`/`missing` 必须给非空 `note`；
+- 正文第二段（按维度展开）应渲染该矩阵，作为 R2 档位判定的证据。
+
+#### 设计意图
+
+- 防止"八问全覆盖=全打 A"这种笼统判定压平 R2 区分度——把颗粒度强制下沉到子问题级；
+- 让"同一子问题下谁答得更好"这个横评最关心的问题有结构化落点；
+- 与 `factCoverageMatrix` 正交：后者管"事实对不对"（T1~T8），本字段管"子问题答没答、答得全不全"。
+
+---
+
 ## 4. Rubric（打分维度定义）
 
 **打分维度的宗旨、R1~R5 的完整定义与权重、扩展维度规则、SBS 规则、评级档位、issueTags 词表、双轴 tier 表、必查 checklist、45min SOP —— 全部单独落在 `.evaluations/RUBRIC_STANDARD.md`。**
@@ -629,13 +688,14 @@ tier 和 score **必须严格一一对应**（`tier="A", score=7` 非法）。**
 |---|---|
 | ① **read**（读报告） | 脑内地图 |
 | ② **🆕 fact-scan**（T1~T8 事实覆盖矩阵扫描） | `summary.factCoverageMatrix`；每份报告对每类显式填"有/无/原因" |
+| ②b **🆕（v3.7）query-scan**（拆子问题） | query 含 ≥2 子问题时产出 `summary.queryCoverageMatrix`：逐子问题 × 逐产品 full/partial/missing |
 | ③ **claim-inventory**（承重 claim 抽取） | `summary.claimInventory`（v3.6：存在的每类 T 至少 1 条）|
 | ④ **pass1**（快筛 + 疑点主动激发） | `claimChecks` 首版，每条必须含 `pass1Question` |
 | ⑤ **pass2**（深核 + 三条强制动作） | 按 P0/P1/P2 深核 suspicious 项；同时执行三条强制动作（A 专名+分类反查 / B 大额数字量纲对照 / C scope 对齐 query）；结果写入 `verificationBudget.notes` |
 | ⑥ **pass3**（逻辑一致性） | R1b 子项；跨段落口径、因果链、算术交叉 |
-| ⑦ **score**（打分 + 跨产品诊断） | `rubric` + `overallScore` + `sbs` + `crossProductInsights` |
-| ⑧ **feedback + report** | `perReportFeedback` + 四段正文 |
-| ⑨ **🆕 history-gate**（历史一致性兜底） | 读 `outbox/{taskId}/` 最新一版；同 reportId 总分 Δ≥1.0 或跨档/veto 翻转 → 必须写 `deltaReason`；无新证据必须回退 |
+| ⑦ **score**（打分 + 跨产品诊断） | `rubric` + `overallScore` + `sbs` + `crossProductInsights`；**R5 须过信噪比负向 checklist** |
+| ⑧ **feedback + report** | `perReportFeedback` + 四段正文（第二段含子问题覆盖矩阵） |
+| ⑨ **🆕 history-gate**（历史一致性兜底） | 读 `outbox/{taskId}/` 最新一版；同 reportId 总分 Δ≥1.0 或跨档/veto 翻转 → 必须写 `deltaReason`（注明差异来源=新证据/视角变化）；无新证据必须回退 |
 
 **硬约束**：
 
@@ -664,7 +724,7 @@ tier 和 score **必须严格一一对应**（`tier="A", score=7` 非法）。**
 
 **契约版本 & 结构：**
 
-- [ ] `contractVersion` = `"3.6"`（推荐）或 `"3.5"`/`"3.4"`（兼容）
+- [ ] `contractVersion` = `"3.7"`（推荐）或 `"3.6"`/`"3.5"`/`"3.4"`（兼容）
 - [ ] `summary.rubric` 覆盖 R1~R5，id/name/weight 与 RUBRIC_STANDARD.md §二 一致
 - [ ] 维度内层数组字段名是 `scores`
 - [ ] `overallScores[].productName` 非空、无括号版本号、同 payload 内唯一
@@ -675,6 +735,14 @@ tier 和 score **必须严格一一对应**（`tier="A", score=7` 非法）。**
 - [ ] 每个 type 的 `perReport` 覆盖所有 candidates
 - [ ] `present=true` 的条目都有 `sampleQuote` 且至少 1 条 claim 在 `claimInventory` 中
 - [ ] `present=false` 的条目都给出非空 `reason`
+
+**子问题覆盖矩阵（v3.7 新增）：**
+
+- [ ] query 含 ≥2 子问题时，`summary.queryCoverageMatrix.subQuestions` 已拆出全部子问题
+- [ ] 每个子问题的 `perReport` 覆盖所有 candidates，`coverage ∈ {full, partial, missing}`
+- [ ] `partial`/`missing` 条目都给出非空 `note`
+- [ ] 正文第二段渲染了该矩阵，作为 R2 档位证据
+- [ ] **R5 已过"信息冗余/篇幅膨胀稀释决策价值"负向 checklist；篇幅未被当作加分理由**
 
 **打分链路：**
 
@@ -783,9 +851,10 @@ tier 和 score **必须严格一一对应**（`tier="A", score=7` 非法）。**
 
 ## 7. 版本
 
-- **契约版本：3.6**
-- 生效日期：2026-04-28
+- **契约版本：3.7**
+- 生效日期：2026-06-03
 - 历史版本：
+  - 3.6（2026-04-28）—— 事实准确性方法升级 + 跨版本稳定性：factCoverageMatrix / pass1Question / Pass2 三强制动作 / history-gate deltaReason
   - 3.5（2026-04-28）—— 详实度与效率双优化：交叉矩阵/why三联/inconclusive收敛/Pass2分层
   - 3.4（2026-04-28）—— taskId 扁平化（结构层升级，评测语义不变）
   - 3.3（2026-04-27）—— 质量优先：取消 45min 时间盒；claim Top 5 → Top 10；文档精简
@@ -796,6 +865,11 @@ tier 和 score **必须严格一一对应**（`tier="A", score=7` 非法）。**
   - 2.1（2026-04-22）—— 外部核验硬约束、perReportFeedback、报告六大章节
   - 2.0（2026-04-21）—— 维度重构、档位制、一票否决、扩展维度
   - 1.0（2026-04-19）—— 初版
+- **v3.7 vs v3.6 的落地变化**（答题颗粒度 + 决策信噪比双闸门，基于 EV-0012 两轮评测复盘）：
+  - 新增 `summary.queryCoverageMatrix`：query 含 ≥2 子问题时必填，逐子问题 × 逐产品判定 full/partial/missing（见 §3.13）
+  - R5 必查 checklist 增至 6 项，新增"信息冗余/篇幅膨胀稀释决策价值"负向项；评判决策价值时篇幅不得作为加分理由
+  - history-gate 增强：deltaReason 须说明"差异来源 = 新证据 / 评测视角变化"
+  - lint 同步：queryCoverageMatrix 结构校验 + R5 checklist ≥6；并把 isV36/isClaimTopTen 等枚举门改为 `cvNum >=` 语义，杜绝新增版本再次漏纳入
 - **v3.6 vs v3.5 的落地变化**（事实准确性评测方法论升级 + 跨版本稳定性）：
   - 新增 `summary.factCoverageMatrix`：T1~T8 事实类型扫描矩阵，抽 claim 前先做，每类给出"有/无/原因"
   - 新增 `claimChecks[].pass1Question`：Pass 1 必须写明怀疑点才能进入 Pass 2，避免"无脑 clean"
