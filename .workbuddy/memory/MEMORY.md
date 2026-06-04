@@ -41,7 +41,7 @@
   3) R3 checklist 加"跨产品非共识归集"（逐产品列差异化观点+是否带why三联+决策增量）。
   4) history-gate 的 deltaReason 须说明"差异来源=新证据/视角变化"。
 - **lint 版本门铁律（三次踩坑后定）**：凡按 contractVersion 分支的判断，**一律用 `cvNum = Number.parseFloat(cv); cvNum >= X` 数值语义**，禁用精确枚举(`cv==="3.6"`)和枚举白名单。已统一：isV2Plus/isV22Plus/isV3/isV36Plus/isV37Plus/isClaimTopTen/targetMinutes门/四段锚点门/扁平化门/contractVersion白名单。
-- Submission（localStorage）与 Inbox（磁盘契约）是两条平行存储链。
+- Submission（localStorage / `_runtime-snapshot.json`）与 Inbox/Outbox（磁盘契约）是两条平行存储链。**新增候选时三处都要补**：inbox candidates + outbox 评测 + snapshot.submissions（否则 `build:public` 的 bake 报 dangling reportId）。补 submission 关键字段：`id`=reportId、`queryId`=query.id、`productId`=PRODUCTS.json 已注册 id、`content`=正文。
 - "待评测"判据：对比源正文最后变动时间晚于最新评测时间时，必须提示重跑评测。
 - 边界隔离：`vite-plugins/` 严禁 import `src/` 代码。
 - 契约/lint/schema 相关改动后的回归三连：`npm run lint:outbox` + `npm test` + `tsc -p tsconfig.app.json --noEmit`（UI 变更再加 `npm run lint`）。
