@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && NODE_ENV=production vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
@@ -15,7 +15,7 @@
     "bake:public": "node scripts/bake-public-data.mjs",
     "bake:check": "node scripts/check-bake-freshness.mjs",
     "lint:outbox": "node scripts/lint-outbox.mjs",
-    "build:public": "npm run lint:outbox && npm test && npm run seed:dump && npm run bake:public && tsc -b && vite build",
+    "build:public": "npm run lint:outbox && npm test && npm run seed:dump && npm run bake:public && tsc -b && NODE_ENV=production vite build",
     "cleanup-inbox": "node scripts/cleanup-orphan-inbox.mjs",
     "cleanup-inbox:apply": "node scripts/cleanup-orphan-inbox.mjs --apply",
     "migrate-inbox": "node scripts/migrate-inbox.mjs",

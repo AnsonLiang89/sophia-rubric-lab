@@ -25,6 +25,39 @@
 export const IS_READONLY = import.meta.env.PROD;
 
 /**
+ * 构建模式健全性自检（2026-06-04 新增，针对"dev 构建被当静态站托管"的静默退化坑）。
+ *
+ * 背景与踩坑：曾出现 `dist/` 被 **dev 模式**构建（`import.meta.env.PROD=false`），
+ * 再用 `vite preview` 静态托管的情况。此时 `IS_READONLY=false`，前端把自己
+ * 当成管理员 dev 版 → storage 走 LocalAdapter 读 localStorage 里的旧 seed
+ * （2 产品 / 1 题），而不是读 bake 出来的 public-bundle.json（9 产品 / 11 题）。
+ * 整个过程**零报错**，只能靠肉眼发现"数据缺了"，排查成本极高。
+ *
+ * 这个矛盾态的指纹：**DEV 构建（有 import.meta.env.DEV）+ 没有 HMR 通道
+ * （import.meta.hot 为空）**。正常 dev server 两者都有；正常 prod build 两者都没有。
+ * 只有"dev 构建后被静态托管"会命中 DEV=true 且 hot=undefined，零误报。
+ *
+ * 返回值：null = 健全；非 null = 检测到异常，附带可读的诊断信息。
+ *
+ * 纯函数版（吃 isDevBuild + hasHmr 两个布尔），便于单测覆盖四种组合而不依赖
+ * `import.meta`。运行时包装见下方 `detectBuildModeAnomaly`。
+ */
+export function buildModeAnomaly(isDevBuild: boolean, hasHmr: boolean): string | null {
+  if (isDevBuild && !hasHmr) {
+    return (
+      "检测到「dev 模式构建的产物被当静态站托管」——此时只读链路会退化为读 localStorage 旧 seed，" +
+      "页面数据会缺失。请用生产构建重新发布：`npm run build:public`（或 `vite build`），再 `vite preview`。"
+    );
+  }
+  return null;
+}
+
+/** 运行时包装：从 import.meta 读取真实构建标记。 */
+export function detectBuildModeAnomaly(): string | null {
+  return buildModeAnomaly(import.meta.env.DEV, Boolean(import.meta.hot));
+}
+
+/**
  * 静态数据源的 URL 前缀。
  * - dev: ""（直接走 /_bus/xxx）
  * - prod: `${BASE_URL}data`（BASE_URL 由 vite.config 的 base 决定；GitHub Pages 需要带 repo 前缀）

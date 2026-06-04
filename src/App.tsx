@@ -4,7 +4,8 @@ import Layout from "./components/Layout";
 import { useLab } from "./store";
 import { storage } from "./storage";
 import { SEED_SNAPSHOT } from "./seed";
-import { IS_READONLY } from "./lib/dataSource";
+import type { LabSnapshot } from "./types";
+import { IS_READONLY, detectBuildModeAnomaly } from "./lib/dataSource";
 import { contractBus } from "./lib/contract";
 
 const DashboardPage = lazy(() => import("./pages/DashboardPage"));
@@ -40,7 +41,7 @@ const LEGACY_PRODUCT_ID_MAP: Record<string, string> = {
  *       编号注册簿架构上线后，后端会统一重新分配 code；浏览器 localStorage 里
  *       的老 code 必须同步修正，否则详情页会用错 code 去 outbox 查报告。
  */
-const CURRENT_MIGRATION_VERSION = 2;
+const CURRENT_MIGRATION_VERSION = 3;
 const MIGRATION_STORAGE_KEY = "sophia-rubric-lab:migration-version";
 
 function readMigrationVersion(): number {
@@ -134,17 +135,90 @@ async function migrateQueryCodesFromRegistry(): Promise<boolean> {
   return dirty;
 }
 
+/**
+ * Migration v3（2026-06-04）：dev 管理员版「数据陈旧」自愈。
+ *
+ * 背景与踩坑：dev(5173) 模式下 storage 是 LocalStorageAdapter，queries / submissions
+ * 直接读 localStorage。但 localStorage 的初始内容来自 `src/seed.ts` 的精简种子
+ * （只有 2 产品 / 1 题 EV-0001），而真实数据早已在磁盘 `.evaluations/` 演进到
+ * 11 题 / 54 份报告。结果：管理员版总览长期只显示 seed 残缺数据，且无任何报错。
+ *
+ * 修法：dev 启动时，若检测到 localStorage 仍是「初始种子」（含 EV-0001 但缺更高
+ * 编号的 query），就从 `.evaluations/_runtime-snapshot.json` 引导导入完整的
+ * queries + submissions（该文件 dev server 可静态访问，且 submission 自带正文
+ * content，满足 dev ReportPage 直读 sub.content 的要求）。products 仍由 bus /
+ * PRODUCTS.json 提供，这里不覆盖。
+ *
+ * 设计原则：
+ *   - 不把几十万字真实数据塞进 seed.ts 源码（保持 seed 精简、可读）；
+ *   - 用 runtime-snapshot 作引导源 → 清缓存后能自愈，且与对外版 bake 同源；
+ *   - 幂等：导入后写 migration v3，不重复执行；用户若已自行编辑过则尊重现状
+ *     （仅在「看起来还是初始种子」时引导，避免覆盖管理员的本地改动）。
+ *
+ * 返回 true 表示执行了引导导入。
+ */
+async function bootstrapDevDataFromSnapshot(): Promise<boolean> {
+  const snap = await storage.exportAll();
+  const codes = new Set((snap.queries ?? []).map((q) => q.code));
+  // 「初始种子」判据：queries 数 ≤1，或仅含 EV-0001 而无 EV-0002+。
+  // 只有这种"明显是开箱默认值"的情况才引导，避免覆盖管理员手动维护的库。
+  const looksLikeSeed =
+    (snap.queries?.length ?? 0) <= 1 ||
+    (codes.has("EV-0001") && ![...codes].some((c) => /^EV-00(0[2-9]|1\d)/.test(c)));
+  if (!looksLikeSeed) return false;
+
+  try {
+    const url = `/.evaluations/_runtime-snapshot.json?_=${Date.now()}`;
+    const resp = await fetch(url, { cache: "no-store" });
+    if (!resp.ok) return false;
+    const remote = (await resp.json()) as Partial<LabSnapshot>;
+    if (!Array.isArray(remote.queries) || !Array.isArray(remote.submissions)) {
+      return false;
+    }
+    if (remote.queries.length === 0) return false;
+    // merge：保留 products（由 bus 提供），用 snapshot 覆盖 queries + submissions。
+    await storage.importAll(
+      {
+        version: 2,
+        exportedAt: new Date().toISOString(),
+        products: snap.products ?? [],
+        queries: remote.queries,
+        submissions: remote.submissions,
+      },
+      "replace"
+    );
+    return true;
+  } catch {
+    // 引导失败（离线 / 文件缺失）保持原样，不影响 dev 启动
+    return false;
+  }
+}
+
 export default function App() {
   const { refresh, loaded } = useLab();
   const [seedChecked, setSeedChecked] = useState(false);
 
   useEffect(() => {
     const init = async () => {
+      // 构建模式健全性自检：捕捉"dev 构建被当静态站托管"的静默退化坑。
+      // 命中时在 console 显式报错（开发者一眼可见），避免再次靠肉眼发现数据缺失。
+      const anomaly = detectBuildModeAnomaly();
+      if (anomaly) console.error(`[build-mode] ${anomaly}`);
+
       // 只读公开版（prod）：数据全来自 /data/public-bundle.json，
       // 不 touch localStorage，也不跑 seed/迁移——直接 refresh 拉数据。
       // 这里 storage 实际是 PublicBundleAdapter（见 storage.ts 末尾的自动分派）。
       if (IS_READONLY) {
         await refresh();
+        // prod 下数据若为空，几乎一定是 bundle 没烤（或 fetch 404）——显式告警，
+        // 而不是默默渲染空表让用户以为"评测没做"。
+        const { products, queries } = useLab.getState();
+        if (!products.length && !queries.length) {
+          console.error(
+            "[public-bundle] 只读版已加载但 products/queries 均为空：" +
+              "请确认 `npm run bake:public` 已执行且 `dist/data/public-bundle.json` 可访问。"
+          );
+        }
         setSeedChecked(true);
         return;
       }
@@ -172,6 +246,10 @@ export default function App() {
           writeMigrationVersion(CURRENT_MIGRATION_VERSION);
         }
       }
+      // Migration v3：dev 库若仍是精简种子（2 产品 / 1 题），从 runtime-snapshot
+      // 引导导入完整数据，自愈"管理员版数据陈旧"。仅在 dev（已排除 prod）执行。
+      // 注意：放在 empty/seed 植入之后——首启植入 seed 后立刻引导成完整库。
+      await bootstrapDevDataFromSnapshot().catch(() => undefined);
       // 每次启动都再对齐一次 registry（幂等）：即便用户在另一个 tab 创建了新
       // query、或 reconcile 又跑过，本 tab 也能拿到最新 code；无变更则 no-op。
       await migrateQueryCodesFromRegistry().catch(() => undefined);

@@ -44,6 +44,8 @@
 - Submission（localStorage / `_runtime-snapshot.json`）与 Inbox/Outbox（磁盘契约）是两条平行存储链。**新增候选时三处都要补**：inbox candidates + outbox 评测 + snapshot.submissions（否则 `build:public` 的 bake 报 dangling reportId）。补 submission 关键字段：`id`=reportId、`queryId`=query.id、`productId`=PRODUCTS.json 已注册 id、`content`=正文。
 - "待评测"判据：对比源正文最后变动时间晚于最新评测时间时，必须提示重跑评测。
 - 边界隔离：`vite-plugins/` 严禁 import `src/` 代码。
+- **生产构建铁律（2026-06-04 踩坑后定）**：dev 构建污染的真凶是环境变量 `NODE_ENV=development`，**`--mode production` 压不住它**。`build`/`build:public` 的 vite build 必须加 `NODE_ENV=production` 前缀。污染会让 `import.meta.env.PROD=false` → 只读版退化成读 localStorage 旧 seed（页面只剩 2 产品 1 题），且零报错。验证构建纯净探针：`grep -c "fileName:" dist/assets/index-*.js` 应为 0（>0=dev JSX 注入）。运行时已有 `detectBuildModeAnomaly()`（指纹 `env.DEV && !import.meta.hot`）在 App init 时 console.error 兜底。
+- **前端「数据缺失」排障铁律**：必须用 agent-browser 实地看渲染，不能只 curl 数据层——数据层 200 完整 ≠ 页面正确（store adapter 选错会读错源）。
 - 契约/lint/schema 相关改动后的回归三连：`npm run lint:outbox` + `npm test` + `tsc -p tsconfig.app.json --noEmit`（UI 变更再加 `npm run lint`）。
 
 ## 工程踩坑（评测官写产物时高频翻车点）

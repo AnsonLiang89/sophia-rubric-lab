@@ -12,7 +12,7 @@
 // ============================================================
 
 import { describe, it, expect } from "vitest";
-import { toStaticUrl, isWriteEndpoint } from "../src/lib/dataSource";
+import { toStaticUrl, isWriteEndpoint, buildModeAnomaly } from "../src/lib/dataSource";
 
 // dev 场景前缀（STATIC_PREFIX 是空字符串，等同"当前域根"）
 const DEV_PREFIX = "";
@@ -185,5 +185,27 @@ describe("isWriteEndpoint — inbox GET 的特殊性", () => {
     // 这两个方法当前未走进写分支——文档化该行为，防止未来无意改动
     expect(isWriteEndpoint("HEAD", "/_bus/standard")).toBe(false);
     expect(isWriteEndpoint("OPTIONS", "/_bus/standard")).toBe(false);
+  });
+});
+
+describe("buildModeAnomaly — 构建模式健全性自检", () => {
+  it("dev 构建 + 无 HMR（dev 产物被静态托管）→ 报异常", () => {
+    // 这正是踩过的坑：dist 用 dev 模式构建，再用 vite preview 托管。
+    const msg = buildModeAnomaly(true, false);
+    expect(msg).not.toBeNull();
+    expect(msg).toContain("dev 模式构建");
+  });
+
+  it("dev 构建 + 有 HMR（正常 dev server）→ 健全", () => {
+    expect(buildModeAnomaly(true, true)).toBeNull();
+  });
+
+  it("prod 构建 + 无 HMR（正常 prod build）→ 健全", () => {
+    expect(buildModeAnomaly(false, false)).toBeNull();
+  });
+
+  it("prod 构建 + 有 HMR（理论上不存在）→ 不误报", () => {
+    // 防御性：即便出现也不该报"dev 被静态托管"这个特定异常
+    expect(buildModeAnomaly(false, true)).toBeNull();
   });
 });
