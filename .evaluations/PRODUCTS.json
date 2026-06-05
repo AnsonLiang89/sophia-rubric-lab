@@ -1,6 +1,6 @@
 {
   "$schema": "评测主体清单（AI 产品列表） — 单一事实源。前端的「评测对象」管理器（管理员版可见）可直接 CRUD，写回走 POST /_bus/products。",
-  "updatedAt": "2026-06-04T03:29:43.061Z",
+  "updatedAt": "2026-06-04T11:39:49.510Z",
   "note": "order 字段仅作备注；实际渲染顺序由前端 sortProducts() 决定：SophiaAI 的版本永远在前（新版本在前），其他按此文件里的 order 升序。颜色规范：同一 name 的不同 version 使用同色系梯度，version 越新越饱和。description 字段为内部说明，仅管理器页面可见，不对外展示。",
   "products": [
     {
@@ -70,6 +70,14 @@
       "vendor": "内部",
       "color": "#8B8272",
       "order": 6
+    },
+    {
+      "id": "claude-opus4.7",
+      "name": "Claude",
+      "version": "opus4.7",
+      "vendor": "Anthropic",
+      "color": "#8B8272",
+      "order": 50
     }
   ]
 }
